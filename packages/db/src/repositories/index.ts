@@ -1,0 +1,1 @@
+export { WorkspaceScopedRepository } from "./base";

@@ -1,0 +1,29 @@
+:root {
+  /* Sigmafy blue ramp — primary accent per the brief */
+  --sigmafy-blue-50: #eef3ff;
+  --sigmafy-blue-500: #0a5bff;
+  --sigmafy-blue-600: #0049db;
+
+  /* Neutral ramp — Apple-style light mode */
+  --neutral-0: #ffffff;
+  --neutral-50: #fafafb;
+  --neutral-100: #f4f4f6;
+  --neutral-200: #e6e7eb;
+  --neutral-500: #6b7280;
+  --neutral-900: #0e1116;
+
+  /* Semantic aliases (shadcn-compatible) */
+  --background: var(--neutral-0);
+  --foreground: var(--neutral-900);
+  --muted: var(--neutral-50);
+  --muted-foreground: var(--neutral-500);
+  --primary: var(--sigmafy-blue-500);
+  --primary-foreground: var(--neutral-0);
+  --border: var(--neutral-200);
+  --ring: var(--sigmafy-blue-500);
+}
+
+/* Dark mode deferred — the brief says light mode first for V1. */
+.dark {
+  /* intentionally empty until Phase 1 design pass */
+}

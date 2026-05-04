@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "echo 'configured per-project via turbo-ignore — see docs/environment-setup.md'"
+}

@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store/
+.next/
+.turbo/
+dist/
+build/
+coverage/
+.vercel/
+pnpm-lock.yaml
+*.tsbuildinfo
+packages/db/migrations/
+packages/stats-client/src/generated/

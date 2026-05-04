@@ -1,0 +1,37 @@
+{
+  "name": "@sigmafy/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "exports": {
+    "./eslint/base": "./eslint/base.js",
+    "./eslint/next": "./eslint/next.js",
+    "./eslint/react": "./eslint/react.js",
+    "./typescript/base": "./typescript/base.json",
+    "./typescript/nextjs": "./typescript/nextjs.json",
+    "./typescript/react-library": "./typescript/react-library.json",
+    "./tailwind/preset": "./tailwind/preset.ts",
+    "./prettier": "./prettier/index.mjs"
+  },
+  "files": ["eslint", "typescript", "tailwind", "prettier"],
+  "scripts": {
+    "lint": "echo 'no lint for @sigmafy/config'",
+    "typecheck": "echo 'no typecheck for @sigmafy/config'",
+    "clean": "echo 'nothing to clean'"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.17.0",
+    "@next/eslint-plugin-next": "^15.0.4",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.13.0",
+    "tailwindcss": "^4.0.0",
+    "typescript-eslint": "^8.18.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.6.0"
+  }
+}
