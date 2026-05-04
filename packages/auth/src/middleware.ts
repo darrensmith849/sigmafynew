@@ -1,12 +1,29 @@
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+
 /**
- * Workspace-context middleware factory for Next.js App Router.
+ * Default Sigmafy middleware: protects every route except marketing, auth
+ * pages, and Clerk's own webhook routes.
  *
- * Phase 0A: resolves workspace from subdomain/session, sets request context,
- * fails closed on missing/invalid workspace. Phase -1 exports a no-op so app
- * code can wire it without behaviour change.
+ * Apps that need different protection rules can compose their own middleware
+ * that calls `clerkMiddleware()` directly.
  */
-export function createSigmafyMiddleware() {
-  return function middleware(): Response | undefined {
-    return undefined;
-  };
-}
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/clerk(.*)",
+]);
+
+export const sigmafyMiddleware = clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect();
+  }
+});
+
+export const sigmafyMiddlewareConfig = {
+  matcher: [
+    // Skip Next.js internals and static files
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+  ],
+};

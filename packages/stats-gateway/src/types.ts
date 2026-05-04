@@ -1,3 +1,5 @@
+import type { ParetoRequest, ParetoResponse } from "@sigmafy/stats-client";
+
 export interface StatsCallRecord {
   workspaceId: string;
   userId: string;
@@ -25,7 +27,10 @@ export interface GatewayAuth {
 
 export interface GatewayOptions {
   baseUrl: string;
-  signingSecret: string;
+  /** HMAC secret added in Phase 1. Ignored for now (FastAPI service has no auth). */
+  signingSecret?: string;
   auth: GatewayAuth;
   logger: GatewayLogger;
 }
+
+export type { ParetoRequest, ParetoResponse };

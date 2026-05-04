@@ -1,8 +1,13 @@
 /**
- * Phase -1: stats client is empty.
+ * Public surface of @sigmafy/stats-client.
  *
- * When the FastAPI stats service is integrated, `pnpm --filter @sigmafy/stats-client generate`
- * will populate `src/generated/` from its OpenAPI document, and this file will
- * re-export the generated client.
+ * This package is consumed exclusively by @sigmafy/stats-gateway.
+ * App code calls the gateway, never this module directly.
  */
-export {};
+export type { components, paths, operations } from "./generated/api";
+export type {
+  ParetoRequest,
+  ParetoResponse,
+  StatsClientError,
+} from "./types";
+export { paretoCall } from "./pareto";

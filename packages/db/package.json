@@ -5,9 +5,18 @@
   "type": "module",
   "license": "UNLICENSED",
   "exports": {
-    ".": { "types": "./src/index.ts", "default": "./src/index.ts" },
-    "./schema": { "types": "./src/schema/index.ts", "default": "./src/schema/index.ts" },
-    "./service-role": { "types": "./src/service-role.ts", "default": "./src/service-role.ts" }
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./schema": {
+      "types": "./src/schema/index.ts",
+      "default": "./src/schema/index.ts"
+    },
+    "./service-role": {
+      "types": "./src/service-role.ts",
+      "default": "./src/service-role.ts"
+    }
   },
   "scripts": {
     "lint": "eslint src --max-warnings=0",
@@ -15,16 +24,21 @@
     "test": "vitest run --passWithNoTests",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx scripts/seed.ts",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
-    "drizzle-orm": "^0.36.4"
+    "drizzle-orm": "^0.36.4",
+    "ws": "^8.20.0"
   },
   "devDependencies": {
     "@sigmafy/config": "workspace:*",
+    "@types/ws": "^8.18.1",
+    "dotenv": "^17.4.2",
     "drizzle-kit": "^0.30.1",
     "eslint": "^9.17.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vitest": "^2.1.8"
   }

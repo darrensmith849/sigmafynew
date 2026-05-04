@@ -1,25 +1,73 @@
+import { paretoCall } from "@sigmafy/stats-client";
+import type { ParetoRequest, ParetoResponse } from "@sigmafy/stats-client";
 import { isAllowed } from "./allowlist";
 import { checkQuota } from "./quota";
-import type { GatewayOptions } from "./types";
-
-const PHASE_MINUS_ONE = "stats-gateway not implemented in Phase -1 — see docs/phase-log.md";
+import type { GatewayOptions, StatsCallRecord } from "./types";
 
 export interface StatsGateway {
-  call(endpoint: string, init?: RequestInit): Promise<unknown>;
+  pareto(request: ParetoRequest): Promise<ParetoResponse>;
 }
 
+/**
+ * Construct a workspace-scoped stats gateway.
+ *
+ * Every method enforces the same pipeline: allowlist check → quota check →
+ * fetch → audit log. The gateway is the only sanctioned path between app
+ * code and the FastAPI service.
+ */
 export function createStatsGateway(opts: GatewayOptions): StatsGateway {
   return {
-    async call(endpoint: string, _init?: RequestInit): Promise<unknown> {
-      if (!isAllowed(endpoint)) {
-        throw new Error(`stats endpoint not allowlisted: ${endpoint}`);
-      }
-      const quota = await checkQuota(opts.auth.workspaceId, endpoint);
-      if (!quota.ok) {
-        throw new Error(`stats quota exceeded for endpoint: ${endpoint}`);
-      }
-      // Phase 0A: signed fetch to opts.baseUrl + endpoint, log via opts.logger.
-      throw new Error(PHASE_MINUS_ONE);
+    async pareto(request) {
+      return runCall("pareto", opts, () =>
+        paretoCall(request, {
+          baseUrl: opts.baseUrl,
+          signature: opts.signingSecret,
+        }),
+      );
     },
   };
+}
+
+async function runCall<T>(
+  endpoint: string,
+  opts: GatewayOptions,
+  fn: () => Promise<T>,
+): Promise<T> {
+  if (!isAllowed(endpoint)) {
+    await record(opts, endpoint, "blocked", 0, `endpoint not allowlisted: ${endpoint}`);
+    throw new Error(`stats endpoint not allowlisted: ${endpoint}`);
+  }
+  const quota = await checkQuota(opts.auth.workspaceId, endpoint);
+  if (!quota.ok) {
+    await record(opts, endpoint, "blocked", 0, "quota exceeded");
+    throw new Error(`stats quota exceeded for endpoint: ${endpoint}`);
+  }
+  const t0 = performance.now();
+  try {
+    const result = await fn();
+    await record(opts, endpoint, "ok", Math.round(performance.now() - t0));
+    return result;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await record(opts, endpoint, "error", Math.round(performance.now() - t0), message);
+    throw err;
+  }
+}
+
+async function record(
+  opts: GatewayOptions,
+  endpoint: string,
+  status: StatsCallRecord["status"],
+  latencyMs: number,
+  errorMessage?: string,
+): Promise<void> {
+  await opts.logger.log({
+    workspaceId: opts.auth.workspaceId,
+    userId: opts.auth.userId,
+    endpoint,
+    status,
+    latencyMs,
+    errorMessage,
+    occurredAt: new Date().toISOString(),
+  });
 }
