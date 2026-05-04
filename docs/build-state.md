@@ -37,10 +37,24 @@ Every runtime adapter throws `"not implemented in Phase -1"` until wired:
 - `@sigmafy/emails` — `sendEmail()`.
 - `@sigmafy/stats-gateway` — `call()` after the allowlist + quota check.
 
+## Live deployments
+
+| App | Project | URL | Status |
+|---|---|---|---|
+| web | `pumpbots-projects/sigmafy-web` | https://web-seven-gold-84.vercel.app | Production |
+| admin | `pumpbots-projects/sigmafy-admin` | https://sigmafy-admin.vercel.app | Production |
+
+Both deployed via the Vercel CLI from the repo root after API-configuring
+each project with `rootDirectory` and the monorepo install/build commands.
+The local `.vercel/` link defaults to `sigmafy-web`; swap to `sigmafy-admin`
+by overwriting `.vercel/project.json` with the admin project ID
+(`prj_0U6FNQxVPyUBX2FW1bwO6gBQvdWv`, org `team_IdxwfxleD8iyeGAc1g0QjSmv`).
+
 ## Known issues / deferred items
 
-- Vercel projects (`sigmafy-web`, `sigmafy-admin`) must be created manually in
-  the Vercel dashboard. See `docs/environment-setup.md` §4.
+- **Git auto-deploy not wired**: deploys today are CLI-driven. To get
+  preview-on-PR and prod-on-merge-to-main, connect each Vercel project to the
+  GitHub repo through the Vercel GitHub App (Settings → Git on each project).
 - `TURBO_TOKEN` (secret) and `TURBO_TEAM` (variable) must be added manually to
   the GitHub repo for Remote Cache to work.
 - Playwright is not in CI yet — added in Phase 0 once routes are real.
