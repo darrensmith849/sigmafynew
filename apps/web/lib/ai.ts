@@ -1,5 +1,13 @@
-import { createAiClient, consoleAiLogger, Prompts } from "@sigmafy/ai";
-import type { AiProvider, AiCallRecord } from "@sigmafy/ai";
+import {
+  createAiClient,
+  consoleAiLogger,
+  gradingPrompts,
+  type AiProvider,
+  type AiCallRecord,
+  type CommonGrading,
+  type GradeableTopic,
+  type Prompts,
+} from "@sigmafy/ai";
 
 let _ai: AiProvider | null = null;
 
@@ -13,33 +21,34 @@ export function getAi(): AiProvider {
   return _ai;
 }
 
+export interface PersistedGrading extends CommonGrading {
+  promptId: string;
+  promptVersion: string;
+  modelId: string;
+  gradedAt: string;
+}
+
 /**
- * Grade a SIPOC submission via the configured AI provider.
+ * Grade a topic submission via the configured AI provider, dispatched by
+ * topic kind through the prompt registry.
  *
- * Returns a structured result + the call metadata for logging. Throws on
- * provider error or unparseable JSON — callers decide whether to swallow
- * (treat as ungraded) or surface to the user.
+ * Adding a new graded topic kind: add the kind to `GradeableTopic` and
+ * register a `GradingPrompt` in `@sigmafy/ai`'s `gradingPrompts`. No
+ * changes here.
+ *
+ * The persisted grading shape is the canonical `CommonGrading` plus the
+ * call provenance (prompt id + version, model id, timestamp). Every
+ * grading row in the DB is traceable to a specific prompt revision.
  */
-export async function gradeSipoc(args: {
+export async function gradeTopic(args: {
   workspaceId: string;
   userId: string;
-  content: {
-    suppliers: string[];
-    inputs: string[];
-    process: string[];
-    outputs: string[];
-    customers: string[];
-  };
-}): Promise<{
-  grading: Prompts.SipocGradingV1.SipocGradingResult & {
-    promptId: string;
-    promptVersion: string;
-    modelId: string;
-    gradedAt: string;
-  };
-  call: AiCallRecord;
-}> {
-  const { SipocGradingV1 } = Prompts;
+  topic: GradeableTopic;
+}): Promise<{ grading: PersistedGrading; call: AiCallRecord }> {
+  const { kind, input } = args.topic;
+  const prompt = gradingPrompts[kind];
+  if (!prompt) throw new Error(`No grading prompt registered for kind: ${kind}`);
+
   const ai = getAi();
   const startedAt = Date.now();
 
@@ -47,35 +56,36 @@ export async function gradeSipoc(args: {
     const response = await ai.complete({
       workspaceId: args.workspaceId,
       userId: args.userId,
-      promptId: SipocGradingV1.PROMPT_ID,
-      promptVersion: SipocGradingV1.VERSION,
+      promptId: prompt.id,
+      promptVersion: prompt.version,
       modelId: process.env.AI_DEFAULT_MODEL_ID ?? "gpt-4o-mini",
       messages: [
-        { role: "system", content: SipocGradingV1.SYSTEM_PROMPT },
-        { role: "user", content: SipocGradingV1.buildSipocUserPrompt(args.content) },
+        { role: "system", content: prompt.systemPrompt },
+        { role: "user", content: prompt.buildUserPrompt(input) },
       ],
-      temperature: 0.2,
-      maxTokens: 600,
+      temperature: prompt.temperature,
+      maxTokens: prompt.maxTokens,
       responseFormat: "json_object",
     });
 
-    let parsed: Prompts.SipocGradingV1.SipocGradingResult;
+    let parsedJson: unknown;
     try {
-      parsed = JSON.parse(response.text) as Prompts.SipocGradingV1.SipocGradingResult;
+      parsedJson = JSON.parse(response.text);
     } catch {
-      throw new Error(`SIPOC grading: model returned non-JSON: ${response.text.slice(0, 200)}`);
+      throw new Error(`${kind} grading: model returned non-JSON: ${response.text.slice(0, 200)}`);
     }
+    const grading = prompt.parse(parsedJson);
 
     const call: AiCallRecord = {
       workspaceId: args.workspaceId,
       userId: args.userId,
-      promptId: SipocGradingV1.PROMPT_ID,
-      promptVersion: SipocGradingV1.VERSION,
+      promptId: prompt.id,
+      promptVersion: prompt.version,
       modelId: response.modelId,
       tokensIn: response.tokensIn,
       tokensOut: response.tokensOut,
       latencyMs: Date.now() - startedAt,
-      costUsd: 0, // computed in Phase 1 via a price table
+      costUsd: 0,
       status: "ok",
       occurredAt: new Date().toISOString(),
     };
@@ -83,9 +93,9 @@ export async function gradeSipoc(args: {
 
     return {
       grading: {
-        ...parsed,
-        promptId: SipocGradingV1.PROMPT_ID,
-        promptVersion: SipocGradingV1.VERSION,
+        ...grading,
+        promptId: prompt.id,
+        promptVersion: prompt.version,
         modelId: response.modelId,
         gradedAt: call.occurredAt,
       },
@@ -96,8 +106,8 @@ export async function gradeSipoc(args: {
     void consoleAiLogger.log({
       workspaceId: args.workspaceId,
       userId: args.userId,
-      promptId: SipocGradingV1.PROMPT_ID,
-      promptVersion: SipocGradingV1.VERSION,
+      promptId: prompt.id,
+      promptVersion: prompt.version,
       modelId: process.env.AI_DEFAULT_MODEL_ID ?? "gpt-4o-mini",
       tokensIn: 0,
       tokensOut: 0,
@@ -109,4 +119,38 @@ export async function gradeSipoc(args: {
     });
     throw err;
   }
+}
+
+/**
+ * @deprecated — use `gradeTopic({ topic: { kind: "sipoc", input } })`.
+ *
+ * Kept for the inline-grading code path in `save-sipoc.ts` and the Inngest
+ * grading function during the Slice A.2 migration. Remove once both
+ * callsites are switched.
+ */
+export async function gradeSipoc(args: {
+  workspaceId: string;
+  userId: string;
+  content: Prompts.SipocInput;
+}): Promise<{
+  grading: Omit<PersistedGrading, "feedback"> & {
+    feedback: Array<{ column: string; note: string }>;
+  };
+  call: AiCallRecord;
+}> {
+  const { grading, call } = await gradeTopic({
+    workspaceId: args.workspaceId,
+    userId: args.userId,
+    topic: { kind: "sipoc", input: args.content },
+  });
+  // Phase 0B's stored shape used `column` not `section`. Map back so any
+  // residual code that reads grading.feedback[].column keeps working.
+  const { feedback: _section, ...rest } = grading;
+  return {
+    grading: {
+      ...rest,
+      feedback: grading.feedback.map((f) => ({ column: f.section, note: f.note })),
+    },
+    call,
+  };
 }

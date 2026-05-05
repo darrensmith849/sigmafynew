@@ -11,3 +11,9 @@ export type {
 
 // Prompt registry
 export * as Prompts from "./prompts";
+export {
+  gradingPrompts,
+  type GradeableTopic,
+  type CommonGrading,
+  type GradingPrompt,
+} from "./prompts";
