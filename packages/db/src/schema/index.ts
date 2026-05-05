@@ -6,3 +6,5 @@ export * from "./projects";
 export * from "./topic-solutions";
 export * from "./stats-call-log";
 export * from "./audit-log";
+export * from "./workspace-invitations";
+export * from "./classes";

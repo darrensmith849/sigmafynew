@@ -13,6 +13,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-up(.*)",
   "/api/clerk(.*)",
   "/api/inngest(.*)", // signature-verified by Inngest SDK; no Clerk auth.
+  "/accept-invite(.*)", // public landing — page itself prompts sign-in.
 ]);
 
 export const sigmafyMiddleware = clerkMiddleware(async (auth, req) => {

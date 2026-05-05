@@ -52,7 +52,15 @@ export default async function DashboardPage() {
             Welcome back{ctx.user.fullName ? `, ${ctx.user.fullName}` : ""}.
           </p>
         </div>
-        <UserButton />
+        <div className="flex items-center gap-4">
+          <Link
+            href="/dashboard/members"
+            className="text-sm font-medium text-muted-foreground hover:text-sigmafyBlue-600"
+          >
+            Members
+          </Link>
+          <UserButton />
+        </div>
       </header>
 
       <RoiSummary

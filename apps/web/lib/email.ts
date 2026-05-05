@@ -2,6 +2,7 @@ import {
   sendEmail,
   WelcomeEmail,
   TopicGradedEmail,
+  WorkspaceInvitationEmail,
   type EmailClientEnv,
 } from "@sigmafy/emails";
 
@@ -44,6 +45,37 @@ export async function sendWelcomeEmail(args: {
     });
   } catch (err) {
     console.error("[email] welcome failed (non-blocking):", err);
+  }
+}
+
+/**
+ * Fire-and-forget workspace invitation email.
+ *
+ * Failure is logged but never throws — invitation row exists in the DB
+ * regardless, and the inviter can copy the accept link manually if needed.
+ */
+export async function sendWorkspaceInvitationEmail(args: {
+  to: string;
+  inviterName: string;
+  workspaceName: string;
+  workspaceId: string;
+  role: "owner" | "admin" | "sponsor" | "trainer" | "delegate";
+  token: string;
+}): Promise<void> {
+  try {
+    await sendEmail(env(), {
+      to: args.to,
+      subject: `${args.inviterName} invited you to ${args.workspaceName} on Sigmafy`,
+      react: WorkspaceInvitationEmail({
+        inviterName: args.inviterName,
+        workspaceName: args.workspaceName,
+        role: args.role,
+        acceptUrl: `${appUrl()}/accept-invite/${args.token}`,
+      }),
+      workspaceId: args.workspaceId,
+    });
+  } catch (err) {
+    console.error("[email] workspace-invitation failed (non-blocking):", err);
   }
 }
 
