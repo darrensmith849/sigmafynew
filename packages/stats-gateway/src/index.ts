@@ -18,4 +18,10 @@ export type {
   XbarRRequest,
   XbarRResponse,
   XbarRControlChart,
+  CapabilityRequest,
+  CapabilityResponse,
+  OneSampleTRequest,
+  OneSampleTResponse,
+  TwoSampleTRequest,
+  TwoSampleTResponse,
 } from "./types";

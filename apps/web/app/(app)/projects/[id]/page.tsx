@@ -19,6 +19,9 @@ import { LongFormTopic } from "./_components/long-form-topic";
 import { HistogramTopic } from "./_components/histogram-topic";
 import { IMRTopic } from "./_components/imr-topic";
 import { XbarRTopic } from "./_components/xbar-r-topic";
+import { CapabilityTopic } from "./_components/capability-topic";
+import { OneSampleTTopic } from "./_components/one-sample-t-topic";
+import { TwoSampleTTopic } from "./_components/two-sample-t-topic";
 import { RoiPanel } from "./_components/roi-panel";
 import { PhaseApprovalPanel } from "./_components/phase-approval-panel";
 import { TopicComments } from "./_components/topic-comments";
@@ -357,6 +360,42 @@ function TopicContent(props: {
     case "xbar-r-chart":
       return (
         <XbarRTopic
+          {...rest}
+          topic={topic}
+          existingSolution={
+            existingSolution
+              ? { content: existingSolution.content, submittedAt: existingSolution.submittedAt }
+              : null
+          }
+        />
+      );
+    case "capability":
+      return (
+        <CapabilityTopic
+          {...rest}
+          topic={topic}
+          existingSolution={
+            existingSolution
+              ? { content: existingSolution.content, submittedAt: existingSolution.submittedAt }
+              : null
+          }
+        />
+      );
+    case "one-sample-t":
+      return (
+        <OneSampleTTopic
+          {...rest}
+          topic={topic}
+          existingSolution={
+            existingSolution
+              ? { content: existingSolution.content, submittedAt: existingSolution.submittedAt }
+              : null
+          }
+        />
+      );
+    case "two-sample-t":
+      return (
+        <TwoSampleTTopic
           {...rest}
           topic={topic}
           existingSolution={

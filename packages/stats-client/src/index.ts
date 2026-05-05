@@ -16,9 +16,17 @@ export type {
   XbarRRequest,
   XbarRResponse,
   XbarRControlChart,
+  CapabilityRequest,
+  CapabilityResponse,
+  OneSampleTRequest,
+  OneSampleTResponse,
+  TwoSampleTRequest,
+  TwoSampleTResponse,
   StatsClientError,
 } from "./types";
 export { paretoCall } from "./pareto";
 export { histogramCall } from "./histogram";
 export { imrCall } from "./imr";
 export { xbarRCall } from "./xbar-r";
+export { capabilityCall } from "./capability";
+export { oneSampleTCall, twoSampleTCall } from "./t-test";

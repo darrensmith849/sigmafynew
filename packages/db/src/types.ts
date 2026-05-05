@@ -6,6 +6,8 @@
  * Phase 1 Slice A.4: long-form (single-textarea topic with AI grading).
  * Phase 1 Slice C.2: histogram (numeric data → distribution).
  * Phase 1 Slice C.3: imr-chart, xbar-r-chart (control charts).
+ * Phase 1 Slice C.4: capability, one-sample-t, two-sample-t — completes
+ *                    the V1 stats allowlist (master plan §5.2).
  */
 export type TopicKind =
   | "charter"
@@ -15,7 +17,10 @@ export type TopicKind =
   | "long-form"
   | "histogram"
   | "imr-chart"
-  | "xbar-r-chart";
+  | "xbar-r-chart"
+  | "capability"
+  | "one-sample-t"
+  | "two-sample-t";
 
 export interface TemplateTopic {
   slug: string;

@@ -58,9 +58,11 @@ describe.skipIf(!APP_URL || !SERVICE_URL)("stats-gateway pareto end-to-end", () 
       logger: createDbStatsLogger(db),
     });
     // The gateway only exposes typed methods for allowlisted endpoints.
-    // After Phase 1 Slice C.3, pareto / histogram / imr-chart / xbar-r-chart
-    // are allowlisted but capability + t-tests are not yet — Slice C.4 adds them.
-    // @ts-expect-error capability is not yet in the allowlist
-    expect(typeof gateway.capability).toBe("undefined");
+    // V1 stats allowlist (master plan §5.2) is complete after Slice C.4.
+    // Anything beyond it (e.g. ANOVA, regression, DOE — all available on
+    // the FastAPI service but intentionally not exposed) is still rejected
+    // by the type system.
+    // @ts-expect-error anova is not in the V1 allowlist
+    expect(typeof gateway.anova).toBe("undefined");
   });
 });

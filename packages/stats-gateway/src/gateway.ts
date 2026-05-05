@@ -3,6 +3,9 @@ import {
   histogramCall,
   imrCall,
   xbarRCall,
+  capabilityCall,
+  oneSampleTCall,
+  twoSampleTCall,
 } from "@sigmafy/stats-client";
 import type {
   ParetoRequest,
@@ -13,6 +16,12 @@ import type {
   IMRResponse,
   XbarRRequest,
   XbarRResponse,
+  CapabilityRequest,
+  CapabilityResponse,
+  OneSampleTRequest,
+  OneSampleTResponse,
+  TwoSampleTRequest,
+  TwoSampleTResponse,
 } from "@sigmafy/stats-client";
 import { isAllowed } from "./allowlist";
 import { checkQuota } from "./quota";
@@ -23,6 +32,9 @@ export interface StatsGateway {
   histogram(request: HistogramRequest): Promise<HistogramResponse>;
   imrChart(request: IMRRequest): Promise<IMRResponse>;
   xbarRChart(request: XbarRRequest): Promise<XbarRResponse>;
+  capability(request: CapabilityRequest): Promise<CapabilityResponse>;
+  oneSampleT(request: OneSampleTRequest): Promise<OneSampleTResponse>;
+  twoSampleT(request: TwoSampleTRequest): Promise<TwoSampleTResponse>;
 }
 
 /**
@@ -61,6 +73,30 @@ export function createStatsGateway(opts: GatewayOptions): StatsGateway {
     async xbarRChart(request) {
       return runCall("xbar-r-chart", opts, () =>
         xbarRCall(request, {
+          baseUrl: opts.baseUrl,
+          signature: opts.signingSecret,
+        }),
+      );
+    },
+    async capability(request) {
+      return runCall("capability", opts, () =>
+        capabilityCall(request, {
+          baseUrl: opts.baseUrl,
+          signature: opts.signingSecret,
+        }),
+      );
+    },
+    async oneSampleT(request) {
+      return runCall("one-sample-t", opts, () =>
+        oneSampleTCall(request, {
+          baseUrl: opts.baseUrl,
+          signature: opts.signingSecret,
+        }),
+      );
+    },
+    async twoSampleT(request) {
+      return runCall("two-sample-t", opts, () =>
+        twoSampleTCall(request, {
           baseUrl: opts.baseUrl,
           signature: opts.signingSecret,
         }),

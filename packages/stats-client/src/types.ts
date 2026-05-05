@@ -72,6 +72,77 @@ export interface XbarRResponse {
   n_subgroups: number;
 }
 
+/** Capability analysis (Cp / Cpk / Pp / Ppk). */
+export interface CapabilityRequest {
+  data: number[];
+  lsl?: number | null;
+  usl?: number | null;
+  subgroup_size?: number;
+}
+
+export interface CapabilityResponse {
+  n: number;
+  mean: number;
+  std_within: number;
+  std_overall: number;
+  cp: number | null;
+  cpk: number | null;
+  cpu: number | null;
+  cpl: number | null;
+  pp: number | null;
+  ppk: number | null;
+  ppu: number | null;
+  ppl: number | null;
+  yield_percent: number;
+  ppm: number;
+  z_upper: number | null;
+  z_lower: number | null;
+}
+
+/** 1-sample t-test. */
+export interface OneSampleTRequest {
+  data: number[];
+  hypothesized_mean: number;
+  alternative?: "two-sided" | "less" | "greater";
+}
+
+export interface OneSampleTResponse {
+  test: string;
+  t_statistic: number;
+  p_value: number;
+  df: number;
+  mean: number;
+  hypothesized_mean: number;
+  alternative: string;
+  ci_95: [number, number];
+  n: number;
+  std_dev: number;
+  se_mean: number;
+}
+
+/** 2-sample t-test. */
+export interface TwoSampleTRequest {
+  data1: number[];
+  data2: number[];
+  equal_var?: boolean;
+  alternative?: "two-sided" | "less" | "greater";
+}
+
+export interface TwoSampleTResponse {
+  test: string;
+  t_statistic: number;
+  p_value: number;
+  mean_1: number;
+  mean_2: number;
+  difference: number;
+  std_1: number;
+  std_2: number;
+  n_1: number;
+  n_2: number;
+  equal_var: boolean;
+  alternative: string;
+}
+
 export interface StatsClientError extends Error {
   statusCode: number;
   endpoint: string;

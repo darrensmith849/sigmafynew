@@ -96,6 +96,13 @@ export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
               description:
                 "Subgrouped control chart for variable data. Use when you collect equal-sized subgroups (e.g. 5 measurements per shift).",
             },
+            {
+              slug: "capability",
+              name: "Capability Analysis (Cp / Cpk)",
+              kind: "capability",
+              description:
+                "Compare process spread against spec limits. Cp / Cpk ≥ 1.33 is generally considered capable. Requires LSL or USL.",
+            },
           ],
         },
       ],
@@ -121,6 +128,26 @@ export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
               kind: "long-form",
               description:
                 "List the candidate root causes you'll test, with the data or evidence that would confirm or rule each one out.",
+            },
+          ],
+        },
+        {
+          slug: "hypothesis-testing",
+          name: "Hypothesis testing",
+          topics: [
+            {
+              slug: "one-sample-t",
+              name: "1-sample t-test",
+              kind: "one-sample-t",
+              description:
+                "Compare a sample mean against a hypothesised target. e.g. \"Is the new process averaging the spec target of 10.0?\"",
+            },
+            {
+              slug: "two-sample-t",
+              name: "2-sample t-test",
+              kind: "two-sample-t",
+              description:
+                "Compare two sample means. e.g. \"Does shift A produce different cycle times than shift B?\"",
             },
           ],
         },

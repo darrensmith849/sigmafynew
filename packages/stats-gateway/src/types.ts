@@ -9,6 +9,12 @@ import type {
   XbarRRequest,
   XbarRResponse,
   XbarRControlChart,
+  CapabilityRequest,
+  CapabilityResponse,
+  OneSampleTRequest,
+  OneSampleTResponse,
+  TwoSampleTRequest,
+  TwoSampleTResponse,
 } from "@sigmafy/stats-client";
 
 export interface StatsCallRecord {
@@ -55,4 +61,10 @@ export type {
   XbarRRequest,
   XbarRResponse,
   XbarRControlChart,
+  CapabilityRequest,
+  CapabilityResponse,
+  OneSampleTRequest,
+  OneSampleTResponse,
+  TwoSampleTRequest,
+  TwoSampleTResponse,
 };
