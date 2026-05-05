@@ -1,13 +1,23 @@
 @import "tailwindcss";
 @import "./tokens/index.css";
+@import "./animations/animations.css";
 
 @layer base {
   * {
-    border-color: var(--border);
+    border-color: var(--color-border);
+  }
+  html {
+    color-scheme: light dark;
+    scroll-behavior: smooth;
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
   }
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: var(--color-bg);
+    color: var(--color-fg);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

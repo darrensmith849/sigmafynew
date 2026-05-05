@@ -1,29 +1,90 @@
+/**
+ * Sigmafy brand tokens — light + dark.
+ *
+ * Source of truth: docs/brand-spec.md, extracted from dev-portal.sigmafy.co.
+ * The new --color-* set is canonical. The shadcn-style aliases at the bottom
+ * (--background / --foreground / etc.) are kept so old call-sites still work
+ * during the brand-sprint migration; they resolve to the same token.
+ */
+
 :root {
-  /* Sigmafy blue ramp — primary accent per the brief */
+  /* === Surface + foreground === */
+  --color-bg: #ffffff;
+  --color-fg: #0a0a0a;
+  --color-muted: #6e6e73;
+  --color-muted-2: #86868b;
+  --color-surface: #ffffff;
+  --color-surface-2: #fbfbfd;
+  --color-surface-3: #f5f5f7;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-subtle: rgba(0, 0, 0, 0.05);
+
+  /* === Accent (inverts across themes) === */
+  --color-accent: #0a0f18;
+  --color-accent-fg: #ffffff;
+  --color-accent-2: #a39081;
+  --color-glow-tint: rgba(10, 15, 24, 0.08);
+
+  /* === Per-product tints === */
+  --tint-projects: #1a5d4a;
+  --tint-spc: #0a4a78;
+  --tint-training: #5a3a8b;
+  --tint-ai: #8b4a1a;
+  --tint-admin: #4a4a5a;
+
+  /* === Translucent nav backgrounds === */
+  --color-nav-bg: rgba(251, 251, 253, 0.72);
+  --color-nav-bg-scrolled: rgba(251, 251, 253, 0.92);
+
+  /* === Shadows === */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px -8px rgba(0, 0, 0, 0.08);
+  --shadow-card-lift:
+    0 1px 3px rgba(0, 0, 0, 0.05), 0 24px 48px -16px rgba(0, 0, 0, 0.16);
+  --shadow-popover: 0 12px 40px -8px rgba(0, 0, 0, 0.18);
+
+  /* === Legacy shadcn-style aliases — kept for backward compat === */
+  --background: var(--color-bg);
+  --foreground: var(--color-fg);
+  --muted: var(--color-surface-3);
+  --muted-foreground: var(--color-muted);
+  --primary: var(--color-accent);
+  --primary-foreground: var(--color-accent-fg);
+  --border: var(--color-border);
+  --ring: var(--color-accent);
+
+  /* === Legacy Sigmafy-blue ramp — kept for backward compat with UI Sprint code === */
   --sigmafy-blue-50: #eef3ff;
   --sigmafy-blue-500: #0a5bff;
   --sigmafy-blue-600: #0049db;
-
-  /* Neutral ramp — Apple-style light mode */
-  --neutral-0: #ffffff;
-  --neutral-50: #fafafb;
-  --neutral-100: #f4f4f6;
-  --neutral-200: #e6e7eb;
-  --neutral-500: #6b7280;
-  --neutral-900: #0e1116;
-
-  /* Semantic aliases (shadcn-compatible) */
-  --background: var(--neutral-0);
-  --foreground: var(--neutral-900);
-  --muted: var(--neutral-50);
-  --muted-foreground: var(--neutral-500);
-  --primary: var(--sigmafy-blue-500);
-  --primary-foreground: var(--neutral-0);
-  --border: var(--neutral-200);
-  --ring: var(--sigmafy-blue-500);
 }
 
-/* Dark mode deferred — the brief says light mode first for V1. */
-.dark {
-  /* intentionally empty until Phase 1 design pass */
+/* === Dark theme === */
+[data-theme="dark"] {
+  --color-bg: #0a0a0a;
+  --color-fg: #f5f5f7;
+  --color-muted: #a1a1a6;
+  --color-muted-2: #86868b;
+  --color-surface: #111111;
+  --color-surface-2: #161616;
+  --color-surface-3: #1d1d1f;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+
+  --color-accent: #f5f5f7;
+  --color-accent-fg: #0a0a0a;
+  --color-glow-tint: rgba(255, 255, 255, 0.06);
+
+  --tint-projects: #6ab089;
+  --tint-spc: #5bb8d4;
+  --tint-training: #a48bcc;
+  --tint-ai: #d4a06a;
+  --tint-admin: #b1bac4;
+
+  --color-nav-bg: rgba(10, 10, 10, 0.72);
+  --color-nav-bg-scrolled: rgba(10, 10, 10, 0.92);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -10px rgba(0, 0, 0, 0.65);
+  --shadow-card-lift:
+    0 1px 2px rgba(0, 0, 0, 0.5), 0 28px 56px -16px rgba(0, 0, 0, 0.85);
+  --shadow-popover: 0 16px 50px -10px rgba(0, 0, 0, 0.85);
 }

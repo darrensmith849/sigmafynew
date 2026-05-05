@@ -4,19 +4,22 @@ import { cn } from "../lib/cn";
 import { cva, type VariantProps } from "../lib/cva";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-pill border border-transparent font-medium tracking-tightish transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        primary: "bg-primary text-primary-foreground hover:bg-sigmafyBlue-600",
-        secondary: "bg-muted text-foreground hover:bg-neutral-100",
-        ghost: "bg-transparent text-foreground hover:bg-muted",
-        outline: "border border-border bg-background text-foreground hover:bg-muted",
+        primary:
+          "bg-accent text-accent-fg border-accent hover:opacity-90 active:translate-y-px",
+        secondary:
+          "bg-surface text-fg border-border hover:bg-surface-2 active:translate-y-px",
+        ghost: "bg-transparent text-fg hover:bg-surface-2",
+        outline:
+          "border border-border bg-bg text-fg hover:bg-surface-2 active:translate-y-px",
       },
       size: {
-        sm: "h-8 rounded-pill px-3 text-sm",
-        md: "h-10 rounded-pill px-5 text-sm",
-        lg: "h-12 rounded-pill px-7 text-base",
+        sm: "h-8 px-[0.85rem] text-[13px]",
+        md: "h-10 px-5 text-[14px]",
+        lg: "h-12 px-[1.6rem] text-[15px]",
       },
     },
     defaultVariants: { variant: "primary", size: "md" },
