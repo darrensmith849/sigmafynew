@@ -5,6 +5,51 @@ commit(s), deliverables checked off, decisions, and open questions.
 
 ---
 
+## Phase 0B — Product Proof (in progress)
+
+- **Status**: code for slices 1, 2, 3, 5 shipped to production
+  (commits below). End-user verification + Slice 4 (Inngest) + Slice 6
+  (UI polish) outstanding before Completion Report.
+- **Branch**: `main`.
+- **Commits shipped (in order)**:
+  - `3a0ea96` — Slice 1 — OpenAI SIPOC grading + display
+  - `53096ee` — Slice 2 — Brevo welcome + topic-graded emails
+  - `1aab0aa` — Slice 3 — ROI capture + dashboard widget
+  - `0e61af6` — Slice 5 — admin app + audit log + bootstrap audit
+- **Verification done by code-side**: `pnpm turbo run lint typecheck
+  test build` green at every commit.
+- **Verification pending end-user**: ROI round-trip, topic-graded email
+  landing in inbox, admin app pages rendering correctly with audit-log
+  entries written.
+- **Deferred slices**:
+  - Slice 4 (Inngest async grading) — needs `INNGEST_EVENT_KEY` +
+    `INNGEST_SIGNING_KEY` from inngest.com. Inline grading is fully
+    functional; this is a UX optimization (~3-8s request → instant
+    response).
+  - Slice 6 (UI polish) — rolled into Phase 1 prep. Existing UI uses
+    the `@sigmafy/ui` primitives + Sigmafy blue tokens; no specific
+    polish complaints filed.
+- **Decisions made (during 0B so far)**:
+  - Grading prompts versioned per the never-edit-published rule;
+    SIPOC v1 lives at `packages/ai/src/prompts/grading/sipoc.v1.ts`.
+  - `topic_solutions.grading` jsonb (nullable) added via migration
+    `0002_phase_0b_grading_column.sql` — applied idempotently to
+    live Neon.
+  - Admin auth via env-var allowlist (`SIGMAFY_ADMIN_EMAILS`) for
+    Phase 0B; Clerk org roles in Phase 1.
+  - True cross-domain impersonation deferred — Slice 5 ships the
+    "view as admin" surface only.
+- **Open questions for Phase 1 prep**:
+  - Inngest vs alternatives (Vercel Cron + queue, etc.) — confirm
+    Inngest before wiring.
+  - Cross-domain impersonation mechanism (signed JWT in URL? Cookie
+    handoff? Subdomain cookie sharing?).
+  - Multi-tenant routing (subdomain `acme.sigmafy.co` vs path prefix
+    `/w/acme/...`) — still an open 0A question; needed before SSA
+    pilot.
+
+---
+
 ## Direction shift — 2026-05-05
 
 - Branch model retired `dev`; all work goes to `main` while no live users.

@@ -5,11 +5,20 @@ every meaningful implementation session.
 
 ## Current phase
 
-**Phase 0A — Architecture Proof**: ✅ **COMPLETE** (2026-05-05).
-Verified end-to-end on production URLs. Phase 0A Completion Report appended
-to `docs/phase-log.md`.
+**Phase 0B — Product Proof**: in progress (2026-05-05). Slices 1, 2, 3, 5
+shipped to production; awaiting end-user verification before Completion
+Report can be sealed.
 
-**Next phase**: Phase 0B — Product Proof. Awaiting 2KO signoff to start.
+| Slice | Scope | Status |
+|---|---|---|
+| 1 | OpenAI SIPOC grading + display on project page | ✅ shipped |
+| 2 | Brevo welcome + topic-graded emails | ✅ shipped |
+| 3 | ROI capture on project + sponsor widget on dashboard | ✅ shipped |
+| 5 | apps/admin tenant list + workspace detail + audit log; bootstrap audit (closes deferred 0A) | ✅ shipped |
+| 4 | Inngest async grading job | 🟡 deferred — needs `INNGEST_*` keys; inline grading fully functional |
+| 6 | UI polish | 🟡 rolled into Phase 1 prep |
+
+**Phase 0A — Architecture Proof**: ✅ complete (2026-05-05).
 
 ## Direction shifts (2026-05-05)
 
@@ -21,7 +30,31 @@ to `docs/phase-log.md`.
 - **Email provider**: default adapter swapped from Resend to Brevo in
   `@sigmafy/emails` (ADR 0008). React Email components retained.
 
-## What works
+## What works (Phase 0B additions)
+
+- **AI grading**: `@sigmafy/ai` OpenAI adapter calls `gpt-4o-mini` chat
+  completions in JSON mode. SIPOC submissions trigger inline grading
+  (~3-8s wait); result persists into `topic_solutions.grading` and renders
+  on the project page below the form.
+- **Email**: `@sigmafy/emails` Brevo adapter renders React Email
+  components (`WelcomeEmail`, `TopicGradedEmail`) to HTML and sends via
+  Brevo's transactional endpoint. Welcome fires on first signup
+  (idempotent); topic-graded fires after each successful grading.
+- **ROI**: `projects.roi_estimated_zar_cents` (BIGINT, applied via
+  migration `0002_phase_0b_grading_column` along with the grading column)
+  captured via `RoiPanel` on the project page; aggregated on
+  `/dashboard` as a workspace-total card + per-project badge. ZAR
+  formatted via `Intl.NumberFormat('en-ZA', ...)`.
+- **Admin app** (`apps/admin`): `/` lists tenants with member/project/ROI
+  counts; `/workspaces/[id]` shows projects, members, recent topic
+  submissions; `/audit-log` shows the last 100 entries. Protected by
+  `SIGMAFY_ADMIN_EMAILS` env-var allowlist (Clerk org roles in Phase 1).
+  Every cross-tenant view writes an `audit_log` row.
+- **Bootstrap auditing**: `bootstrapUserAndWorkspace` now writes a
+  `bootstrap.create_workspace` audit-log row. Closes the deferred
+  Phase 0A item.
+
+## What works (Phase 0A — recap)
 
 - Phase -1 monorepo + Phase 0A architecture all green: 24/24 turbo tasks
   pass on `pnpm turbo run lint typecheck test build`.
@@ -51,11 +84,9 @@ to `docs/phase-log.md`.
 
 ## What's stubbed (fails loudly)
 
-- `@sigmafy/billing` — every Paystack adapter method throws.
-- `@sigmafy/ai` — OpenAI adapter complete/stream throw "not wired in 0A"
-  (lands in Phase 0B).
-- `@sigmafy/emails` — `sendEmail()` throws "not wired in 0A" (Brevo lands
-  in Phase 0B).
+- `@sigmafy/billing` — every Paystack adapter method throws. Lands in
+  Phase 1 (Paystack billing test using internal/comped workspace per
+  master plan §16).
 
 ## Live deployments
 
@@ -70,16 +101,35 @@ auto-deploy production. Phase-0a app routes are wired but signup will return
 
 ## Known issues / deferred items
 
-- **Pending Clerk keys** to seal Phase 0A: live signup → SIPOC submit →
-  Pareto run on the production URL.
-- **Single-branch risk**: every commit to `main` ships to production. Fine
-  for now (no users), but reinstate dev/PR flow before Phase 1 (ADR 0006).
-- `TURBO_TOKEN` (secret) and `TURBO_TEAM` (variable) must be added manually
-  to the GitHub repo for Remote Cache to work.
-- Playwright is not in CI yet — added in Phase 0B once routes are real and
-  signup is verified.
-- `apps/stats-api` is a placeholder; the existing FastAPI service stays on
-  Fly.io and is consumed by `@sigmafy/stats-gateway`.
+- **End-user verification of Phase 0B slices 1/2/3/5 pending** — see
+  Handover note at the bottom. Specifically: ROI capture round-trip,
+  topic-graded email landing in inbox, and admin app rendering all three
+  pages.
+- **Inngest deferred (Slice 4)**: AI grading runs inline (~3-8s request).
+  Needs `INNGEST_EVENT_KEY` + `INNGEST_SIGNING_KEY` from inngest.com to
+  move it to a background job.
+- **Cross-domain admin impersonation deferred**: master plan §15 calls
+  for "2KO admin can impersonate with logging." Slice 5 satisfies the
+  "view the workspace" half. True impersonation (admin acts as user)
+  needs a JWT/cookie handoff between admin.vercel.app and web.vercel.app
+  with strict scoping. Phase 1 prep.
+- **Stale tenants from phase-0a development**: `acme` and `zeta`
+  workspaces + their users remain in Neon. Harmless; clean up before
+  the SSA pilot.
+- **Single-branch risk**: every commit to `main` ships to production.
+  Fine while there are zero live users; reinstate dev/PR flow before
+  Phase 1 (ADR 0006).
+- **Secrets to rotate**: OpenAI key, Brevo key, and Neon `neondb_owner`
+  password were all pasted into a chat session and logged. Rotate before
+  any external party uses the platform.
+- `TURBO_TOKEN` (secret) and `TURBO_TEAM` (variable) must be added
+  manually to the GitHub repo for Remote Cache to work.
+- Vercel auto-deploy via GitHub App not wired — deploys are CLI-driven
+  (`vercel deploy --prod` from the linked dir). Connect both Vercel
+  projects to the GitHub App before Phase 1.
+- Playwright not in CI yet.
+- `apps/stats-api` is a placeholder; the existing FastAPI service stays
+  on Fly.io and is consumed by `@sigmafy/stats-gateway`.
 
 ## How to verify locally
 
