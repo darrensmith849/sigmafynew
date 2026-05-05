@@ -46,7 +46,25 @@ export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
       ],
     },
     { slug: "measure", name: "Measure", sections: [] },
-    { slug: "analyse", name: "Analyse", sections: [] },
+    {
+      slug: "analyse",
+      name: "Analyse",
+      sections: [
+        {
+          slug: "root-cause",
+          name: "Root cause analysis",
+          topics: [
+            {
+              slug: "five-whys",
+              name: "5-Whys",
+              kind: "five-whys",
+              description:
+                "Drill from a specific problem down to a root cause by asking \"why?\" five times — each answer is the next \"why\".",
+            },
+          ],
+        },
+      ],
+    },
     { slug: "improve", name: "Improve", sections: [] },
     { slug: "control", name: "Control", sections: [] },
     { slug: "executive-summary", name: "Executive Summary", sections: [] },

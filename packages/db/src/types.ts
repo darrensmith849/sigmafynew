@@ -1,10 +1,10 @@
 /**
  * Shape of `project_templates.definition` JSON.
  *
- * Phase 0A keeps this minimal — three topic kinds: charter (read-only display),
- * sipoc (form), pareto (form + stats call). More kinds arrive in Phase 1.
+ * Phase 0A: charter (read-only), sipoc, pareto.
+ * Phase 1 Slice A.3: five-whys.
  */
-export type TopicKind = "charter" | "sipoc" | "pareto";
+export type TopicKind = "charter" | "sipoc" | "pareto" | "five-whys";
 
 export interface TemplateTopic {
   slug: string;

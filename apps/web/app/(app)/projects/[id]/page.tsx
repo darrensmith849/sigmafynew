@@ -14,6 +14,7 @@ import { getAppDb } from "@/lib/db";
 import { CharterTopic } from "./_components/charter-topic";
 import { SipocTopic } from "./_components/sipoc-topic";
 import { ParetoTopic } from "./_components/pareto-topic";
+import { FiveWhysTopic } from "./_components/five-whys-topic";
 import { RoiPanel } from "./_components/roi-panel";
 
 export const dynamic = "force-dynamic";
@@ -219,6 +220,14 @@ function TopicContent(props: {
               ? { content: existingSolution.content, submittedAt: existingSolution.submittedAt }
               : null
           }
+        />
+      );
+    case "five-whys":
+      return (
+        <FiveWhysTopic
+          {...rest}
+          topic={topic}
+          existingSolution={existingSolution}
         />
       );
   }
