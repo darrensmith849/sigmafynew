@@ -5,48 +5,114 @@ commit(s), deliverables checked off, decisions, and open questions.
 
 ---
 
-## Phase 0B — Product Proof (in progress)
+## Phase 0B — Product Proof
 
-- **Status**: code for slices 1, 2, 3, 5 shipped to production
-  (commits below). End-user verification + Slice 4 (Inngest) + Slice 6
-  (UI polish) outstanding before Completion Report.
+- **Status**: ✅ **COMPLETE** (2026-05-05). Verified end-to-end on
+  production: ROI capture round-trip, AI grading, topic-graded email,
+  admin app pages. Inngest endpoint live + signing key configured
+  (after a re-redeploy with the env vars properly saved).
 - **Branch**: `main`.
-- **Commits shipped (in order)**:
+- **Commits**:
   - `3a0ea96` — Slice 1 — OpenAI SIPOC grading + display
   - `53096ee` — Slice 2 — Brevo welcome + topic-graded emails
   - `1aab0aa` — Slice 3 — ROI capture + dashboard widget
   - `0e61af6` — Slice 5 — admin app + audit log + bootstrap audit
-- **Verification done by code-side**: `pnpm turbo run lint typecheck
-  test build` green at every commit.
-- **Verification pending end-user**: ROI round-trip, topic-graded email
-  landing in inbox, admin app pages rendering correctly with audit-log
-  entries written.
-- **Deferred slices**:
-  - Slice 4 (Inngest async grading) — needs `INNGEST_EVENT_KEY` +
-    `INNGEST_SIGNING_KEY` from inngest.com. Inline grading is fully
-    functional; this is a UX optimization (~3-8s request → instant
-    response).
-  - Slice 6 (UI polish) — rolled into Phase 1 prep. Existing UI uses
-    the `@sigmafy/ui` primitives + Sigmafy blue tokens; no specific
-    polish complaints filed.
-- **Decisions made (during 0B so far)**:
-  - Grading prompts versioned per the never-edit-published rule;
-    SIPOC v1 lives at `packages/ai/src/prompts/grading/sipoc.v1.ts`.
-  - `topic_solutions.grading` jsonb (nullable) added via migration
-    `0002_phase_0b_grading_column.sql` — applied idempotently to
-    live Neon.
-  - Admin auth via env-var allowlist (`SIGMAFY_ADMIN_EMAILS`) for
-    Phase 0B; Clerk org roles in Phase 1.
-  - True cross-domain impersonation deferred — Slice 5 ships the
-    "view as admin" surface only.
-- **Open questions for Phase 1 prep**:
-  - Inngest vs alternatives (Vercel Cron + queue, etc.) — confirm
-    Inngest before wiring.
-  - Cross-domain impersonation mechanism (signed JWT in URL? Cookie
-    handoff? Subdomain cookie sharing?).
-  - Multi-tenant routing (subdomain `acme.sigmafy.co` vs path prefix
-    `/w/acme/...`) — still an open 0A question; needed before SSA
-    pilot.
+  - `590cc28` — Slice 4 — Inngest async grading scaffold
+  - `9a37543` — docs sync (interim)
+
+### Phase Completion Report
+
+What was built (vs master plan §15 deliverables):
+
+- ✅ **SIPOC graded by AI Copilot** — `packages/ai/src/prompts/grading/sipoc.v1.ts`,
+  OpenAI `gpt-4o-mini` JSON-mode, grading persists to
+  `topic_solutions.grading` (jsonb), renders inline on the project page
+  with decision pill + score + per-column feedback.
+- ✅ **Email notification on grading** — `@sigmafy/emails` Brevo
+  adapter with React Email templates (`WelcomeEmail`,
+  `TopicGradedEmail`). Welcome fires on first signup (idempotent),
+  topic-graded fires after each grading.
+- ✅ **ROI capture** — `RoiPanel` component on the project page,
+  `saveProjectRoi` server action, ZAR-cents storage, dashboard
+  shows aggregate workspace ROI + per-project badges.
+- ✅ **Sponsor-visible ROI** — workspace dashboard displays the
+  aggregate via `Intl.NumberFormat('en-ZA', ...)`. Sponsor role
+  gating arrives in Phase 1.
+- ✅ **2KO admin can view workspaces** — `apps/admin` with tenant
+  list + workspace detail + audit log. Each cross-tenant view writes
+  an `audit_log` row.
+- 🟡 **2KO admin can impersonate with logging** — half-met. Slice 5
+  ships the "view workspace as admin" surface (admin sees projects,
+  members, recent topic submissions); true cross-domain impersonation
+  (admin acts AS the user) is deferred to Phase 1 because of the
+  JWT/cookie handoff complexity.
+- ✅ **Inngest async grading job** — `/api/inngest` live;
+  `gradeSipocFn` with 4 step.run units (load, grade, persist, email);
+  `save-sipoc` dispatches the event when keys are configured, falls
+  back to inline otherwise.
+- 🟡 **Polished Apple-style UI for all 0A and 0B screens** — passable
+  but not exhaustively polished. Existing UI uses `@sigmafy/ui`
+  primitives + Sigmafy blue tokens. Polish pass rolled into Phase 1.
+- ⚠️ **Real recorded session as proof artifact** — not produced; tied
+  to staging-URL feedback session with SSA team in Phase 1 prep.
+
+Checks run:
+- `pnpm turbo run lint typecheck test build` → green on every commit
+  (8/8 in the final run).
+- Production verification: signup → bootstrap → SIPOC submit → AI
+  grading → email arrival → ROI capture → dashboard widget → admin
+  tenant list / workspace detail / audit log all confirmed by 2KO.
+
+Direction shifts that landed during 0B:
+- Branch flow: `main`-only while no live users (ADR 0006). **Reinstate
+  dev/PR flow before Phase 1 launch.**
+- AI provider default: OpenAI (ADR 0007).
+- Email provider default: Brevo (ADR 0008).
+
+Decisions made (during 0B):
+- Grading prompts versioned per the never-edit-published rule; SIPOC
+  v1 lives at `packages/ai/src/prompts/grading/sipoc.v1.ts`.
+- `topic_solutions.grading` jsonb (nullable) added via migration
+  `0002_phase_0b_grading_column.sql`.
+- Admin auth via env-var allowlist (`SIGMAFY_ADMIN_EMAILS`) for 0B;
+  Clerk org roles in Phase 1.
+- Bootstrap path now writes a `bootstrap.create_workspace` audit-log
+  row — closes the deferred 0A audit item.
+- Inngest with graceful inline fallback when keys are missing — code
+  works in dev / no-keys without code paths going dark.
+
+Known issues / deferred items:
+- True cross-domain admin impersonation (admin acts as user, not just
+  views as admin) — needs JWT/cookie handoff design. Phase 1 prep.
+- UI polish pass — existing UI is functional and on-brand but not
+  exhaustively reviewed against `dev-portal.sigmafy.co`.
+- AI override UX (trainer/sponsor manual override of AI feedback) —
+  the topic-graded card has a "trainer override coming in Phase 1"
+  caption; the actual override mechanism lands in Phase 1.
+- Stale phase-0a development tenants (`acme`, `zeta`) and users in
+  Neon. Clean up before SSA pilot.
+- Vercel auto-deploy from GitHub App not wired — deploys remain
+  CLI-driven.
+- Single-branch deploy risk — every commit to `main` ships to
+  production. Reinstate dev/PR flow before Phase 1.
+- Pasted secrets to rotate after SSA pilot prep starts: OpenAI, Brevo,
+  Neon (`neondb_owner`), Inngest signing key.
+
+Recommended next phase: **Phase 1 — SSA Pilot** (master plan §16).
+
+Why this phase should come next:
+- 0A proved the architecture, 0B proved the product shape. The
+  remaining gap to V1 success is making SSA's next live Green Belt
+  cohort runnable end-to-end on the platform — a much bigger surface
+  area than 0A/0B (full DMAIC topics, 5–8 stats tools, sponsor
+  workflow, certificates, ROI dashboards, cohort scheduling, AI
+  override, Laravel ETL, parallel run, cutover).
+- Per master plan §16, target is 8–12 weeks. We should agree a
+  Phase-1 slicing strategy with 2KO before implementation begins.
+
+Required approval before continuing:
+- 2KO signoff required: **yes** — Phase 0B acceptance + Phase 1 plan +
+  decision on the dev/PR-flow reinstatement timing.
 
 ---
 

@@ -5,18 +5,22 @@ every meaningful implementation session.
 
 ## Current phase
 
-**Phase 0B — Product Proof**: in progress (2026-05-05). Slices 1, 2, 3, 5
-shipped to production; awaiting end-user verification before Completion
-Report can be sealed.
+**Phase 0B — Product Proof**: ✅ **COMPLETE** (2026-05-05). Verified
+end-to-end on production. Phase 0B Completion Report appended to
+`docs/phase-log.md`.
+
+**Next phase**: Phase 1 — SSA Pilot (master plan §16). Target 8–12 weeks.
+Awaiting 2KO signoff on Phase 1 slicing strategy before implementation
+begins.
 
 | Slice | Scope | Status |
 |---|---|---|
-| 1 | OpenAI SIPOC grading + display on project page | ✅ shipped |
-| 2 | Brevo welcome + topic-graded emails | ✅ shipped |
-| 3 | ROI capture on project + sponsor widget on dashboard | ✅ shipped |
-| 5 | apps/admin tenant list + workspace detail + audit log; bootstrap audit (closes deferred 0A) | ✅ shipped |
-| 4 | Inngest async grading job | 🟡 deferred — needs `INNGEST_*` keys; inline grading fully functional |
-| 6 | UI polish | 🟡 rolled into Phase 1 prep |
+| 1 | OpenAI SIPOC grading + display on project page | ✅ shipped + verified |
+| 2 | Brevo welcome + topic-graded emails | ✅ shipped + verified |
+| 3 | ROI capture on project + sponsor widget on dashboard | ✅ shipped + verified |
+| 4 | Inngest async grading job | ✅ shipped (graceful inline fallback retained) |
+| 5 | apps/admin tenant list + workspace detail + audit log + bootstrap audit | ✅ shipped + verified |
+| 6 | UI polish | 🟡 partial — rolled into Phase 1 prep |
 
 **Phase 0A — Architecture Proof**: ✅ complete (2026-05-05).
 
