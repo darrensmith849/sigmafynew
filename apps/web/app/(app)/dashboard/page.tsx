@@ -4,6 +4,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle } from "@sigmafy/ui";
 import { schema, withWorkspace } from "@sigmafy/db";
 import { bootstrapUserAndWorkspace } from "@/lib/auth";
 import { getAppDb } from "@/lib/db";
+import { EmptyState } from "../_components/empty-state";
 
 export const dynamic = "force-dynamic";
 
@@ -56,11 +57,13 @@ export default async function DashboardPage() {
 
       <section className="grid gap-4">
         {projects.length === 0 ? (
-          <Card>
-            <CardContent className="p-6 text-sm text-muted-foreground">
-              No projects yet.
-            </CardContent>
-          </Card>
+          <EmptyState
+            eyebrow="Get started"
+            title="No projects yet"
+            body="Projects belong to delegates enrolled in a class. Create a class first, then add delegates and they'll each get their own Green Belt project."
+            actionHref="/dashboard/classes/new"
+            actionLabel="Create a class"
+          />
         ) : (
           projects.map((p) => (
             <Card key={p.id}>

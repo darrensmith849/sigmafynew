@@ -6,6 +6,7 @@ import { schema, withWorkspace } from "@sigmafy/db";
 import { bootstrapUserAndWorkspace } from "@/lib/auth";
 import { getAppDb } from "@/lib/db";
 import { DecidePhaseForm } from "./_components/decide-phase-form";
+import { EmptyState } from "../../_components/empty-state";
 
 export const dynamic = "force-dynamic";
 
@@ -67,11 +68,11 @@ export default async function ApprovalsPage() {
 
       <section className="grid gap-3">
         {pending.length === 0 ? (
-          <Card>
-            <CardContent className="p-6 text-sm text-muted-foreground">
-              Nothing waiting for approval right now.
-            </CardContent>
-          </Card>
+          <EmptyState
+            eyebrow="All clear"
+            title="All caught up"
+            body="No phases are waiting for sponsor review right now. When a delegate submits a DMAIC phase, it will appear here for you to approve or send back with notes."
+          />
         ) : (
           pending.map((p) => (
             <Card key={p.id}>
