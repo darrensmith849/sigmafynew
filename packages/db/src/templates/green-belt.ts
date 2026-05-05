@@ -8,9 +8,8 @@ import type { TemplateDefinition } from "../types";
  *   under Analyse → Root cause analysis.
  * Phase 1 Slice A.4: long-form topic kind populates Measure / Improve /
  *   Control / Executive Summary phases. AI Copilot grades each.
- *
- * Process Map and Fishbone topic kinds (per master plan §5.1) land in
- * Slice A.5 — they need richer UI than long-form.
+ * Phase 1 Slice A.5: process-map (Define) + fishbone (Analyse) — the
+ *   last two Sigmafy Tools from master plan §5.1.
  */
 export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
   phases: [
@@ -42,6 +41,13 @@ export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
               kind: "pareto",
               description:
                 "Quantify defect categories so the vital few stand out from the trivial many.",
+            },
+            {
+              slug: "process-map",
+              name: "Process Map",
+              kind: "process-map",
+              description:
+                "List the steps that make up the process, in order. Naming actors per step is optional but helps surface handoff issues.",
             },
           ],
         },
@@ -121,6 +127,13 @@ export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
               kind: "five-whys",
               description:
                 "Drill from a specific problem down to a root cause by asking \"why?\" five times — each answer is the next \"why\".",
+            },
+            {
+              slug: "fishbone",
+              name: "Fishbone",
+              kind: "fishbone",
+              description:
+                "Organise candidate causes of a single problem into the 6 M's (People, Machines, Methods, Materials, Measurement, Environment).",
             },
             {
               slug: "hypotheses",

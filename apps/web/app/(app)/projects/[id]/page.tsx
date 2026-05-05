@@ -16,6 +16,8 @@ import { SipocTopic } from "./_components/sipoc-topic";
 import { ParetoTopic } from "./_components/pareto-topic";
 import { FiveWhysTopic } from "./_components/five-whys-topic";
 import { LongFormTopic } from "./_components/long-form-topic";
+import { ProcessMapTopic } from "./_components/process-map-topic";
+import { FishboneTopic } from "./_components/fishbone-topic";
 import { HistogramTopic } from "./_components/histogram-topic";
 import { IMRTopic } from "./_components/imr-topic";
 import { XbarRTopic } from "./_components/xbar-r-topic";
@@ -330,6 +332,22 @@ function TopicContent(props: {
     case "long-form":
       return (
         <LongFormTopic
+          {...rest}
+          topic={topic}
+          existingSolution={existingSolution}
+        />
+      );
+    case "process-map":
+      return (
+        <ProcessMapTopic
+          {...rest}
+          topic={topic}
+          existingSolution={existingSolution}
+        />
+      );
+    case "fishbone":
+      return (
+        <FishboneTopic
           {...rest}
           topic={topic}
           existingSolution={existingSolution}

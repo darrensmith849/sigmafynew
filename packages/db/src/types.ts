@@ -4,6 +4,8 @@
  * Phase 0A: charter (read-only), sipoc, pareto.
  * Phase 1 Slice A.3: five-whys + Charter editing.
  * Phase 1 Slice A.4: long-form (single-textarea topic with AI grading).
+ * Phase 1 Slice A.5: process-map + fishbone — the last two Sigmafy Tools
+ *                    from master plan §5.1.
  * Phase 1 Slice C.2: histogram (numeric data → distribution).
  * Phase 1 Slice C.3: imr-chart, xbar-r-chart (control charts).
  * Phase 1 Slice C.4: capability, one-sample-t, two-sample-t — completes
@@ -15,6 +17,8 @@ export type TopicKind =
   | "pareto"
   | "five-whys"
   | "long-form"
+  | "process-map"
+  | "fishbone"
   | "histogram"
   | "imr-chart"
   | "xbar-r-chart"
