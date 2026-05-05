@@ -13,7 +13,7 @@ governs scope, phases, and rules — treat it as the source of truth.
 
 ## At the start of every session
 
-1. `git checkout main && git pull --rebase origin main`
+1. `git checkout dev && git pull --rebase origin dev`
 2. Read `docs/build-state.md` — what works, what's stubbed, known issues.
 3. Read `docs/phase-log.md` — most recent phase and open questions.
 4. Identify the active phase. **State the phase before implementing changes.**
@@ -21,15 +21,16 @@ governs scope, phases, and rules — treat it as the source of truth.
 
 ## Branch and commit rules
 
-- **While there are zero live users**, all implementation work pushes directly
-  to `main`. The `dev` branch is retired (kept as a stale snapshot).
-- **Reinstate dev/PR flow before Phase 1 (SSA pilot launch)** — at that point
-  every commit to `main` triggers a Vercel production deploy, which is
-  unacceptable once real delegates are signing in. ADR 0006 covers the gate.
-- Pull latest before every commit: `git pull --rebase origin main`.
+- **All implementation work pushes to `dev`.** `main` is updated only via
+  reviewed pull requests. Reinstated 2026-05-05 in Slice D.4 ahead of the
+  SSA pilot launch (ADR 0006 superseded). Phase 0A/0B and the bulk of Phase 1
+  ran main-only while no users existed.
+- Pull latest before every commit: `git pull --rebase origin dev`.
 - Resolve merge conflicts deliberately. If unsure, stop and report the files.
 - Never force push. Never `--no-verify`.
 - Commit messages: `phase-x: concise description`.
+- PR titles use the same convention. Description should reference master-plan
+  § when relevant.
 
 ## Phase rules
 
@@ -67,8 +68,8 @@ Always recommend the next concrete phase.
 
 ```bash
 git status
-git checkout main
-git pull --rebase origin main
+git checkout dev
+git pull --rebase origin dev
 pnpm install
 pnpm lint
 pnpm test
@@ -78,12 +79,19 @@ Before commit:
 
 ```bash
 git status
-git pull --rebase origin main
+git pull --rebase origin dev
 # Resolve conflicts if any
 pnpm lint
 pnpm test
 pnpm build
 git add <files>
 git commit -m "phase-x: concise description"
-git push origin main
+git push origin dev
+```
+
+To get changes into `main` (which auto-deploys to production via Vercel):
+
+```bash
+gh pr create --base main --head dev --title "phase-x: …" --body "…"
+# 2KO reviews + merges via the GitHub UI.
 ```

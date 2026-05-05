@@ -318,15 +318,15 @@ workspace_id = current_setting('app.current_workspace_id')::uuid
 
 ## 11. Git, Vercel and Collaboration Rules
 
-### 11.1 Branch Rules (revised 2026-05-05)
+### 11.1 Branch Rules (revised 2026-05-05; reinstated dev/PR 2026-05-05 in Slice D.4)
 
-- **While there are zero live users**, all implementation work pushes
-  directly to `main`. The `dev` branch is retired.
-- **Reinstate the dev/PR flow before Phase 1 (SSA pilot launch)** —
-  ADR 0006 specifies the reversion path.
+- **All implementation work pushes to `dev`.** `main` updates only via
+  reviewed pull requests. Vercel auto-deploys `main` to production.
+- **Single-branch flow** ran during Phase 0A/0B and most of Phase 1
+  while no users existed (ADR 0006). Reinstated to dev/PR in
+  Slice D.4 ahead of the SSA pilot launch — ADR 0006 superseded.
 - Do not trigger production deployment changes until Phase 0A and Phase 0B
-  are explicitly approved by 2KO (the deploy targets are already wired,
-  but external announcement waits for sign-off).
+  are explicitly approved by 2KO (already done — both sealed).
 
 ### 11.2 Pull-Latest Rules
 
@@ -334,8 +334,8 @@ Before every new implementation session:
 
 ```
 git status
-git checkout main
-git pull --rebase origin main
+git checkout dev
+git pull --rebase origin dev
 pnpm install
 pnpm lint
 pnpm test
@@ -345,14 +345,21 @@ Before every commit:
 
 ```
 git status
-git pull --rebase origin main
+git pull --rebase origin dev
 # Resolve conflicts if any, then run the relevant checks:
 pnpm lint
 pnpm test
 pnpm build
 git add <files>
 git commit -m "phase-x: concise description"
-git push origin main
+git push origin dev
+```
+
+To get changes to production:
+
+```
+gh pr create --base main --head dev --title "phase-x: …" --body "…"
+# 2KO reviewer merges via GitHub UI → Vercel auto-deploys main.
 ```
 
 ### 11.3 Conflict Handling Rules
@@ -371,7 +378,7 @@ git push origin main
 
 ### 12.1 At the Start of Every Session
 
-1. Pull latest `main` branch changes.
+1. Pull latest `dev` branch changes.
 2. Read `docs/build-state.md`.
 3. Read `docs/phase-log.md`.
 4. Identify the active phase and current open tasks.

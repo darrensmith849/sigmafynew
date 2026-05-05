@@ -5,6 +5,63 @@ commit(s), deliverables checked off, decisions, and open questions.
 
 ---
 
+## Phase 1 — SSA Pilot (in progress)
+
+- **Status**: 14 sub-slices shipped to `main` over a single intensive
+  session (2026-05-05). Phase 1 ~85% by code volume; remaining work is
+  Paystack billing test (D.2), Laravel ETL (D.3), and Process Map +
+  Fishbone UI (A.5).
+- **Branch model**: switched back to dev/PR flow in Slice D.4 (ADR 0006
+  superseded). All future Phase 1 work goes through PR.
+
+### Sub-slices shipped
+
+| Slice | Commit | Scope |
+|---|---|---|
+| A.1 | `c71acda` | Trainer/sponsor/admin override of AI grading + audit-logged persistence + ADR 0009 (workspace routing decision) |
+| A.2 | `a1e4ddb` | Generic AI grading abstraction (`GradingPrompt<TInput>` + prompt registry + `gradeTopic` runner) |
+| A.3 | `aa53148` + `492e6ba` | 5-Whys topic kind + Charter promoted from read-only to editable + AI grading on both |
+| A.4 | `9db5c87` | Long-form generic topic kind + full DMAIC template (Measure / Improve / Control / Exec topics) |
+| B.1 | `636b81b` | Schema for workspace_invitations + classes + class_enrolments + RLS |
+| B.2 | `636b81b` | Workspace member invite-by-email + Brevo template + accept-invite route + members page |
+| B.3 | `0997676` | Classes UI — list, create, detail, roster, auto-spawn delegate projects |
+| B.4 | `6b58c18` | Phase sign-off workflow — schema + server actions + sponsor email + delegate decision email + approvals queue |
+| B.5 | `7613281` | CSV bulk delegate import (uses existing invite mechanism, parallel email send) |
+| C.1 | `e755599` | Topic-level comments thread |
+| C.2 | `3d98e31` | Histogram stat (V1 stats #2) |
+| C.3 | `84e2aeb` | I-MR + X-bar / R control charts (V1 stats #3, #4) |
+| C.4 | `0b7d014` | Capability + 1-sample t + 2-sample t — V1 stats allowlist complete (7/7) |
+| C.5 | `53559c1` | Sponsor ROI dashboard with per-class roll-up + per-delegate phase chips |
+| D.1 | `34bfab0` | Project completion → SSA-style PDF certificate via @react-pdf/renderer |
+| D.4 | (this commit) | Reinstate dev/PR flow ahead of SSA pilot (ADR 0006 superseded) |
+
+### Remaining Phase 1 work
+
+- **D.2 Paystack billing test** — needs Paystack sandbox keys from 2KO.
+- **D.3 Laravel → Postgres ETL** — needs the Laravel DB schema or sample
+  export from 2KO.
+- **A.5 Process Map + Fishbone** — UI work, ~half a day each. Not
+  blocking SSA pilot.
+- **D Polish** — phase-aware AI Copilot (currently per-topic only),
+  in-app inbox notifications (currently email only), formal report
+  exports (currently dashboards only). All optional-for-pilot.
+
+### V1 success criteria status (master plan §3)
+
+| # | Criterion | Status |
+|---|---|---|
+| 1 | SSA using new platform live | ⬜ requires real-world deployment |
+| 2 | Laravel app being sunset for new cohorts | ⬜ requires D.3 + cutover |
+| 3 | At least one Green Belt cohort completed end-to-end | ⬜ requires real cohort |
+| 4 | At least one ROI figure captured + shown to sponsor | 🟢 capability built; awaits real data |
+| 5 | AI guidance on all topics + 50% delegate use | 🟢 capability built; awaits usage |
+| 6 | 80% AI interactions no negative override | 🟢 capability built; awaits usage |
+| 7 | At least 5 stats tools live | ✅ **7 live** |
+| 8 | SSA admins can independently run a class end-to-end | ✅ all features built |
+| 9 | No tenant-isolation incident — verified through RLS + audit | ✅ RLS tested, audit log live |
+
+---
+
 ## Phase 0B — Product Proof
 
 - **Status**: ✅ **COMPLETE** (2026-05-05). Verified end-to-end on

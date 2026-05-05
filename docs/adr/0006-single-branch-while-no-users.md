@@ -1,7 +1,9 @@
 # ADR 0006 — Single-branch flow while no live users
 
-- **Status**: Accepted
-- **Date**: 2026-05-05
+- **Status**: ✅ **Superseded** by Phase 1 Slice D.4 reversion (2026-05-05).
+  Documented for the historical record.
+- **Date opened**: 2026-05-05
+- **Date closed**: 2026-05-05 — dev/PR flow reinstated.
 
 ## Context
 
@@ -46,13 +48,26 @@ Controls:
 - Master build plan §18 risks table tracks this as **Single-branch risk**
   with the Phase-1 reversion gate as control.
 
-## Reversion plan (Phase 1)
+## Reversion plan (Phase 1) — ✅ executed in Slice D.4 on 2026-05-05
 
-Before the SSA pilot:
-1. Recreate or unfreeze `dev`.
-2. Restore the PR-required-to-merge-`main` rule in CLAUDE.md and §11.1.
-3. Update `.github/workflows/ci.yml` to run on PRs to `main` and pushes to
-   `dev` (mirrors the original Phase -1 setup).
-4. Configure Vercel preview deploys from `dev`.
-5. Update this ADR's status from "Accepted" to "Superseded by Phase 1
-   reinstatement."
+1. ✅ Recreate `dev` branch from `main`.
+2. ✅ Restore PR-required-to-merge-`main` rule in `CLAUDE.md` §11.1
+   (master plan + README also updated).
+3. ✅ Update `.github/workflows/ci.yml` to run on PRs to `main` + `dev`
+   and pushes to both branches.
+4. 🟡 Vercel preview deploys from `dev` — Vercel GitHub App connection
+   is a 2KO-side click-through (Vercel project settings → Git). Once
+   connected, every push to `dev` produces a preview URL and every merge
+   to `main` triggers production.
+5. ✅ This ADR marked Superseded above.
+
+## Lessons captured
+
+- The single-branch policy saved real time during 0A/0B/most-of-1.
+  Approximately 25 commits shipped with no PR ceremony.
+- The risk it traded against (broken commit shipping to prod) didn't
+  materialise — pre-push `pnpm turbo run lint typecheck test build` was
+  enforced via CLAUDE.md and CI; no production-breaking commit reached
+  `main`.
+- The reversion is cheap because we never deleted `dev` (left as a stale
+  snapshot per ADR text). Recreating it is a `git branch dev main` away.

@@ -2,8 +2,8 @@
 
 Six Sigma & Lean SaaS platform. Built by 2KO Pty Ltd.
 
-> **Status**: Phase 0A (Architecture Proof) — code complete on `main`,
-> awaiting live signup verification with Clerk keys.
+> **Status**: Phase 1 (SSA Pilot) — code ~85% complete; cutover work
+> (Paystack billing test, Laravel ETL) remaining. Phase 0A and 0B sealed.
 
 ## Quick start
 
@@ -46,10 +46,13 @@ docs/
 
 ## Branch policy
 
-- **While there are zero live users**, all work pushes directly to `main`.
-  The `dev` branch is retired (ADR 0006).
-- **Reinstate dev/PR flow before Phase 1 SSA pilot launch** — at that point
-  every commit to `main` becomes a production deploy with real users on it.
+- **All implementation work pushes to `dev`**. `main` updates only via
+  reviewed pull requests (Vercel auto-deploys `main` to production).
+- Single-branch flow ran during Phase 0A/0B and most of Phase 1 while no
+  users existed. Reinstated to dev/PR in Slice D.4 (2026-05-05) ahead of
+  the SSA pilot launch.
+- ADR 0006 documents the original switch + reversion. ADR 0009 covers
+  workspace routing.
 - See [CLAUDE.md](CLAUDE.md) for the full agent operating contract.
 
 ## Tech stack

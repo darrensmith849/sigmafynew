@@ -5,34 +5,42 @@ every meaningful implementation session.
 
 ## Current phase
 
-**Phase 0B — Product Proof**: ✅ **COMPLETE** (2026-05-05). Verified
-end-to-end on production. Phase 0B Completion Report appended to
-`docs/phase-log.md`.
+**Phase 1 — SSA Pilot**: 🟡 **In progress (~85% by code volume)**. 14
+sub-slices shipped to `main` over a single intensive session. Remaining
+work is concentrated in Slice D (Paystack billing test, Laravel ETL,
+parallel run, sunset).
 
-**Next phase**: Phase 1 — SSA Pilot (master plan §16). Target 8–12 weeks.
-Awaiting 2KO signoff on Phase 1 slicing strategy before implementation
-begins.
+### Phase 1 slices
 
 | Slice | Scope | Status |
 |---|---|---|
-| 1 | OpenAI SIPOC grading + display on project page | ✅ shipped + verified |
-| 2 | Brevo welcome + topic-graded emails | ✅ shipped + verified |
-| 3 | ROI capture on project + sponsor widget on dashboard | ✅ shipped + verified |
-| 4 | Inngest async grading job | ✅ shipped (graceful inline fallback retained) |
-| 5 | apps/admin tenant list + workspace detail + audit log + bootstrap audit | ✅ shipped + verified |
-| 6 | UI polish | 🟡 partial — rolled into Phase 1 prep |
+| **A** | Full DMAIC + AI grading abstraction + override + template expansion | ✅ A.1, A.2, A.3, A.4 shipped |
+| A.5 | Process Map + Fishbone topic kinds | ⬜ deferred (richer UI; not blocking pilot) |
+| **B** | Cohorts + sponsor approval workflow | ✅ B.1, B.2, B.3, B.4, B.5 shipped (incl. CSV import) |
+| **C** | Stats expansion + topic comments + sponsor ROI dashboard | ✅ C.1, C.2, C.3, C.4, C.5 shipped (V1 stats allowlist 7/7 done) |
+| **D** | Cutover work | 🟡 D.1 (certificate PDF) ✅, D.4 (dev/PR reinstatement) ✅; D.2 (Paystack) + D.3 (Laravel ETL) ⬜ |
 
-**Phase 0A — Architecture Proof**: ✅ complete (2026-05-05).
+### Phase 0B — Product Proof
+✅ Complete (2026-05-05). Verified end-to-end on production. Completion
+Report in `docs/phase-log.md`.
+
+### Phase 0A — Architecture Proof
+✅ Complete (2026-05-05).
 
 ## Direction shifts (2026-05-05)
 
-- **Branch flow**: `dev` retired while there are zero live users. All work
-  pushes directly to `main`. Reverts to dev/PR flow before Phase 1 SSA pilot
-  (ADR 0006).
-- **AI provider**: default adapter swapped from Anthropic Claude to OpenAI in
-  `@sigmafy/ai` (ADR 0007). Abstraction surface unchanged.
-- **Email provider**: default adapter swapped from Resend to Brevo in
-  `@sigmafy/emails` (ADR 0008). React Email components retained.
+- **Branch flow** (ADR 0006 → superseded in Slice D.4): `dev` retired
+  during 0A/0B/most of Phase 1; reinstated in Slice D.4 ahead of SSA
+  pilot launch. **All work now pushes to `dev` and reaches `main` via
+  reviewed PRs.**
+- **AI provider** (ADR 0007): default adapter swapped from Anthropic
+  Claude to OpenAI in `@sigmafy/ai`. Abstraction surface unchanged.
+- **Email provider** (ADR 0008): default adapter swapped from Resend to
+  Brevo in `@sigmafy/emails`. React Email components retained.
+- **Workspace routing** (ADR 0009): path-prefix `/w/{slug}/...` chosen
+  over subdomain. Rollout deferred — current routes remain
+  unprefixed since each user is in one workspace; switch when
+  multi-workspace UX matters.
 
 ## What works (Phase 0B additions)
 
