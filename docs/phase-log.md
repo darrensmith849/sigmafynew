@@ -7,12 +7,11 @@ commit(s), deliverables checked off, decisions, and open questions.
 
 ## Phase 1 — SSA Pilot (in progress)
 
-- **Status**: 14 sub-slices shipped to `main` over a single intensive
-  session (2026-05-05). Phase 1 ~85% by code volume; remaining work is
-  Paystack billing test (D.2), Laravel ETL (D.3), and Process Map +
-  Fishbone UI (A.5).
+- **Status**: 15 sub-slices + a 7-step UI Sprint shipped (2026-05-05).
+  Phase 1 ~92% by code volume; remaining work is Paystack billing test
+  (D.2) and Laravel ETL (D.3).
 - **Branch model**: switched back to dev/PR flow in Slice D.4 (ADR 0006
-  superseded). All future Phase 1 work goes through PR.
+  superseded). All UI Sprint work landed via PR #2.
 
 ### Sub-slices shipped
 
@@ -33,15 +32,20 @@ commit(s), deliverables checked off, decisions, and open questions.
 | C.4 | `0b7d014` | Capability + 1-sample t + 2-sample t — V1 stats allowlist complete (7/7) |
 | C.5 | `53559c1` | Sponsor ROI dashboard with per-class roll-up + per-delegate phase chips |
 | D.1 | `34bfab0` | Project completion → SSA-style PDF certificate via @react-pdf/renderer |
-| D.4 | (this commit) | Reinstate dev/PR flow ahead of SSA pilot (ADR 0006 superseded) |
+| D.4 | (slice commit) | Reinstate dev/PR flow ahead of SSA pilot (ADR 0006 superseded) |
+| UI.1 | `22ac72a` | Persistent sticky top nav across `(app)/*` pages |
+| UI.2 | `c0f0642` | Marketing landing page rewrite |
+| UI.3 | `7738650` | Sigmafy chrome around Clerk sign-in/sign-up |
+| UI.4 | `f6bd14f` | Shared `<EmptyState />` component + applied to dashboard / classes / approvals / ROI |
+| UI.5 | `be68aa4` | Process Map + Fishbone topic kinds (Slice A.5 — last two Sigmafy Tools) |
+| UI.6 | `b850385` | Loading skeletons + error boundary for `(app)/*` routes |
+| UI.7 | `6be0bd6` | Mobile-friendly app header (hamburger drawer below `md`) |
 
 ### Remaining Phase 1 work
 
 - **D.2 Paystack billing test** — needs Paystack sandbox keys from 2KO.
 - **D.3 Laravel → Postgres ETL** — needs the Laravel DB schema or sample
   export from 2KO.
-- **A.5 Process Map + Fishbone** — UI work, ~half a day each. Not
-  blocking SSA pilot.
 - **D Polish** — phase-aware AI Copilot (currently per-topic only),
   in-app inbox notifications (currently email only), formal report
   exports (currently dashboards only). All optional-for-pilot.
