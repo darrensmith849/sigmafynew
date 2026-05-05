@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
 import { Button, Card, CardContent, CardHeader, CardTitle } from "@sigmafy/ui";
 import { schema, withWorkspace } from "@sigmafy/db";
 import { bootstrapUserAndWorkspace } from "@/lib/auth";
@@ -39,46 +38,14 @@ export default async function DashboardPage() {
   ).length;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
-      <header className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium uppercase tracking-wide text-sigmafyBlue-500">
-            {ctx.workspace.name}
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
-            Projects
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Welcome back{ctx.user.fullName ? `, ${ctx.user.fullName}` : ""}.
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/roi"
-            className="text-sm font-medium text-muted-foreground hover:text-sigmafyBlue-600"
-          >
-            ROI
-          </Link>
-          <Link
-            href="/dashboard/approvals"
-            className="text-sm font-medium text-muted-foreground hover:text-sigmafyBlue-600"
-          >
-            Approvals
-          </Link>
-          <Link
-            href="/dashboard/classes"
-            className="text-sm font-medium text-muted-foreground hover:text-sigmafyBlue-600"
-          >
-            Classes
-          </Link>
-          <Link
-            href="/dashboard/members"
-            className="text-sm font-medium text-muted-foreground hover:text-sigmafyBlue-600"
-          >
-            Members
-          </Link>
-          <UserButton />
-        </div>
+    <main className="mx-auto flex flex-col gap-8 max-w-4xl px-6 py-10">
+      <header>
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+          Projects
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Welcome back{ctx.user.fullName ? `, ${ctx.user.fullName}` : ""}.
+        </p>
       </header>
 
       <RoiSummary

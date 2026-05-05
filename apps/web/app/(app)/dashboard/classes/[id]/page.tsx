@@ -78,7 +78,7 @@ export default async function ClassDetailPage(props: {
   const sponsors = enrolments.filter((e) => e.role === "sponsor");
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex flex-col gap-8 max-w-4xl px-6 py-10">
       <header>
         <Link
           href="/dashboard/classes"
@@ -86,7 +86,7 @@ export default async function ClassDetailPage(props: {
         >
           ← Classes
         </Link>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground">
           {cls.name}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">

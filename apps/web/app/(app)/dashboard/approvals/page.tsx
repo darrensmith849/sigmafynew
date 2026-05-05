@@ -54,15 +54,9 @@ export default async function ApprovalsPage() {
   });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex flex-col gap-8 max-w-4xl px-6 py-10">
       <header>
-        <Link
-          href="/dashboard"
-          className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-sigmafyBlue-600"
-        >
-          ← Dashboard
-        </Link>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
           Pending phase approvals
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
