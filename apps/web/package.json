@@ -23,6 +23,7 @@
     "@sigmafy/emails": "workspace:*",
     "@sigmafy/stats-gateway": "workspace:*",
     "@sigmafy/ui": "workspace:*",
+    "@react-pdf/renderer": "^4.1.5",
     "drizzle-orm": "^0.36.4",
     "inngest": "^3.27.4",
     "next": "^15.1.0",

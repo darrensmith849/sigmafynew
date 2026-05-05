@@ -25,6 +25,7 @@ import { TwoSampleTTopic } from "./_components/two-sample-t-topic";
 import { RoiPanel } from "./_components/roi-panel";
 import { PhaseApprovalPanel } from "./_components/phase-approval-panel";
 import { TopicComments } from "./_components/topic-comments";
+import { CompletionPanel } from "./_components/completion-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -259,6 +260,7 @@ export default async function ProjectPage(props: {
           phaseName={phase.name}
           approval={currentApproval}
         />
+        <CompletionPanel projectId={project.id} status={project.status} />
       </div>
     </main>
   );
