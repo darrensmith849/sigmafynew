@@ -74,7 +74,7 @@ export function LongFormTopic(props: {
               value={answer}
               onChange={(e) => setAnswer(e.currentTarget.value)}
               placeholder="Be specific. Name systems, metrics, owners, dates."
-              className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+              className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
             />
           </div>
           <div className="flex items-center justify-between">

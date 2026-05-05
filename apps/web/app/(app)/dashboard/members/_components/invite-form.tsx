@@ -65,7 +65,7 @@ export function InviteForm() {
               onClick={() => setRole(r.value)}
               className={`rounded-md border px-3 py-2 text-left text-sm transition-colors ${
                 role === r.value
-                  ? "border-sigmafyBlue-300 bg-sigmafyBlue-50 text-sigmafyBlue-900"
+                  ? "border-border bg-surface-3 text-fg"
                   : "border-border bg-background text-muted-foreground hover:bg-muted"
               }`}
             >
@@ -77,7 +77,7 @@ export function InviteForm() {
       </div>
       <div className="flex items-center justify-between">
         {error && <p className="text-sm text-red-600">{error}</p>}
-        {feedback && <p className="text-sm text-sigmafyBlue-700">{feedback}</p>}
+        {feedback && <p className="text-sm text-fg">{feedback}</p>}
         <div className="ml-auto">
           <Button type="submit" disabled={pending}>
             {pending ? "Sending…" : "Send invitation"}

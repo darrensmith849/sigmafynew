@@ -124,7 +124,7 @@ export function CharterTopic(props: {
                   rows={f.rows}
                   value={content[f.key]}
                   onChange={(e) => updateField(f.key, e.currentTarget.value)}
-                  className="mt-1 w-full rounded-md border border-border bg-background p-3 text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+                  className="mt-1 w-full rounded-md border border-border bg-background p-3 text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
                 />
               </div>
             ))}

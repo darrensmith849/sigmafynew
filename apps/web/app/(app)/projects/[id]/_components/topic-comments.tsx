@@ -15,11 +15,11 @@ export interface CommentDisplay {
 }
 
 const ROLE_BADGE: Record<string, string> = {
-  owner: "bg-sigmafyBlue-50 text-sigmafyBlue-700",
-  admin: "bg-sigmafyBlue-50 text-sigmafyBlue-700",
+  owner: "bg-surface-3 text-fg",
+  admin: "bg-surface-3 text-fg",
   trainer: "bg-amber-50 text-amber-800",
   sponsor: "bg-purple-50 text-purple-800",
-  delegate: "bg-neutral-100 text-neutral-700",
+  delegate: "bg-surface-3 text-neutral-700",
 };
 
 export function TopicComments(props: {
@@ -114,7 +114,7 @@ export function TopicComments(props: {
             onChange={(e) => setBody(e.currentTarget.value)}
             rows={3}
             placeholder="Ask a question. Leave guidance. Flag a concern."
-            className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+            className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
           />
           <div className="flex items-center justify-between">
             {error && <p className="text-sm text-red-600">{error}</p>}

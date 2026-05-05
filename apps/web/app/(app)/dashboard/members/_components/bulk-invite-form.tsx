@@ -81,8 +81,8 @@ const RESULT_LABEL: Record<BulkInviteRowResult["status"], string> = {
 
 const RESULT_STYLE: Record<BulkInviteRowResult["status"], string> = {
   invited: "bg-green-50 text-green-800",
-  reused: "bg-sigmafyBlue-50 text-sigmafyBlue-700",
-  already_member: "bg-neutral-100 text-neutral-700",
+  reused: "bg-surface-3 text-fg",
+  already_member: "bg-surface-3 text-neutral-700",
   error: "bg-red-50 text-red-800",
 };
 
@@ -125,7 +125,7 @@ export function BulkInviteForm() {
           value={text}
           onChange={(e) => setText(e.currentTarget.value)}
           placeholder={"email,role\ndelegate1@example.com,delegate\ndelegate2@example.com,delegate\nsponsor1@example.com,sponsor"}
-          className="w-full rounded-md border border-border bg-background p-3 font-mono text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+          className="w-full rounded-md border border-border bg-background p-3 font-mono text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
         />
       </div>
 
@@ -139,7 +139,7 @@ export function BulkInviteForm() {
               onClick={() => setDefaultRole(r)}
               className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                 defaultRole === r
-                  ? "border-sigmafyBlue-300 bg-sigmafyBlue-50 text-sigmafyBlue-900"
+                  ? "border-border bg-surface-3 text-fg"
                   : "border-border bg-background text-muted-foreground hover:bg-muted"
               }`}
             >
@@ -157,7 +157,7 @@ export function BulkInviteForm() {
           </p>
           <div className="max-h-64 overflow-y-auto rounded-md border border-border">
             <table className="w-full text-sm">
-              <thead className="bg-neutral-50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <thead className="bg-bg text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2 font-medium">Line</th>
                   <th className="px-3 py-2 font-medium">Email</th>

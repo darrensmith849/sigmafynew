@@ -144,7 +144,7 @@ export function FishboneTopic(props: {
             {categories.map((cat, catIdx) => (
               <div
                 key={cat.name}
-                className="grid gap-2 rounded-md border border-border/60 bg-neutral-50/40 p-3"
+                className="grid gap-2 rounded-md border border-border/60 bg-bg/40 p-3"
               >
                 <h4 className="text-sm font-semibold text-foreground">{cat.name}</h4>
                 <p className="-mt-1 text-xs text-muted-foreground">

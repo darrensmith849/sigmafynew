@@ -78,7 +78,7 @@ export default async function ClassesPage() {
                 <CardTitle>
                   <Link
                     href={`/dashboard/classes/${c.id}` as never}
-                    className="hover:text-sigmafyBlue-600"
+                    className="hover:text-fg"
                   >
                     {c.name}
                   </Link>
@@ -86,7 +86,7 @@ export default async function ClassesPage() {
               </CardHeader>
               <CardContent className="grid gap-1 text-sm text-muted-foreground sm:flex sm:items-center sm:justify-between">
                 <span>
-                  <code className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs">{c.slug}</code>
+                  <code className="rounded bg-surface-3 px-1.5 py-0.5 text-xs">{c.slug}</code>
                   {" · "}
                   {c.delegate_count} delegate{c.delegate_count === 1 ? "" : "s"}
                   {" · "}

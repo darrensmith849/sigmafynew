@@ -24,7 +24,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <AppHeader workspaceName={workspaceName} />
-      <div className="bg-neutral-50 min-h-[calc(100vh-3.5rem)]">{children}</div>
+      <div className="bg-bg min-h-[calc(100vh-3.5rem)] text-fg">{children}</div>
     </>
   );
 }

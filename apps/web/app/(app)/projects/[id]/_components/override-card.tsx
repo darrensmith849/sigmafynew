@@ -74,7 +74,7 @@ export function OverrideCard(props: {
   // Rendered override (read-only summary)
   if (props.override && !open) {
     return (
-      <Card className="border-sigmafyBlue-200 bg-sigmafyBlue-50/30">
+      <Card className="border-border bg-surface-3/30">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Trainer override</CardTitle>
@@ -114,7 +114,7 @@ export function OverrideCard(props: {
   // Inline form (either editing existing or adding new)
   if (open) {
     return (
-      <Card className="border-sigmafyBlue-200 bg-sigmafyBlue-50/30">
+      <Card className="border-border bg-surface-3/30">
         <CardHeader>
           <CardTitle>
             {props.override ? "Edit trainer override" : "Override AI feedback"}
@@ -151,7 +151,7 @@ export function OverrideCard(props: {
               value={note}
               onChange={(e) => setNote(e.currentTarget.value)}
               rows={4}
-              className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+              className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
               placeholder="What's good. What needs revising. Be specific."
             />
           </div>
@@ -173,7 +173,7 @@ export function OverrideCard(props: {
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="self-start rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-sigmafyBlue-300 hover:bg-sigmafyBlue-50 hover:text-sigmafyBlue-700"
+      className="self-start rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-border hover:bg-surface-3 hover:text-fg"
     >
       Override AI feedback
     </button>
