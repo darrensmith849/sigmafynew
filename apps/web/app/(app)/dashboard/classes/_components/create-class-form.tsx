@@ -55,7 +55,7 @@ export function CreateClassForm() {
           value={description}
           onChange={(e) => setDescription(e.currentTarget.value)}
           placeholder="Anything trainers and delegates should know about this cohort."
-          className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+          className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
         />
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

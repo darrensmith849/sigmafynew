@@ -26,7 +26,7 @@ export default function AppError(props: { error: Error & { digest?: string }; re
           </p>
           {props.error.digest && (
             <p className="mt-2 text-xs text-muted-foreground">
-              <code className="rounded bg-neutral-100 px-2 py-1 font-mono text-xs">
+              <code className="rounded bg-surface-3 px-2 py-1 font-mono text-xs">
                 {props.error.digest}
               </code>
             </p>

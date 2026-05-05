@@ -178,7 +178,7 @@ export default async function RoiPage() {
         </p>
       </header>
 
-      <Card className="border-sigmafyBlue-100 bg-sigmafyBlue-50/30">
+      <Card className="border-border-subtle bg-surface-3/30">
         <CardHeader>
           <CardTitle>Workspace total</CardTitle>
         </CardHeader>
@@ -212,7 +212,7 @@ export default async function RoiPage() {
                 <h2 className="text-lg font-semibold">
                   <Link
                     href={`/dashboard/classes/${cls.id}` as never}
-                    className="hover:text-sigmafyBlue-600"
+                    className="hover:text-fg"
                   >
                     {cls.name}
                   </Link>
@@ -269,7 +269,7 @@ export default async function RoiPage() {
                   <div>
                     <Link
                       href={`/projects/${p.id}` as never}
-                      className="font-medium hover:text-sigmafyBlue-600"
+                      className="font-medium hover:text-fg"
                     >
                       {p.name}
                     </Link>
@@ -307,7 +307,7 @@ function DelegateRow(props: {
           {d.project_id && (
             <Link
               href={`/projects/${d.project_id}` as never}
-              className="ml-3 text-xs font-medium text-sigmafyBlue-600 hover:underline"
+              className="ml-3 text-xs font-medium text-fg hover:underline"
             >
               project →
             </Link>
@@ -327,7 +327,7 @@ function DelegateRow(props: {
             ? "bg-green-100 text-green-800 border-green-200"
             : pending
               ? "bg-amber-100 text-amber-800 border-amber-200"
-              : "bg-neutral-50 text-muted-foreground border-border";
+              : "bg-bg text-muted-foreground border-border";
           return (
             <span
               key={phase}

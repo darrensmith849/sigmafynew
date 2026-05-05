@@ -100,7 +100,7 @@ export function XbarRTopic(props: {
               value={text}
               onChange={(e) => setText(e.currentTarget.value)}
               placeholder={"10.1, 10.3, 9.8\n10.2, 10.4, 9.9\n10.1, 10.0, 10.5\n9.7, 9.9, 10.2"}
-              className="w-full rounded-md border border-border bg-background p-3 font-mono text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+              className="w-full rounded-md border border-border bg-background p-3 font-mono text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
             />
           </div>
           <div className="flex justify-end">

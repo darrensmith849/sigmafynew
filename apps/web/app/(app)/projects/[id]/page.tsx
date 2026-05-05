@@ -168,7 +168,7 @@ export default async function ProjectPage(props: {
       <aside>
         <Link
           href="/dashboard"
-          className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-sigmafyBlue-600"
+          className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-fg"
         >
           ← All projects
         </Link>
@@ -184,7 +184,7 @@ export default async function ProjectPage(props: {
                 href={`/projects/${project.id}?phase=${p.slug}` as never}
                 className={`flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors ${
                   p.slug === phase.slug
-                    ? "bg-sigmafyBlue-50 font-medium text-sigmafyBlue-600"
+                    ? "bg-surface-3 font-medium text-fg"
                     : "text-muted-foreground hover:bg-muted"
                 }`}
               >

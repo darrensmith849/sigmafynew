@@ -80,7 +80,7 @@ export default async function ApprovalsPage() {
                 <CardTitle>
                   <Link
                     href={`/projects/${p.projectId}?phase=${p.phaseSlug}` as never}
-                    className="hover:text-sigmafyBlue-600"
+                    className="hover:text-fg"
                   >
                     {p.projectName} — {PHASE_LABELS[p.phaseSlug] ?? p.phaseSlug}
                   </Link>

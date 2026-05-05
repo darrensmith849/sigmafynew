@@ -108,7 +108,7 @@ export function TwoSampleTTopic(props: {
                   onClick={() => setEqualVar(false)}
                   className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                     !equalVar
-                      ? "border-sigmafyBlue-300 bg-sigmafyBlue-50 text-sigmafyBlue-900"
+                      ? "border-border bg-surface-3 text-fg"
                       : "border-border bg-background text-muted-foreground hover:bg-muted"
                   }`}
                 >
@@ -119,7 +119,7 @@ export function TwoSampleTTopic(props: {
                   onClick={() => setEqualVar(true)}
                   className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                     equalVar
-                      ? "border-sigmafyBlue-300 bg-sigmafyBlue-50 text-sigmafyBlue-900"
+                      ? "border-border bg-surface-3 text-fg"
                       : "border-border bg-background text-muted-foreground hover:bg-muted"
                   }`}
                 >
@@ -137,7 +137,7 @@ export function TwoSampleTTopic(props: {
                     onClick={() => setAlternative(a.v)}
                     className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                       alternative === a.v
-                        ? "border-sigmafyBlue-300 bg-sigmafyBlue-50 text-sigmafyBlue-900"
+                        ? "border-border bg-surface-3 text-fg"
                         : "border-border bg-background text-muted-foreground hover:bg-muted"
                     }`}
                   >

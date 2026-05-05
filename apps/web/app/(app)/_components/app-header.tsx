@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
+import { Logo, ThemeToggle } from "@sigmafy/ui";
 
 interface NavLink {
   href: string;
@@ -23,10 +24,10 @@ const NAV: NavLink[] = [
 /**
  * Sticky top bar shown on every authenticated page.
  *
- * Desktop (md+): brand + workspace name on the left, primary nav inline,
- * UserButton on the right.
- * Mobile: brand + UserButton stay visible; nav collapses into a hamburger
- * panel that drops below the bar when toggled.
+ * Adopts the dev-portal chrome: translucent + blurred background using
+ * --color-nav-bg, the Sigmafy logo + lowercase wordmark, and subtle
+ * weight-contrast active state (no off-brand blue accent). Mobile
+ * collapses to a hamburger drawer.
  */
 export function AppHeader(props: { workspaceName: string }) {
   const pathname = usePathname() ?? "";
@@ -49,29 +50,25 @@ export function AppHeader(props: { workspaceName: string }) {
   const closeMenu = () => setOpen(false);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:gap-6 sm:px-6">
+    <header
+      className="sticky top-0 z-30 border-b border-border-subtle backdrop-blur"
+      style={{ background: "var(--color-nav-bg)" }}
+    >
+      <div className="mx-auto flex h-14 max-w-shell items-center gap-4 px-5 sm:gap-6 sm:px-8">
         <Link href="/dashboard" className="flex items-baseline gap-3" onClick={closeMenu}>
-          <span className="text-sm font-bold tracking-[0.2em] text-sigmafyBlue-600">
-            SIGMAFY
-          </span>
-          <span className="hidden text-sm text-muted-foreground sm:inline">
-            {props.workspaceName}
-          </span>
+          <Logo />
+          <span className="hidden text-sm text-muted sm:inline">{props.workspaceName}</span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="ml-4 hidden items-center gap-1 text-sm md:flex">
+        <nav className="ml-4 hidden items-center gap-5 text-[13px] md:flex" aria-label="Primary">
           {NAV.map((item) => {
             const active = item.match === activeMatch;
             return (
               <Link
                 key={item.href}
                 href={item.href as never}
-                className={`rounded-md px-3 py-1.5 transition-colors ${
-                  active
-                    ? "bg-sigmafyBlue-50 font-medium text-sigmafyBlue-700"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                className={`tracking-tightish transition-colors ${
+                  active ? "font-medium text-fg" : "text-muted hover:text-fg"
                 }`}
               >
                 {item.label}
@@ -81,11 +78,11 @@ export function AppHeader(props: { workspaceName: string }) {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle className="hidden sm:inline-flex" />
           <UserButton />
-          {/* Hamburger toggle — mobile only */}
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-pill text-muted hover:bg-surface-2 hover:text-fg md:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             aria-controls="app-mobile-nav"
@@ -107,14 +104,10 @@ export function AppHeader(props: { workspaceName: string }) {
         </div>
       </div>
 
-      {/* Mobile nav drawer */}
       {open && (
-        <nav
-          id="app-mobile-nav"
-          className="border-t border-border/60 bg-background md:hidden"
-        >
-          <div className="mx-auto grid max-w-6xl gap-1 px-4 py-3 text-sm">
-            <p className="px-3 pb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <nav id="app-mobile-nav" className="border-t border-border-subtle bg-bg md:hidden">
+          <div className="mx-auto grid max-w-shell gap-1 px-5 py-3 text-sm sm:px-8">
+            <p className="px-3 pb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-2">
               {props.workspaceName}
             </p>
             {NAV.map((item) => {
@@ -125,9 +118,7 @@ export function AppHeader(props: { workspaceName: string }) {
                   href={item.href as never}
                   onClick={closeMenu}
                   className={`rounded-md px-3 py-2 transition-colors ${
-                    active
-                      ? "bg-sigmafyBlue-50 font-medium text-sigmafyBlue-700"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    active ? "font-medium text-fg" : "text-muted hover:bg-surface-2 hover:text-fg"
                   }`}
                 >
                   {item.label}

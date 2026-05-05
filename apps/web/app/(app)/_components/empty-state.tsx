@@ -24,7 +24,7 @@ export function EmptyState(props: {
     <Card className="border-border/60 bg-background">
       <CardContent className="grid gap-3 p-8 text-center">
         {props.eyebrow && (
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-sigmafyBlue-600">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-fg">
             {props.eyebrow}
           </p>
         )}

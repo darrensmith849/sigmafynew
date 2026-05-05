@@ -42,7 +42,7 @@ export function DecidePhaseForm(props: { projectId: string; phaseSlug: string })
           value={note}
           onChange={(e) => setNote(e.currentTarget.value)}
           placeholder="What's strong, what needs revising."
-          className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+          className="w-full rounded-md border border-border bg-background p-3 text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
         />
       </div>
       <div className="flex flex-wrap items-center justify-end gap-2">

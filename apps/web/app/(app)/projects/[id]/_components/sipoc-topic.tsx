@@ -140,7 +140,7 @@ export function SipocTopic(props: {
             <p className="text-sm text-red-600">{gradingError}</p>
           )}
           {queuedMsg && (
-            <p className="text-sm text-sigmafyBlue-700">{queuedMsg}</p>
+            <p className="text-sm text-fg">{queuedMsg}</p>
           )}
         </CardContent>
       </Card>

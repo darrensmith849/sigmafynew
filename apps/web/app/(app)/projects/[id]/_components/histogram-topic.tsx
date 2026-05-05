@@ -77,7 +77,7 @@ export function HistogramTopic(props: {
               value={text}
               onChange={(e) => setText(e.currentTarget.value)}
               placeholder="e.g. 4.2, 4.5, 4.1, 4.7, 4.3, 4.6, 4.4, 4.8, 4.2, 4.5"
-              className="w-full rounded-md border border-border bg-background p-3 font-mono text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+              className="w-full rounded-md border border-border bg-background p-3 font-mono text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
             />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -135,7 +135,7 @@ export function HistogramTopic(props: {
             <p className="mt-4 text-xs text-muted-foreground">
               Plotly figure persisted with the submission. Chart rendering UI
               ships in a follow-up; the data is in
-              <code className="ml-1 rounded bg-neutral-100 px-1 py-0.5 text-xs">topic_solutions.content.result.figure</code>.
+              <code className="ml-1 rounded bg-surface-3 px-1 py-0.5 text-xs">topic_solutions.content.result.figure</code>.
             </p>
           </CardContent>
         </Card>

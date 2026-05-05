@@ -69,7 +69,7 @@ export default async function DashboardPage() {
             <Card key={p.id}>
               <CardHeader>
                 <CardTitle>
-                  <Link href={`/projects/${p.id}` as never} className="hover:text-sigmafyBlue-600">
+                  <Link href={`/projects/${p.id}` as never} className="hover:text-fg">
                     {p.name}
                   </Link>
                 </CardTitle>
@@ -99,7 +99,7 @@ function RoiSummary(props: {
   totalProjects: number;
 }) {
   return (
-    <Card className="border-sigmafyBlue-100 bg-sigmafyBlue-50/30">
+    <Card className="border-border-subtle bg-surface-3/30">
       <CardHeader>
         <CardTitle>Estimated annual ROI</CardTitle>
       </CardHeader>
@@ -128,7 +128,7 @@ function RoiBadge({ zarCents }: { zarCents: number | null | undefined }) {
     );
   }
   return (
-    <span className="rounded-full bg-sigmafyBlue-50 px-3 py-1 text-xs font-medium text-sigmafyBlue-700">
+    <span className="rounded-full bg-surface-3 px-3 py-1 text-xs font-medium text-fg">
       {ZAR.format(zarCents / 100)}/yr
     </span>
   );

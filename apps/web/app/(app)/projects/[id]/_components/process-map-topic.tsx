@@ -116,10 +116,10 @@ export function ProcessMapTopic(props: {
             {steps.map((step, idx) => (
               <div
                 key={idx}
-                className="grid gap-2 rounded-md border border-border/60 bg-neutral-50/40 p-3"
+                className="grid gap-2 rounded-md border border-border/60 bg-bg/40 p-3"
               >
                 <div className="flex items-start gap-2">
-                  <span className="mt-2 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sigmafyBlue-100 text-xs font-semibold text-sigmafyBlue-700">
+                  <span className="mt-2 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-3 text-xs font-semibold text-fg">
                     {idx + 1}
                   </span>
                   <div className="grid flex-1 gap-2">

@@ -124,7 +124,7 @@ export default async function MembersPage() {
                 <span className="font-medium">{m.fullName ?? m.email}</span>
                 <span className="ml-2 text-xs text-muted-foreground">{m.email}</span>
               </div>
-              <span className="rounded-full bg-sigmafyBlue-50 px-2 py-0.5 text-xs font-medium text-sigmafyBlue-700">
+              <span className="rounded-full bg-surface-3 px-2 py-0.5 text-xs font-medium text-fg">
                 {m.role}
               </span>
             </div>

@@ -82,7 +82,7 @@ export default async function ClassDetailPage(props: {
       <header>
         <Link
           href="/dashboard/classes"
-          className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-sigmafyBlue-600"
+          className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-fg"
         >
           ← Classes
         </Link>
@@ -90,7 +90,7 @@ export default async function ClassDetailPage(props: {
           {cls.name}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          <code className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs">{cls.slug}</code>
+          <code className="rounded bg-surface-3 px-1.5 py-0.5 text-xs">{cls.slug}</code>
           {cls.startsOn && cls.endsOn && (
             <>
               {" · "}
@@ -115,7 +115,7 @@ export default async function ClassDetailPage(props: {
               {" "}
               <Link
                 href="/dashboard/members"
-                className="font-medium text-sigmafyBlue-600 hover:underline"
+                className="font-medium text-fg hover:underline"
               >
                 Invite more members
               </Link>{" "}
@@ -177,7 +177,7 @@ function RosterSection(props: {
                   {e.projectId && (
                     <Link
                       href={`/projects/${e.projectId}`}
-                      className="ml-3 text-xs font-medium text-sigmafyBlue-600 hover:underline"
+                      className="ml-3 text-xs font-medium text-fg hover:underline"
                     >
                       project
                     </Link>

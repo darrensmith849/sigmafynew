@@ -48,7 +48,7 @@ export function CompletionPanel(props: {
           <div className="flex flex-wrap gap-2">
             <a
               href={`/api/certificates/${props.projectId}`}
-              className="inline-flex items-center justify-center rounded-full bg-sigmafyBlue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sigmafyBlue-700"
+              className="inline-flex items-center justify-center rounded-full bg-fg px-4 py-2 text-sm font-semibold text-white hover:bg-fg"
             >
               Download certificate
             </a>

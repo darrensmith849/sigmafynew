@@ -73,7 +73,7 @@ export function OneSampleTTopic(props: {
               value={text}
               onChange={(e) => setText(e.currentTarget.value)}
               placeholder="e.g. 10.1, 10.3, 9.8, 10.2, 10.4, 9.9, 10.1, 10.0"
-              className="w-full rounded-md border border-border bg-background p-3 font-mono text-sm focus:border-sigmafyBlue-400 focus:outline-none focus:ring-2 focus:ring-sigmafyBlue-100"
+              className="w-full rounded-md border border-border bg-background p-3 font-mono text-sm focus:border-fg focus:outline-none focus:ring-2 focus:ring-fg/10"
             />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -96,7 +96,7 @@ export function OneSampleTTopic(props: {
                     onClick={() => setAlternative(a.v)}
                     className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                       alternative === a.v
-                        ? "border-sigmafyBlue-300 bg-sigmafyBlue-50 text-sigmafyBlue-900"
+                        ? "border-border bg-surface-3 text-fg"
                         : "border-border bg-background text-muted-foreground hover:bg-muted"
                     }`}
                   >

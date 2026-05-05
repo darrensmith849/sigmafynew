@@ -41,7 +41,7 @@ export default async function AcceptInvitePage(props: {
 
   const copy = REASON_COPY[result.reason] ?? REASON_COPY.not_found!;
   return (
-    <main className="flex min-h-screen items-center justify-center bg-neutral-50 p-6">
+    <main className="flex min-h-screen items-center justify-center bg-bg p-6">
       <Card className="max-w-md">
         <CardHeader>
           <CardTitle>{copy.title}</CardTitle>
