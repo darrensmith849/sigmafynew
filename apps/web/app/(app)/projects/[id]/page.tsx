@@ -15,6 +15,7 @@ import { CharterTopic } from "./_components/charter-topic";
 import { SipocTopic } from "./_components/sipoc-topic";
 import { ParetoTopic } from "./_components/pareto-topic";
 import { FiveWhysTopic } from "./_components/five-whys-topic";
+import { LongFormTopic } from "./_components/long-form-topic";
 import { RoiPanel } from "./_components/roi-panel";
 
 export const dynamic = "force-dynamic";
@@ -231,6 +232,14 @@ function TopicContent(props: {
     case "five-whys":
       return (
         <FiveWhysTopic
+          {...rest}
+          topic={topic}
+          existingSolution={existingSolution}
+        />
+      );
+    case "long-form":
+      return (
+        <LongFormTopic
           {...rest}
           topic={topic}
           existingSolution={existingSolution}

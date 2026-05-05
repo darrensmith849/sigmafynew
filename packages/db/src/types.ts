@@ -2,9 +2,10 @@
  * Shape of `project_templates.definition` JSON.
  *
  * Phase 0A: charter (read-only), sipoc, pareto.
- * Phase 1 Slice A.3: five-whys.
+ * Phase 1 Slice A.3: five-whys + Charter editing.
+ * Phase 1 Slice A.4: long-form (single-textarea topic with AI grading).
  */
-export type TopicKind = "charter" | "sipoc" | "pareto" | "five-whys";
+export type TopicKind = "charter" | "sipoc" | "pareto" | "five-whys" | "long-form";
 
 export interface TemplateTopic {
   slug: string;
