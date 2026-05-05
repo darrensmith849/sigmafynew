@@ -9,3 +9,4 @@ export * from "./audit-log";
 export * from "./workspace-invitations";
 export * from "./classes";
 export * from "./phase-approvals";
+export * from "./topic-comments";

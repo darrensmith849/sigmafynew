@@ -18,6 +18,7 @@ import { FiveWhysTopic } from "./_components/five-whys-topic";
 import { LongFormTopic } from "./_components/long-form-topic";
 import { RoiPanel } from "./_components/roi-panel";
 import { PhaseApprovalPanel } from "./_components/phase-approval-panel";
+import { TopicComments } from "./_components/topic-comments";
 
 export const dynamic = "force-dynamic";
 
@@ -104,13 +105,53 @@ export default async function ProjectPage(props: {
       .from(schema.phaseApprovals)
       .where(eq(schema.phaseApprovals.projectId, project.id));
 
-    return { project, definition, phase, section, topic, solution, approvals };
+    const currentTopicPath =
+      section && topic ? topicPath(phase.slug, section.slug, topic.slug) : null;
+    const comments = currentTopicPath
+      ? await tx
+          .select({
+            id: schema.topicComments.id,
+            body: schema.topicComments.body,
+            createdAt: schema.topicComments.createdAt,
+            authorEmail: schema.users.email,
+            authorFullName: schema.users.fullName,
+            authorUserId: schema.topicComments.userId,
+            authorRole: schema.memberships.role,
+          })
+          .from(schema.topicComments)
+          .innerJoin(schema.users, eq(schema.topicComments.userId, schema.users.id))
+          .leftJoin(
+            schema.memberships,
+            and(
+              eq(schema.memberships.userId, schema.topicComments.userId),
+              eq(schema.memberships.workspaceId, ctx.workspace.id),
+            ),
+          )
+          .where(
+            and(
+              eq(schema.topicComments.projectId, project.id),
+              eq(schema.topicComments.topicPath, currentTopicPath),
+            ),
+          )
+          .orderBy(schema.topicComments.createdAt)
+      : [];
+
+    return { project, definition, phase, section, topic, solution, approvals, comments, currentTopicPath };
   });
 
   if (!data) notFound();
-  const { project, definition, phase, section, topic, solution, approvals } = data;
+  const { project, definition, phase, section, topic, solution, approvals, comments, currentTopicPath } = data;
   const approvalByPhase = new Map(approvals.map((a) => [a.phaseSlug, a]));
   const currentApproval = approvalByPhase.get(phase.slug) ?? null;
+  const commentsForTopic = comments.map((c) => ({
+    id: c.id,
+    body: c.body,
+    createdAt: c.createdAt,
+    authorEmail: c.authorEmail,
+    authorFullName: c.authorFullName,
+    authorRole: c.authorRole ?? "delegate",
+    isMine: c.authorUserId === ctx.user.id,
+  }));
 
   return (
     <main className="mx-auto grid min-h-screen max-w-6xl gap-8 px-6 py-10 lg:grid-cols-[260px_1fr]">
@@ -197,6 +238,13 @@ export default async function ProjectPage(props: {
             sectionSlug={section.slug}
             topic={topic}
             existingSolution={solution}
+          />
+        )}
+        {currentTopicPath && (
+          <TopicComments
+            projectId={project.id}
+            topicPath={currentTopicPath}
+            comments={commentsForTopic}
           />
         )}
         <PhaseApprovalPanel
