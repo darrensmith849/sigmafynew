@@ -1,12 +1,11 @@
 import type { TemplateDefinition } from "../types";
 
 /**
- * Canonical Green Belt DMAIC template — Phase 0A scope.
+ * Canonical Green Belt DMAIC template.
  *
- * The full template (all five DMAIC phases × multiple sections × many topics)
- * lands in Phase 1. Phase 0A surfaces only the Define → Charter slice with
- * three topics: Charter (read-only display), SIPOC (form submission),
- * Pareto (form + stats call).
+ * Phase 0A: Define → Charter (read-only), SIPOC, Pareto.
+ * Phase 1 Slice A.3: Charter becomes editable + AI-graded; 5-Whys lands
+ * under Analyse → Root cause analysis.
  */
 export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
   phases: [
@@ -23,9 +22,7 @@ export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
               name: "Charter",
               kind: "charter",
               description:
-                "Document the problem, the goal, the scope, the timeline and the team for this Green Belt project.",
-              prompt:
-                "Sigmafy will display the canonical Charter prompts here in Phase 1. For Phase 0A this topic is read-only.",
+                "Define the problem, goal, scope and target for this Green Belt project. AI Copilot grades each field.",
             },
             {
               slug: "sipoc",

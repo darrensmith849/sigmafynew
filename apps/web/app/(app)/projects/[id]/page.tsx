@@ -201,7 +201,13 @@ function TopicContent(props: {
   const { topic, existingSolution, ...rest } = props;
   switch (topic.kind) {
     case "charter":
-      return <CharterTopic topic={topic} />;
+      return (
+        <CharterTopic
+          {...rest}
+          topic={topic}
+          existingSolution={existingSolution}
+        />
+      );
     case "sipoc":
       return (
         <SipocTopic

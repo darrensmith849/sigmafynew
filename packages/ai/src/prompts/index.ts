@@ -14,15 +14,18 @@
 export type { CommonGrading, GradingPrompt } from "./types";
 export { SipocPrompt, type SipocInput } from "./grading/sipoc";
 export { FiveWhysPrompt, type FiveWhysInput } from "./grading/five-whys";
+export { CharterPrompt, type CharterInput } from "./grading/charter";
 
 import type { GradingPrompt } from "./types";
 import { SipocPrompt, type SipocInput } from "./grading/sipoc";
 import { FiveWhysPrompt, type FiveWhysInput } from "./grading/five-whys";
+import { CharterPrompt, type CharterInput } from "./grading/charter";
 
 /** Discriminated union of every kind we know how to grade. */
 export type GradeableTopic =
   | { kind: "sipoc"; input: SipocInput }
-  | { kind: "five-whys"; input: FiveWhysInput };
+  | { kind: "five-whys"; input: FiveWhysInput }
+  | { kind: "charter"; input: CharterInput };
 
 /**
  * Compile-time registry. New topic kinds: add to GradeableTopic above and
@@ -34,6 +37,7 @@ export const gradingPrompts: {
 } = {
   sipoc: SipocPrompt,
   "five-whys": FiveWhysPrompt,
+  charter: CharterPrompt,
 };
 
 // Backwards-compatible namespace export (Phase 0B code still imports
