@@ -66,8 +66,11 @@ export function SipocTopic(props: {
     });
   };
 
+  const [queuedMsg, setQueuedMsg] = useState<string | null>(null);
+
   const onSubmit = () => {
     setGradingError(null);
+    setQueuedMsg(null);
     startTransition(async () => {
       const cleaned: SipocContent = {
         suppliers: content.suppliers.filter(Boolean),
@@ -84,7 +87,11 @@ export function SipocTopic(props: {
         content: cleaned,
       });
       setSavedAt(formatTime(new Date()));
-      if (!result.graded) {
+      if (result.async) {
+        setQueuedMsg(
+          "Saved. AI grading is running in the background — refresh in ~10 seconds, or watch your email.",
+        );
+      } else if (!result.graded) {
         setGradingError(
           "Saved, but AI grading failed. Try again — grading runs each submit.",
         );
@@ -127,6 +134,9 @@ export function SipocTopic(props: {
           </div>
           {gradingError && (
             <p className="text-sm text-red-600">{gradingError}</p>
+          )}
+          {queuedMsg && (
+            <p className="text-sm text-sigmafyBlue-700">{queuedMsg}</p>
           )}
         </CardContent>
       </Card>

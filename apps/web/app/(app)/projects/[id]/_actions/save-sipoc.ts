@@ -7,6 +7,7 @@ import { requireAuthContext } from "@/lib/auth";
 import { getAppDb } from "@/lib/db";
 import { gradeSipoc } from "@/lib/ai";
 import { sendTopicGradedEmail } from "@/lib/email";
+import { inngest } from "@/lib/inngest/client";
 
 export interface SipocContent {
   suppliers: string[];
@@ -17,14 +18,15 @@ export interface SipocContent {
 }
 
 /**
- * Save a SIPOC submission and run AI grading inline.
+ * Save a SIPOC submission. Grading runs async via Inngest when configured;
+ * otherwise falls back to inline grading so dev / no-keys still works.
  *
- * Phase 0B: grading + email both happen synchronously in the request.
- * Phase 0B Slice 4 moves grading + email to Inngest so the request returns
- * instantly and grading + delivery land as background events.
- *
- * The grading is best-effort: if OpenAI fails, the submission still saves
- * and we return `graded: false`. The email is also best-effort.
+ * Return value semantics:
+ *   - `graded: true`  — grading completed inline; the topic_solutions row
+ *                       already has the grading column set on return.
+ *   - `graded: false` — grading was dispatched to Inngest (or failed
+ *                       inline). The grading column will be populated
+ *                       async; the page will show it on next refresh.
  */
 export async function saveSipoc(input: {
   projectId: string;
@@ -32,35 +34,63 @@ export async function saveSipoc(input: {
   sectionSlug: string;
   topicSlug: string;
   content: SipocContent;
-}): Promise<{ ok: true; graded: boolean }> {
+}): Promise<{ ok: true; graded: boolean; async: boolean }> {
   const ctx = await requireAuthContext();
   const db = getAppDb();
   const path = topicPath(input.phaseSlug, input.sectionSlug, input.topicSlug);
 
-  // 1. Save the submission and look up the project name (single tx).
-  const { insertedId, projectName } = await withWorkspace(db, ctx.workspace.id, async (tx) => {
-    const projectRows = await tx
-      .select({ name: schema.projects.name })
-      .from(schema.projects)
-      .where(eq(schema.projects.id, input.projectId))
-      .limit(1);
-    const project = projectRows[0];
+  // 1. Save the submission and grab the project name for downstream use.
+  const { insertedId, projectName } = await withWorkspace(
+    db,
+    ctx.workspace.id,
+    async (tx) => {
+      const projectRows = await tx
+        .select({ name: schema.projects.name })
+        .from(schema.projects)
+        .where(eq(schema.projects.id, input.projectId))
+        .limit(1);
+      const project = projectRows[0];
 
-    const rows = await tx
-      .insert(schema.topicSolutions)
-      .values({
-        workspaceId: ctx.workspace.id,
-        projectId: input.projectId,
-        topicPath: path,
-        userId: ctx.user.id,
-        content: input.content,
-        status: "submitted",
-      })
-      .returning({ id: schema.topicSolutions.id });
-    return { insertedId: rows[0]!.id, projectName: project?.name ?? "Project" };
-  });
+      const rows = await tx
+        .insert(schema.topicSolutions)
+        .values({
+          workspaceId: ctx.workspace.id,
+          projectId: input.projectId,
+          topicPath: path,
+          userId: ctx.user.id,
+          content: input.content,
+          status: "submitted",
+        })
+        .returning({ id: schema.topicSolutions.id });
+      return { insertedId: rows[0]!.id, projectName: project?.name ?? "Project" };
+    },
+  );
 
-  // 2. Grade (best-effort).
+  // 2. Try Inngest first. If keys are configured, this returns instantly
+  //    and the user sees grading on next page load (or via the email).
+  if (process.env.INNGEST_EVENT_KEY) {
+    try {
+      await inngest.send({
+        name: "topic.grading.requested",
+        data: {
+          workspaceId: ctx.workspace.id,
+          projectId: input.projectId,
+          topicSolutionId: insertedId,
+          topicKind: "sipoc",
+          topicPath: path,
+          submitterUserId: ctx.user.id,
+          submitterEmail: ctx.user.email,
+          submitterName: ctx.user.fullName,
+        },
+      });
+      revalidatePath(`/projects/${input.projectId}`);
+      return { ok: true, graded: false, async: true };
+    } catch (err) {
+      console.error("[save-sipoc] inngest dispatch failed, falling back to inline:", err);
+    }
+  }
+
+  // 3. Inline fallback (dev, or Inngest unavailable). Same logic as before.
   let graded = false;
   let gradingResult: Awaited<ReturnType<typeof gradeSipoc>>["grading"] | null = null;
   try {
@@ -83,11 +113,9 @@ export async function saveSipoc(input: {
     });
     graded = true;
   } catch (err) {
-    console.error("[save-sipoc] grading failed (continuing):", err);
+    console.error("[save-sipoc] inline grading failed:", err);
   }
 
-  // 3. Email (best-effort, only if grading succeeded — nothing meaningful to
-  //    say to the user yet otherwise).
   if (graded && gradingResult) {
     await sendTopicGradedEmail({
       to: ctx.user.email,
@@ -103,5 +131,5 @@ export async function saveSipoc(input: {
   }
 
   revalidatePath(`/projects/${input.projectId}`);
-  return { ok: true, graded };
+  return { ok: true, graded, async: false };
 }

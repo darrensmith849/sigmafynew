@@ -24,6 +24,7 @@
     "@sigmafy/stats-gateway": "workspace:*",
     "@sigmafy/ui": "workspace:*",
     "drizzle-orm": "^0.36.4",
+    "inngest": "^3.27.4",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
