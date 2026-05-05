@@ -5,11 +5,11 @@ every meaningful implementation session.
 
 ## Current phase
 
-**Phase 0A — Architecture Proof**: code complete on `main` (commit `13ca4ab`,
-merged via `ef637d3`). **Pending live signup verification with Clerk keys**
-before the Phase 0A Completion Report can be written.
+**Phase 0A — Architecture Proof**: ✅ **COMPLETE** (2026-05-05).
+Verified end-to-end on production URLs. Phase 0A Completion Report appended
+to `docs/phase-log.md`.
 
-**Next phase after 0A close**: Phase 0B — Product Proof.
+**Next phase**: Phase 0B — Product Proof. Awaiting 2KO signoff to start.
 
 ## Direction shifts (2026-05-05)
 
