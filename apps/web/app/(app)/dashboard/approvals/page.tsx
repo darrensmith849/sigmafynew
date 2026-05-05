@@ -6,6 +6,7 @@ import { schema, withWorkspace } from "@sigmafy/db";
 import { bootstrapUserAndWorkspace } from "@/lib/auth";
 import { getAppDb } from "@/lib/db";
 import { DecidePhaseForm } from "./_components/decide-phase-form";
+import { EmptyState } from "../../_components/empty-state";
 
 export const dynamic = "force-dynamic";
 
@@ -54,15 +55,9 @@ export default async function ApprovalsPage() {
   });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex flex-col gap-8 max-w-4xl px-6 py-10">
       <header>
-        <Link
-          href="/dashboard"
-          className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-sigmafyBlue-600"
-        >
-          ← Dashboard
-        </Link>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
           Pending phase approvals
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -73,11 +68,11 @@ export default async function ApprovalsPage() {
 
       <section className="grid gap-3">
         {pending.length === 0 ? (
-          <Card>
-            <CardContent className="p-6 text-sm text-muted-foreground">
-              Nothing waiting for approval right now.
-            </CardContent>
-          </Card>
+          <EmptyState
+            eyebrow="All clear"
+            title="All caught up"
+            body="No phases are waiting for sponsor review right now. When a delegate submits a DMAIC phase, it will appear here for you to approve or send back with notes."
+          />
         ) : (
           pending.map((p) => (
             <Card key={p.id}>

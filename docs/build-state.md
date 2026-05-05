@@ -5,20 +5,19 @@ every meaningful implementation session.
 
 ## Current phase
 
-**Phase 1 — SSA Pilot**: 🟡 **In progress (~85% by code volume)**. 14
-sub-slices shipped to `main` over a single intensive session. Remaining
-work is concentrated in Slice D (Paystack billing test, Laravel ETL,
-parallel run, sunset).
+**Phase 1 — SSA Pilot**: 🟡 **In progress (~92% by code volume)**. 15
+sub-slices and a 7-step UI Sprint shipped. Remaining work is concentrated
+in Slice D (Paystack billing test, Laravel ETL, parallel run, sunset).
 
 ### Phase 1 slices
 
 | Slice | Scope | Status |
 |---|---|---|
-| **A** | Full DMAIC + AI grading abstraction + override + template expansion | ✅ A.1, A.2, A.3, A.4 shipped |
-| A.5 | Process Map + Fishbone topic kinds | ⬜ deferred (richer UI; not blocking pilot) |
+| **A** | Full DMAIC + AI grading abstraction + override + template expansion | ✅ A.1, A.2, A.3, A.4, A.5 shipped (Process Map + Fishbone landed in UI Sprint) |
 | **B** | Cohorts + sponsor approval workflow | ✅ B.1, B.2, B.3, B.4, B.5 shipped (incl. CSV import) |
 | **C** | Stats expansion + topic comments + sponsor ROI dashboard | ✅ C.1, C.2, C.3, C.4, C.5 shipped (V1 stats allowlist 7/7 done) |
 | **D** | Cutover work | 🟡 D.1 (certificate PDF) ✅, D.4 (dev/PR reinstatement) ✅; D.2 (Paystack) + D.3 (Laravel ETL) ⬜ |
+| **UI Sprint** | Bounded polish: top nav, marketing landing, sign-in/up chrome, empty/loading/error states, A.5, mobile audit | ✅ UI.1–UI.7 shipped on `dev`, in PR #2 |
 
 ### Phase 0B — Product Proof
 ✅ Complete (2026-05-05). Verified end-to-end on production. Completion

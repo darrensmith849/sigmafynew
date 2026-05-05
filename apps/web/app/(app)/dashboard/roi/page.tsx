@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@sigmafy/ui";
 import { schema, withWorkspace } from "@sigmafy/db";
 import { bootstrapUserAndWorkspace } from "@/lib/auth";
 import { getAppDb } from "@/lib/db";
+import { EmptyState } from "../../_components/empty-state";
 
 export const dynamic = "force-dynamic";
 
@@ -166,15 +167,9 @@ export default async function RoiPage() {
     unassignedProjects.reduce((acc, p) => acc + Number(p.roi_cents ?? 0), 0);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex flex-col gap-8 max-w-5xl px-6 py-10">
       <header>
-        <Link
-          href="/dashboard"
-          className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-sigmafyBlue-600"
-        >
-          ← Dashboard
-        </Link>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
           ROI dashboard
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -198,18 +193,13 @@ export default async function RoiPage() {
       </Card>
 
       {classMeta.length === 0 && (
-        <Card>
-          <CardContent className="p-6 text-sm text-muted-foreground">
-            No classes yet.{" "}
-            <Link
-              href="/dashboard/classes/new"
-              className="font-medium text-sigmafyBlue-600 hover:underline"
-            >
-              Create your first class
-            </Link>{" "}
-            to start tracking cohort ROI.
-          </CardContent>
-        </Card>
+        <EmptyState
+          eyebrow="No cohorts yet"
+          title="No classes yet"
+          body="ROI is rolled up by class. Create your first class and enrol delegates so each project's estimated annual savings can aggregate here."
+          actionHref="/dashboard/classes/new"
+          actionLabel="Create your first class"
+        />
       )}
 
       {classMeta.map((cls) => {

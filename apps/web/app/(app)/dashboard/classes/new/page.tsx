@@ -17,7 +17,7 @@ export default async function NewClassPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 px-6 py-12">
+    <main className="mx-auto flex flex-col gap-6 max-w-2xl px-6 py-10">
       <Link
         href="/dashboard/classes"
         className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-sigmafyBlue-600"

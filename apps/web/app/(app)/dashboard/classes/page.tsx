@@ -5,6 +5,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle } from "@sigmafy/ui";
 import { schema, withWorkspace } from "@sigmafy/db";
 import { bootstrapUserAndWorkspace } from "@/lib/auth";
 import { getAppDb } from "@/lib/db";
+import { EmptyState } from "../../_components/empty-state";
 
 export const dynamic = "force-dynamic";
 
@@ -45,16 +46,10 @@ export default async function ClassesPage() {
   });
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-4xl flex-col gap-8 px-6 py-12">
-      <header className="flex items-start justify-between">
+    <main className="mx-auto flex flex-col gap-8 max-w-4xl px-6 py-10">
+      <header className="flex items-start justify-between gap-4">
         <div>
-          <Link
-            href="/dashboard"
-            className="text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-sigmafyBlue-600"
-          >
-            ← Dashboard
-          </Link>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
             Classes
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -69,11 +64,13 @@ export default async function ClassesPage() {
 
       <section className="grid gap-3">
         {classes.length === 0 ? (
-          <Card>
-            <CardContent className="p-6 text-sm text-muted-foreground">
-              No classes yet. <Link href="/dashboard/classes/new" className="font-medium text-sigmafyBlue-600 hover:underline">Create your first class</Link>.
-            </CardContent>
-          </Card>
+          <EmptyState
+            eyebrow="Cohorts"
+            title="No classes yet"
+            body="Group delegates into a cohort with shared start and end dates, a trainer, and a sponsor. Each delegate gets their own Green Belt project."
+            actionHref="/dashboard/classes/new"
+            actionLabel="Create your first class"
+          />
         ) : (
           classes.map((c) => (
             <Card key={c.id}>
