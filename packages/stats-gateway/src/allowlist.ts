@@ -12,11 +12,15 @@
  */
 export type StatsEndpoint =
   | "pareto"
-  | "histogram";
+  | "histogram"
+  | "imr-chart"
+  | "xbar-r-chart";
 
 export const ENDPOINT_ALLOWLIST: ReadonlySet<StatsEndpoint> = new Set<StatsEndpoint>([
   "pareto",
   "histogram",
+  "imr-chart",
+  "xbar-r-chart",
 ]);
 
 export function isAllowed(endpoint: string): endpoint is StatsEndpoint {

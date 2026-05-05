@@ -5,6 +5,7 @@
  * Phase 1 Slice A.3: five-whys + Charter editing.
  * Phase 1 Slice A.4: long-form (single-textarea topic with AI grading).
  * Phase 1 Slice C.2: histogram (numeric data → distribution).
+ * Phase 1 Slice C.3: imr-chart, xbar-r-chart (control charts).
  */
 export type TopicKind =
   | "charter"
@@ -12,7 +13,9 @@ export type TopicKind =
   | "pareto"
   | "five-whys"
   | "long-form"
-  | "histogram";
+  | "histogram"
+  | "imr-chart"
+  | "xbar-r-chart";
 
 export interface TemplateTopic {
   slug: string;

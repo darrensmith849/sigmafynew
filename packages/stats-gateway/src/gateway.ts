@@ -1,9 +1,18 @@
-import { paretoCall, histogramCall } from "@sigmafy/stats-client";
+import {
+  paretoCall,
+  histogramCall,
+  imrCall,
+  xbarRCall,
+} from "@sigmafy/stats-client";
 import type {
   ParetoRequest,
   ParetoResponse,
   HistogramRequest,
   HistogramResponse,
+  IMRRequest,
+  IMRResponse,
+  XbarRRequest,
+  XbarRResponse,
 } from "@sigmafy/stats-client";
 import { isAllowed } from "./allowlist";
 import { checkQuota } from "./quota";
@@ -12,6 +21,8 @@ import type { GatewayOptions, StatsCallRecord } from "./types";
 export interface StatsGateway {
   pareto(request: ParetoRequest): Promise<ParetoResponse>;
   histogram(request: HistogramRequest): Promise<HistogramResponse>;
+  imrChart(request: IMRRequest): Promise<IMRResponse>;
+  xbarRChart(request: XbarRRequest): Promise<XbarRResponse>;
 }
 
 /**
@@ -34,6 +45,22 @@ export function createStatsGateway(opts: GatewayOptions): StatsGateway {
     async histogram(request) {
       return runCall("histogram", opts, () =>
         histogramCall(request, {
+          baseUrl: opts.baseUrl,
+          signature: opts.signingSecret,
+        }),
+      );
+    },
+    async imrChart(request) {
+      return runCall("imr-chart", opts, () =>
+        imrCall(request, {
+          baseUrl: opts.baseUrl,
+          signature: opts.signingSecret,
+        }),
+      );
+    },
+    async xbarRChart(request) {
+      return runCall("xbar-r-chart", opts, () =>
+        xbarRCall(request, {
           baseUrl: opts.baseUrl,
           signature: opts.signingSecret,
         }),

@@ -10,7 +10,15 @@ export type {
   ParetoResponse,
   HistogramRequest,
   HistogramResponse,
+  IMRRequest,
+  IMRResponse,
+  IMRControlChart,
+  XbarRRequest,
+  XbarRResponse,
+  XbarRControlChart,
   StatsClientError,
 } from "./types";
 export { paretoCall } from "./pareto";
 export { histogramCall } from "./histogram";
+export { imrCall } from "./imr";
+export { xbarRCall } from "./xbar-r";

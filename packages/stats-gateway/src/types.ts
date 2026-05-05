@@ -3,6 +3,12 @@ import type {
   ParetoResponse,
   HistogramRequest,
   HistogramResponse,
+  IMRRequest,
+  IMRResponse,
+  IMRControlChart,
+  XbarRRequest,
+  XbarRResponse,
+  XbarRControlChart,
 } from "@sigmafy/stats-client";
 
 export interface StatsCallRecord {
@@ -38,4 +44,15 @@ export interface GatewayOptions {
   logger: GatewayLogger;
 }
 
-export type { ParetoRequest, ParetoResponse, HistogramRequest, HistogramResponse };
+export type {
+  ParetoRequest,
+  ParetoResponse,
+  HistogramRequest,
+  HistogramResponse,
+  IMRRequest,
+  IMRResponse,
+  IMRControlChart,
+  XbarRRequest,
+  XbarRResponse,
+  XbarRControlChart,
+};

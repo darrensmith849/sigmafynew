@@ -58,10 +58,9 @@ describe.skipIf(!APP_URL || !SERVICE_URL)("stats-gateway pareto end-to-end", () 
       logger: createDbStatsLogger(db),
     });
     // The gateway only exposes typed methods for allowlisted endpoints.
-    // After Phase 1 Slice C.2, `pareto` and `histogram` are allowlisted but
-    // I-MR / X-bar-R / capability / t-tests are not yet — this is enforced
-    // by the type system. Slice C.3 / C.4 add them.
-    // @ts-expect-error imrChart is not yet in the allowlist
-    expect(typeof gateway.imrChart).toBe("undefined");
+    // After Phase 1 Slice C.3, pareto / histogram / imr-chart / xbar-r-chart
+    // are allowlisted but capability + t-tests are not yet — Slice C.4 adds them.
+    // @ts-expect-error capability is not yet in the allowlist
+    expect(typeof gateway.capability).toBe("undefined");
   });
 });

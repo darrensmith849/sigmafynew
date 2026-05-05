@@ -17,6 +17,8 @@ import { ParetoTopic } from "./_components/pareto-topic";
 import { FiveWhysTopic } from "./_components/five-whys-topic";
 import { LongFormTopic } from "./_components/long-form-topic";
 import { HistogramTopic } from "./_components/histogram-topic";
+import { IMRTopic } from "./_components/imr-topic";
+import { XbarRTopic } from "./_components/xbar-r-topic";
 import { RoiPanel } from "./_components/roi-panel";
 import { PhaseApprovalPanel } from "./_components/phase-approval-panel";
 import { TopicComments } from "./_components/topic-comments";
@@ -331,6 +333,30 @@ function TopicContent(props: {
     case "histogram":
       return (
         <HistogramTopic
+          {...rest}
+          topic={topic}
+          existingSolution={
+            existingSolution
+              ? { content: existingSolution.content, submittedAt: existingSolution.submittedAt }
+              : null
+          }
+        />
+      );
+    case "imr-chart":
+      return (
+        <IMRTopic
+          {...rest}
+          topic={topic}
+          existingSolution={
+            existingSolution
+              ? { content: existingSolution.content, submittedAt: existingSolution.submittedAt }
+              : null
+          }
+        />
+      );
+    case "xbar-r-chart":
+      return (
+        <XbarRTopic
           {...rest}
           topic={topic}
           existingSolution={

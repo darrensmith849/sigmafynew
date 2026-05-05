@@ -82,6 +82,20 @@ export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
               description:
                 "Visualise the distribution of your measured variable. Useful for spotting skew, outliers, and whether the process output looks normal.",
             },
+            {
+              slug: "imr-chart",
+              name: "I-MR Control Chart",
+              kind: "imr-chart",
+              description:
+                "Individuals + Moving Range chart. Use when you have one observation per time period — flags whether the process is in statistical control.",
+            },
+            {
+              slug: "xbar-r-chart",
+              name: "X-bar / R Control Chart",
+              kind: "xbar-r-chart",
+              description:
+                "Subgrouped control chart for variable data. Use when you collect equal-sized subgroups (e.g. 5 measurements per shift).",
+            },
           ],
         },
       ],

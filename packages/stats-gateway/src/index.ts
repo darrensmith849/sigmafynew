@@ -12,4 +12,10 @@ export type {
   ParetoResponse,
   HistogramRequest,
   HistogramResponse,
+  IMRRequest,
+  IMRResponse,
+  IMRControlChart,
+  XbarRRequest,
+  XbarRResponse,
+  XbarRControlChart,
 } from "./types";

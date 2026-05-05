@@ -32,6 +32,46 @@ export interface HistogramResponse {
   figure: unknown;
 }
 
+/** I-MR (Individuals + Moving Range) control chart. */
+export interface IMRRequest {
+  data: number[];
+}
+
+export interface IMRControlChart {
+  data: Array<number | null>;
+  center_line: number;
+  ucl: number;
+  lcl: number;
+  sigma?: number;
+}
+
+export interface IMRResponse {
+  individuals: IMRControlChart;
+  moving_range: IMRControlChart;
+  nelson_rules?: unknown;
+  n_observations: number;
+}
+
+/** X-bar / R chart on equal-sized subgroups. */
+export interface XbarRRequest {
+  subgroups: number[][];
+}
+
+export interface XbarRControlChart {
+  data: number[];
+  center_line: number;
+  ucl: number;
+  lcl: number;
+}
+
+export interface XbarRResponse {
+  x_bar: XbarRControlChart;
+  r_chart: XbarRControlChart;
+  nelson_rules?: unknown;
+  subgroup_size: number;
+  n_subgroups: number;
+}
+
 export interface StatsClientError extends Error {
   statusCode: number;
   endpoint: string;
