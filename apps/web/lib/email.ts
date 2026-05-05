@@ -3,8 +3,23 @@ import {
   WelcomeEmail,
   TopicGradedEmail,
   WorkspaceInvitationEmail,
+  PhaseApprovalRequestedEmail,
+  PhaseApprovalDecidedEmail,
   type EmailClientEnv,
 } from "@sigmafy/emails";
+
+const PHASE_LABELS: Record<string, string> = {
+  define: "Define",
+  measure: "Measure",
+  analyse: "Analyse",
+  improve: "Improve",
+  control: "Control",
+  "executive-summary": "Executive Summary",
+};
+
+function phaseLabel(slug: string): string {
+  return PHASE_LABELS[slug] ?? slug;
+}
 
 function env(): EmailClientEnv {
   return {
@@ -76,6 +91,66 @@ export async function sendWorkspaceInvitationEmail(args: {
     });
   } catch (err) {
     console.error("[email] workspace-invitation failed (non-blocking):", err);
+  }
+}
+
+export async function sendPhaseApprovalRequestedEmail(args: {
+  to: string;
+  toName?: string;
+  workspaceId: string;
+  workspaceName: string;
+  projectId: string;
+  projectName: string;
+  phaseSlug: string;
+}): Promise<void> {
+  try {
+    await sendEmail(env(), {
+      to: args.to,
+      toName: args.toName,
+      subject: `${args.projectName} — ${phaseLabel(args.phaseSlug)} ready for review`,
+      react: PhaseApprovalRequestedEmail({
+        recipientName: args.toName?.split(" ")[0],
+        workspaceName: args.workspaceName,
+        projectName: args.projectName,
+        phaseLabel: phaseLabel(args.phaseSlug),
+        approvalsUrl: `${appUrl()}/dashboard/approvals`,
+      }),
+      workspaceId: args.workspaceId,
+    });
+  } catch (err) {
+    console.error("[email] phase-approval-requested failed (non-blocking):", err);
+  }
+}
+
+export async function sendPhaseApprovalDecidedEmail(args: {
+  to: string;
+  toName?: string;
+  workspaceId: string;
+  projectId: string;
+  projectName: string;
+  phaseSlug: string;
+  decision: "approved" | "rejected";
+  note: string;
+  decidedByName: string;
+}): Promise<void> {
+  try {
+    await sendEmail(env(), {
+      to: args.to,
+      toName: args.toName,
+      subject: `${phaseLabel(args.phaseSlug)} ${args.decision === "approved" ? "approved" : "needs revision"} — ${args.projectName}`,
+      react: PhaseApprovalDecidedEmail({
+        recipientName: args.toName?.split(" ")[0],
+        projectName: args.projectName,
+        phaseLabel: phaseLabel(args.phaseSlug),
+        decision: args.decision,
+        note: args.note,
+        decidedByName: args.decidedByName,
+        projectUrl: `${appUrl()}/projects/${args.projectId}`,
+      }),
+      workspaceId: args.workspaceId,
+    });
+  } catch (err) {
+    console.error("[email] phase-approval-decided failed (non-blocking):", err);
   }
 }
 

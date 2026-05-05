@@ -54,6 +54,12 @@ export default async function DashboardPage() {
         </div>
         <div className="flex items-center gap-4">
           <Link
+            href="/dashboard/approvals"
+            className="text-sm font-medium text-muted-foreground hover:text-sigmafyBlue-600"
+          >
+            Approvals
+          </Link>
+          <Link
             href="/dashboard/classes"
             className="text-sm font-medium text-muted-foreground hover:text-sigmafyBlue-600"
           >

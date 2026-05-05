@@ -17,6 +17,7 @@ import { ParetoTopic } from "./_components/pareto-topic";
 import { FiveWhysTopic } from "./_components/five-whys-topic";
 import { LongFormTopic } from "./_components/long-form-topic";
 import { RoiPanel } from "./_components/roi-panel";
+import { PhaseApprovalPanel } from "./_components/phase-approval-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -92,11 +93,24 @@ export default async function ProjectPage(props: {
       }
     }
 
-    return { project, definition, phase, section, topic, solution };
+    const approvals = await tx
+      .select({
+        phaseSlug: schema.phaseApprovals.phaseSlug,
+        status: schema.phaseApprovals.status,
+        submittedAt: schema.phaseApprovals.submittedAt,
+        decidedAt: schema.phaseApprovals.decidedAt,
+        note: schema.phaseApprovals.note,
+      })
+      .from(schema.phaseApprovals)
+      .where(eq(schema.phaseApprovals.projectId, project.id));
+
+    return { project, definition, phase, section, topic, solution, approvals };
   });
 
   if (!data) notFound();
-  const { project, definition, phase, section, topic, solution } = data;
+  const { project, definition, phase, section, topic, solution, approvals } = data;
+  const approvalByPhase = new Map(approvals.map((a) => [a.phaseSlug, a]));
+  const currentApproval = approvalByPhase.get(phase.slug) ?? null;
 
   return (
     <main className="mx-auto grid min-h-screen max-w-6xl gap-8 px-6 py-10 lg:grid-cols-[260px_1fr]">
@@ -112,19 +126,23 @@ export default async function ProjectPage(props: {
           {project.name}
         </h2>
         <nav className="mt-6 grid gap-1">
-          {definition.phases.map((p) => (
-            <Link
-              key={p.slug}
-              href={`/projects/${project.id}?phase=${p.slug}` as never}
-              className={`rounded-md px-3 py-2 text-sm transition-colors ${
-                p.slug === phase.slug
-                  ? "bg-sigmafyBlue-50 font-medium text-sigmafyBlue-600"
-                  : "text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              {p.name}
-            </Link>
-          ))}
+          {definition.phases.map((p) => {
+            const a = approvalByPhase.get(p.slug);
+            return (
+              <Link
+                key={p.slug}
+                href={`/projects/${project.id}?phase=${p.slug}` as never}
+                className={`flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors ${
+                  p.slug === phase.slug
+                    ? "bg-sigmafyBlue-50 font-medium text-sigmafyBlue-600"
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <span>{p.name}</span>
+                {a && <PhaseStatusDot status={a.status} />}
+              </Link>
+            );
+          })}
         </nav>
         {section && (
           <div className="mt-6">
@@ -181,9 +199,25 @@ export default async function ProjectPage(props: {
             existingSolution={solution}
           />
         )}
+        <PhaseApprovalPanel
+          projectId={project.id}
+          phaseSlug={phase.slug}
+          phaseName={phase.name}
+          approval={currentApproval}
+        />
       </div>
     </main>
   );
+}
+
+function PhaseStatusDot({ status }: { status: string }) {
+  const cls =
+    status === "approved"
+      ? "bg-green-500"
+      : status === "rejected"
+        ? "bg-red-500"
+        : "bg-amber-500";
+  return <span className={`h-2 w-2 rounded-full ${cls}`} aria-label={status} />;
 }
 
 function TopicContent(props: {
