@@ -71,6 +71,19 @@ export const GREEN_BELT_TEMPLATE: TemplateDefinition = {
             },
           ],
         },
+        {
+          slug: "data",
+          name: "Data analysis",
+          topics: [
+            {
+              slug: "histogram",
+              name: "Histogram",
+              kind: "histogram",
+              description:
+                "Visualise the distribution of your measured variable. Useful for spotting skew, outliers, and whether the process output looks normal.",
+            },
+          ],
+        },
       ],
     },
     {

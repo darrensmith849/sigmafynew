@@ -1,11 +1,17 @@
-import { paretoCall } from "@sigmafy/stats-client";
-import type { ParetoRequest, ParetoResponse } from "@sigmafy/stats-client";
+import { paretoCall, histogramCall } from "@sigmafy/stats-client";
+import type {
+  ParetoRequest,
+  ParetoResponse,
+  HistogramRequest,
+  HistogramResponse,
+} from "@sigmafy/stats-client";
 import { isAllowed } from "./allowlist";
 import { checkQuota } from "./quota";
 import type { GatewayOptions, StatsCallRecord } from "./types";
 
 export interface StatsGateway {
   pareto(request: ParetoRequest): Promise<ParetoResponse>;
+  histogram(request: HistogramRequest): Promise<HistogramResponse>;
 }
 
 /**
@@ -20,6 +26,14 @@ export function createStatsGateway(opts: GatewayOptions): StatsGateway {
     async pareto(request) {
       return runCall("pareto", opts, () =>
         paretoCall(request, {
+          baseUrl: opts.baseUrl,
+          signature: opts.signingSecret,
+        }),
+      );
+    },
+    async histogram(request) {
+      return runCall("histogram", opts, () =>
+        histogramCall(request, {
           baseUrl: opts.baseUrl,
           signature: opts.signingSecret,
         }),

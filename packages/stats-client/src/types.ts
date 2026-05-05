@@ -16,6 +16,22 @@ export interface ParetoResponse {
   figure?: unknown;
 }
 
+/**
+ * Histogram request — array of numeric observations.
+ * The Fly.io service requires `data.length >= 2`.
+ */
+export interface HistogramRequest {
+  data: number[];
+  title?: string | null;
+  x_label?: string | null;
+  y_label?: string | null;
+}
+
+/** The service returns a Plotly figure. We treat it as opaque JSON. */
+export interface HistogramResponse {
+  figure: unknown;
+}
+
 export interface StatsClientError extends Error {
   statusCode: number;
   endpoint: string;

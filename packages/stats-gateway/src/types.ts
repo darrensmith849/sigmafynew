@@ -1,4 +1,9 @@
-import type { ParetoRequest, ParetoResponse } from "@sigmafy/stats-client";
+import type {
+  ParetoRequest,
+  ParetoResponse,
+  HistogramRequest,
+  HistogramResponse,
+} from "@sigmafy/stats-client";
 
 export interface StatsCallRecord {
   workspaceId: string;
@@ -33,4 +38,4 @@ export interface GatewayOptions {
   logger: GatewayLogger;
 }
 
-export type { ParetoRequest, ParetoResponse };
+export type { ParetoRequest, ParetoResponse, HistogramRequest, HistogramResponse };

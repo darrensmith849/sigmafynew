@@ -16,6 +16,7 @@ import { SipocTopic } from "./_components/sipoc-topic";
 import { ParetoTopic } from "./_components/pareto-topic";
 import { FiveWhysTopic } from "./_components/five-whys-topic";
 import { LongFormTopic } from "./_components/long-form-topic";
+import { HistogramTopic } from "./_components/histogram-topic";
 import { RoiPanel } from "./_components/roi-panel";
 import { PhaseApprovalPanel } from "./_components/phase-approval-panel";
 import { TopicComments } from "./_components/topic-comments";
@@ -325,6 +326,18 @@ function TopicContent(props: {
           {...rest}
           topic={topic}
           existingSolution={existingSolution}
+        />
+      );
+    case "histogram":
+      return (
+        <HistogramTopic
+          {...rest}
+          topic={topic}
+          existingSolution={
+            existingSolution
+              ? { content: existingSolution.content, submittedAt: existingSolution.submittedAt }
+              : null
+          }
         />
       );
   }

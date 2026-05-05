@@ -8,6 +8,9 @@ export type { components, paths, operations } from "./generated/api";
 export type {
   ParetoRequest,
   ParetoResponse,
+  HistogramRequest,
+  HistogramResponse,
   StatsClientError,
 } from "./types";
 export { paretoCall } from "./pareto";
+export { histogramCall } from "./histogram";

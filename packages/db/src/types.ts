@@ -4,8 +4,15 @@
  * Phase 0A: charter (read-only), sipoc, pareto.
  * Phase 1 Slice A.3: five-whys + Charter editing.
  * Phase 1 Slice A.4: long-form (single-textarea topic with AI grading).
+ * Phase 1 Slice C.2: histogram (numeric data → distribution).
  */
-export type TopicKind = "charter" | "sipoc" | "pareto" | "five-whys" | "long-form";
+export type TopicKind =
+  | "charter"
+  | "sipoc"
+  | "pareto"
+  | "five-whys"
+  | "long-form"
+  | "histogram";
 
 export interface TemplateTopic {
   slug: string;

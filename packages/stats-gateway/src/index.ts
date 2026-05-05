@@ -10,4 +10,6 @@ export type {
   QuotaResult,
   ParetoRequest,
   ParetoResponse,
+  HistogramRequest,
+  HistogramResponse,
 } from "./types";
