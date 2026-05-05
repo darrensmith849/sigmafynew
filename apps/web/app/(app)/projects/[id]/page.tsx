@@ -59,8 +59,10 @@ export default async function ProjectPage(props: {
     const topic = section?.topics.find((t) => t.slug === topicSlug) ?? section?.topics[0];
 
     let solution = null as null | {
+      id: string;
       content: unknown;
       grading: unknown;
+      gradingOverride: unknown;
       submittedAt: Date;
     };
     if (section && topic) {
@@ -79,8 +81,10 @@ export default async function ProjectPage(props: {
       const s = sols[0];
       if (s) {
         solution = {
+          id: s.id,
           content: s.content,
           grading: s.grading,
+          gradingOverride: s.gradingOverride,
           submittedAt: s.submittedAt,
         };
       }
@@ -186,8 +190,10 @@ function TopicContent(props: {
   sectionSlug: string;
   topic: TemplateTopic;
   existingSolution: null | {
+    id: string;
     content: unknown;
     grading: unknown;
+    gradingOverride: unknown;
     submittedAt: Date;
   };
 }) {
@@ -204,7 +210,6 @@ function TopicContent(props: {
         />
       );
     case "pareto":
-      // Pareto doesn't render grading yet; strip the field for its narrower prop type.
       return (
         <ParetoTopic
           {...rest}

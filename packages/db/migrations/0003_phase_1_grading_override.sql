@@ -1,0 +1,1 @@
+ALTER TABLE "topic_solutions" ADD COLUMN "grading_override" jsonb;

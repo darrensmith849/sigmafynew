@@ -35,6 +35,24 @@ export const topicSolutions = pgTable(
       .references(() => users.id),
     content: jsonb("content").notNull(),
     grading: jsonb("grading"),
+    /**
+     * Trainer / sponsor / admin override of AI grading.
+     *
+     * Shape:
+     * {
+     *   decision: "approved" | "approved_with_notes" | "needs_revision",
+     *   note: string,
+     *   overriddenBy: { userId, email, role },
+     *   overriddenAt: ISO 8601
+     * }
+     *
+     * When set, this takes precedence over `grading` in the UI.
+     * Clearing the override (set to null) restores AI grading visibility.
+     *
+     * Master plan §10 / §15: trainer/sponsor/admin override of AI feedback
+     * must be the default UX, not an edge case.
+     */
+    gradingOverride: jsonb("grading_override"),
     status: text("status", {
       enum: ["draft", "submitted", "approved", "rejected"],
     })

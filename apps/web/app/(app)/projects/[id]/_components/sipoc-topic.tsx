@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from "@sigmafy/ui";
 import type { TemplateTopic } from "@sigmafy/db";
 import { saveSipoc, type SipocContent } from "../_actions/save-sipoc";
+import { OverrideCard, type OverrideDisplay } from "./override-card";
 
 const COLUMNS: Array<{ key: keyof SipocContent; label: string; placeholder: string }> = [
   { key: "suppliers", label: "Suppliers", placeholder: "e.g. Steel mill" },
@@ -37,13 +38,16 @@ export function SipocTopic(props: {
   sectionSlug: string;
   topic: TemplateTopic;
   existingSolution: null | {
+    id: string;
     content: unknown;
     grading: unknown;
+    gradingOverride: unknown;
     submittedAt: Date;
   };
 }) {
   const initial = (props.existingSolution?.content as SipocContent | undefined) ?? EMPTY;
   const initialGrading = (props.existingSolution?.grading as SipocGradingDisplay | null) ?? null;
+  const override = (props.existingSolution?.gradingOverride as OverrideDisplay | null) ?? null;
   const [content, setContent] = useState<SipocContent>(() => ({
     suppliers: padTo(initial.suppliers, 3),
     inputs: padTo(initial.inputs, 3),
@@ -141,12 +145,32 @@ export function SipocTopic(props: {
         </CardContent>
       </Card>
 
-      {grading && <GradingCard grading={grading} />}
+      {grading && (
+        <>
+          {/* Override card always renders when there's any grading at all —
+              either the existing override (read-only) or the "Override AI feedback"
+              button. Master plan §10/§15: override is the default UX. */}
+          {props.existingSolution && (
+            <OverrideCard
+              projectId={props.projectId}
+              topicSolutionId={props.existingSolution.id}
+              override={override}
+            />
+          )}
+          <GradingCard grading={grading} dimmed={override !== null} />
+        </>
+      )}
     </div>
   );
 }
 
-function GradingCard({ grading }: { grading: SipocGradingDisplay }) {
+function GradingCard({
+  grading,
+  dimmed,
+}: {
+  grading: SipocGradingDisplay;
+  dimmed: boolean;
+}) {
   const decisionStyle = {
     approved: "bg-green-50 text-green-800 border-green-200",
     approved_with_notes: "bg-amber-50 text-amber-800 border-amber-200",
@@ -160,10 +184,17 @@ function GradingCard({ grading }: { grading: SipocGradingDisplay }) {
   }[grading.decision];
 
   return (
-    <Card>
+    <Card className={dimmed ? "opacity-70" : ""}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>AI feedback</CardTitle>
+          <CardTitle>
+            AI feedback{" "}
+            {dimmed && (
+              <span className="ml-2 text-xs font-normal text-muted-foreground">
+                (overridden — for reference)
+              </span>
+            )}
+          </CardTitle>
           <span className={`rounded-full border px-3 py-1 text-xs font-medium ${decisionStyle}`}>
             {decisionLabel} · {grading.score}/100
           </span>
@@ -187,10 +218,6 @@ function GradingCard({ grading }: { grading: SipocGradingDisplay }) {
           Graded by {grading.modelId} · prompt v{grading.promptVersion} ·
           {" "}
           {new Date(grading.gradedAt).toLocaleString()}
-          {" — "}
-          <span className="italic">
-            Trainer/sponsor override coming in Phase 1.
-          </span>
         </p>
       </CardContent>
     </Card>
