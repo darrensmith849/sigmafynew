@@ -8,3 +8,6 @@ export type {
   AiResponse,
   AiCallRecord,
 } from "./types";
+
+// Prompt registry
+export * as Prompts from "./prompts";

@@ -14,6 +14,8 @@ export interface AiRequest {
   messages: AiMessage[];
   maxTokens?: number;
   temperature?: number;
+  /** "json_object" forces the model to return parseable JSON (OpenAI JSON mode). */
+  responseFormat?: "json_object";
 }
 
 export interface AiResponse {

@@ -14,6 +14,9 @@ import { users } from "./users";
  *   pareto: { input: { labels: [...], counts: [...] }, result: { total, sorted, cumulative } }
  *   charter: { problem, goal, scope, baseline, target, ... } (read-only in Phase 0A)
  *
+ * `grading` is set by the AI grading flow in Phase 0B+. Shape varies by topic
+ * kind but always includes { promptId, promptVersion, modelId, gradedAt, ... }.
+ *
  * Multiple solutions per topic are allowed (the latest is treated as current).
  */
 export const topicSolutions = pgTable(
@@ -31,6 +34,7 @@ export const topicSolutions = pgTable(
       .notNull()
       .references(() => users.id),
     content: jsonb("content").notNull(),
+    grading: jsonb("grading"),
     status: text("status", {
       enum: ["draft", "submitted", "approved", "rejected"],
     })

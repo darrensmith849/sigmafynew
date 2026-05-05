@@ -57,7 +57,11 @@ export default async function ProjectPage(props: {
     const topicSlug = sp.topic ?? section?.topics[0]?.slug;
     const topic = section?.topics.find((t) => t.slug === topicSlug) ?? section?.topics[0];
 
-    let solution = null as null | { content: unknown; submittedAt: Date };
+    let solution = null as null | {
+      content: unknown;
+      grading: unknown;
+      submittedAt: Date;
+    };
     if (section && topic) {
       const path = topicPath(phase.slug, section.slug, topic.slug);
       const sols = await tx
@@ -72,7 +76,13 @@ export default async function ProjectPage(props: {
         .orderBy(desc(schema.topicSolutions.submittedAt))
         .limit(1);
       const s = sols[0];
-      if (s) solution = { content: s.content, submittedAt: s.submittedAt };
+      if (s) {
+        solution = {
+          content: s.content,
+          grading: s.grading,
+          submittedAt: s.submittedAt,
+        };
+      }
     }
 
     return { project, definition, phase, section, topic, solution };
@@ -166,15 +176,36 @@ function TopicContent(props: {
   phaseSlug: string;
   sectionSlug: string;
   topic: TemplateTopic;
-  existingSolution: null | { content: unknown; submittedAt: Date };
+  existingSolution: null | {
+    content: unknown;
+    grading: unknown;
+    submittedAt: Date;
+  };
 }) {
-  const { topic } = props;
+  const { topic, existingSolution, ...rest } = props;
   switch (topic.kind) {
     case "charter":
       return <CharterTopic topic={topic} />;
     case "sipoc":
-      return <SipocTopic {...props} />;
+      return (
+        <SipocTopic
+          {...rest}
+          topic={topic}
+          existingSolution={existingSolution}
+        />
+      );
     case "pareto":
-      return <ParetoTopic {...props} />;
+      // Pareto doesn't render grading yet; strip the field for its narrower prop type.
+      return (
+        <ParetoTopic
+          {...rest}
+          topic={topic}
+          existingSolution={
+            existingSolution
+              ? { content: existingSolution.content, submittedAt: existingSolution.submittedAt }
+              : null
+          }
+        />
+      );
   }
 }
