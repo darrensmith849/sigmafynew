@@ -6,6 +6,7 @@ import { schema, withWorkspace } from "@sigmafy/db";
 import { bootstrapUserAndWorkspace } from "@/lib/auth";
 import { getAppDb } from "@/lib/db";
 import { InviteForm } from "./_components/invite-form";
+import { BulkInviteForm } from "./_components/bulk-invite-form";
 import { CancelInviteButton } from "./_components/cancel-invite-button";
 
 export const dynamic = "force-dynamic";
@@ -74,6 +75,15 @@ export default async function MembersPage() {
         </CardHeader>
         <CardContent>
           <InviteForm />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Bulk invite from CSV</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BulkInviteForm />
         </CardContent>
       </Card>
 
