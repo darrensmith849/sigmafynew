@@ -14,6 +14,7 @@ import { getAppDb } from "@/lib/db";
 import { CharterTopic } from "./_components/charter-topic";
 import { SipocTopic } from "./_components/sipoc-topic";
 import { ParetoTopic } from "./_components/pareto-topic";
+import { RoiPanel } from "./_components/roi-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -148,6 +149,14 @@ export default async function ProjectPage(props: {
 
       {/* Topic content */}
       <div className="grid gap-6">
+        <RoiPanel
+          projectId={project.id}
+          initialZarRands={
+            project.roiEstimatedZarCents !== null && project.roiEstimatedZarCents !== undefined
+              ? project.roiEstimatedZarCents / 100
+              : null
+          }
+        />
         {!section || !topic ? (
           <Card>
             <CardHeader>
