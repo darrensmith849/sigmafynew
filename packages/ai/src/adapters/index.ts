@@ -1,1 +1,1 @@
-export { createClaudeAdapter, type ClaudeAdapterOptions } from "./claude";
+export { createOpenAiAdapter, type OpenAiAdapterOptions } from "./openai";

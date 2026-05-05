@@ -18,7 +18,7 @@ checkout to a running `apps/web` and `apps/admin`.
 ```bash
 git clone <repo-url> sigmafynew
 cd sigmafynew
-git checkout dev
+git checkout main
 nvm use
 corepack enable
 pnpm install --frozen-lockfile
@@ -38,13 +38,13 @@ All variables are documented in the per-app `.env.example` files. Summary:
 | `DATABASE_URL_SERVICE` | web, admin | runtime | Neon connection string for the audited service role. |
 | `CLERK_PUBLISHABLE_KEY` | web, admin | build + runtime | From Clerk dashboard. |
 | `CLERK_SECRET_KEY` | web, admin | runtime | From Clerk dashboard. |
-| `ANTHROPIC_API_KEY` | web | runtime | From Anthropic console. |
-| `AI_PROVIDER` | web | runtime | Defaults to `claude`. |
+| `OPENAI_API_KEY` | web | runtime | From OpenAI platform dashboard. |
+| `AI_PROVIDER` | web | runtime | Defaults to `openai`. |
 | `BILLING_PROVIDER` | web | runtime | Defaults to `paystack`. |
 | `PAYSTACK_SECRET_KEY` | web | runtime | From Paystack dashboard. |
 | `PAYSTACK_PUBLIC_KEY` | web | build + runtime | From Paystack dashboard. |
-| `RESEND_API_KEY` | web | runtime | From Resend dashboard. |
-| `EMAIL_FROM` | web | runtime | e.g. `no-reply@sigmafy.co`. |
+| `BREVO_API_KEY` | web | runtime | From Brevo (formerly Sendinblue) dashboard → SMTP & API. Sender domain must be DNS-verified before first send. |
+| `EMAIL_FROM` | web | runtime | e.g. `no-reply@sigmafy.co`. Must match a Brevo-verified sender. |
 | `UPSTASH_REDIS_REST_URL` | web | runtime | Upstash Redis (Phase 1+). |
 | `UPSTASH_REDIS_REST_TOKEN` | web | runtime | Upstash Redis (Phase 1+). |
 | `INNGEST_EVENT_KEY` | web | runtime | Inngest events (Phase 0B+). |
@@ -78,7 +78,7 @@ Vercel dashboard** by 2KO — Phase -1 does not provision them.
 |---|---|
 | Repo | this repo |
 | Production branch | `main` |
-| Preview branches | `dev` (and PR branches) |
+| Preview branches | PR branches only — `dev` is retired (ADR 0006). |
 | Root Directory | `apps/web` |
 | Framework Preset | Next.js |
 | Install Command | `cd ../.. && pnpm install --frozen-lockfile` |
@@ -129,7 +129,8 @@ pnpm db:migrate
 ```
 
 In Neon, create one project for Sigmafy, then a database branch per developer
-and one for `dev`/`main` previews/production.
+and one for `main` (production). Reinstate a separate `dev` branch when the
+dev/PR flow is reinstated before Phase 1 (ADR 0006).
 
 ## 7. Troubleshooting
 

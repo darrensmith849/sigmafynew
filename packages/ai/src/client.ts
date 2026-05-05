@@ -1,19 +1,19 @@
-import { createClaudeAdapter } from "./adapters/claude";
+import { createOpenAiAdapter } from "./adapters/openai";
 import type { AiProvider } from "./provider";
 import type { AiProviderId } from "./types";
 
 export interface AiClientEnv {
   AI_PROVIDER?: AiProviderId;
-  ANTHROPIC_API_KEY?: string;
+  OPENAI_API_KEY?: string;
   AI_DEFAULT_MODEL_ID?: string;
 }
 
 export function createAiClient(env: AiClientEnv): AiProvider {
-  const provider = env.AI_PROVIDER ?? "claude";
+  const provider = env.AI_PROVIDER ?? "openai";
   switch (provider) {
-    case "claude":
-      return createClaudeAdapter({
-        apiKey: env.ANTHROPIC_API_KEY ?? "",
+    case "openai":
+      return createOpenAiAdapter({
+        apiKey: env.OPENAI_API_KEY ?? "",
         defaultModelId: env.AI_DEFAULT_MODEL_ID,
       });
     default: {

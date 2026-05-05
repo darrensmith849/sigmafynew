@@ -17,7 +17,9 @@ people will work on the repo concurrently.
 - Layout: `apps/*` for runnable apps, `packages/*` for shared libraries.
 - Per-app Vercel projects with `Root Directory` pointing into `apps/<name>`.
 - Turborepo Remote Cache shared between local, CI, and Vercel.
-- All work pushed to `dev`; `main` is release-only with branch protection.
+- ~~All work pushed to `dev`; `main` is release-only with branch protection.~~
+  **Superseded 2026-05-05 by ADR 0006**: while there are zero live users, all
+  work pushes directly to `main`. Reinstate dev/PR flow before Phase 1.
 
 ## Alternatives considered
 

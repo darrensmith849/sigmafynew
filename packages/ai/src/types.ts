@@ -1,4 +1,4 @@
-export type AiProviderId = "claude";
+export type AiProviderId = "openai";
 
 export interface AiMessage {
   role: "system" | "user" | "assistant";

@@ -1,18 +1,20 @@
 import type { SendEmailInput, SendEmailResult } from "./types";
 
-const PHASE_MINUS_ONE = "email send not implemented in Phase -1 — see docs/phase-log.md";
+const PHASE_0A_NOT_WIRED =
+  "email send not wired yet — Brevo adapter lands in Phase 0B (see docs/master-build-plan.md §15).";
 
 export interface EmailClientEnv {
-  RESEND_API_KEY?: string;
+  BREVO_API_KEY?: string;
   EMAIL_FROM?: string;
 }
 
 /**
- * Send a transactional email through Resend.
+ * Send a transactional email via Brevo.
  *
- * Phase -1: signature only. Throws "not implemented" so callers fail loudly
- * rather than silently dropping mail.
+ * Phase 0A: signature only. Throws "not wired" so callers fail loudly rather
+ * than silently dropping mail. Phase 0B renders the React Email component to
+ * HTML and POSTs to Brevo's transactional endpoint.
  */
 export async function sendEmail(_env: EmailClientEnv, _input: SendEmailInput): Promise<SendEmailResult> {
-  throw new Error(PHASE_MINUS_ONE);
+  throw new Error(PHASE_0A_NOT_WIRED);
 }
