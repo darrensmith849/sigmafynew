@@ -21,16 +21,14 @@ governs scope, phases, and rules — treat it as the source of truth.
 
 ## Branch and commit rules
 
-- **All implementation work pushes to `dev`.** `main` is updated only via
-  reviewed pull requests. Reinstated 2026-05-05 in Slice D.4 ahead of the
-  SSA pilot launch (ADR 0006 superseded). Phase 0A/0B and the bulk of Phase 1
-  ran main-only while no users existed.
-- Pull latest before every commit: `git pull --rebase origin dev`.
+- **All implementation work pushes to `main`.** Reverted to main-only on
+  2026-05-05 after the brand-sprint merge — no live users yet, and the
+  PR ceremony was slowing iteration to no benefit. Will reinstate dev/PR
+  flow once SSA goes live (ADR 0006 will be re-superseded then).
+- Pull latest before every commit: `git pull --rebase origin main`.
 - Resolve merge conflicts deliberately. If unsure, stop and report the files.
 - Never force push. Never `--no-verify`.
 - Commit messages: `phase-x: concise description`.
-- PR titles use the same convention. Description should reference master-plan
-  § when relevant.
 
 ## Phase rules
 
@@ -68,8 +66,8 @@ Always recommend the next concrete phase.
 
 ```bash
 git status
-git checkout dev
-git pull --rebase origin dev
+git checkout main
+git pull --rebase origin main
 pnpm install
 pnpm lint
 pnpm test
@@ -79,19 +77,33 @@ Before commit:
 
 ```bash
 git status
-git pull --rebase origin dev
+git pull --rebase origin main
 # Resolve conflicts if any
 pnpm lint
 pnpm test
 pnpm build
 git add <files>
 git commit -m "phase-x: concise description"
-git push origin dev
+git push origin main
 ```
 
-To get changes into `main` (which auto-deploys to production via Vercel):
+## Production deploy
+
+Vercel auto-deploys `main` *when the GitHub webhook fires*. The webhook
+has been intermittently dropping pushes — if a commit lands on `main`
+and no new deployment shows up in the Vercel dashboard within a minute
+or two, trigger a manual deploy:
 
 ```bash
-gh pr create --base main --head dev --title "phase-x: …" --body "…"
-# 2KO reviews + merges via the GitHub UI.
+# From the repo root, with the existing sigmafy-web project link:
+mkdir -p .vercel
+cat > .vercel/project.json <<'EOF'
+{"projectId":"prj_NeNsFwNQZbHkYfjqDVFLvNdFVAhA","orgId":"team_IdxwfxleD8iyeGAc1g0QjSmv","projectName":"sigmafy-web"}
+EOF
+npx --yes vercel@latest deploy --prod --yes --cwd "$(pwd)"
+rm -rf .vercel
 ```
+
+Production URLs (all alias the latest deployment):
+- https://web-seven-gold-84.vercel.app (shortest)
+- https://sigmafy-web-pumpbots-projects.vercel.app
