@@ -36,8 +36,8 @@ All variables are documented in the per-app `.env.example` files. Summary:
 |---|---|---|---|
 | `DATABASE_URL` | web, admin | runtime | Neon connection string for the workspace role. |
 | `DATABASE_URL_SERVICE` | web, admin | runtime | Neon connection string for the audited service role. |
-| `CLERK_PUBLISHABLE_KEY` | web, admin | build + runtime | From Clerk dashboard. |
-| `CLERK_SECRET_KEY` | web, admin | runtime | From Clerk dashboard. |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | web, admin | build + runtime | From Clerk dashboard → API keys. The `NEXT_PUBLIC_` prefix is required so Clerk's client SDK can read it. |
+| `CLERK_SECRET_KEY` | web, admin | runtime | From Clerk dashboard → API keys (server-side only). |
 | `OPENAI_API_KEY` | web | runtime | From OpenAI platform dashboard. |
 | `AI_PROVIDER` | web | runtime | Defaults to `openai`. |
 | `BILLING_PROVIDER` | web | runtime | Defaults to `paystack`. |
