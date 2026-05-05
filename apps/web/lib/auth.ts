@@ -4,6 +4,7 @@ import { schema } from "@sigmafy/db";
 import type { SigmafyAuthContext } from "@sigmafy/auth";
 import { getServiceDb } from "./db";
 import { sendWelcomeEmail } from "./email";
+import { writeAuditLog } from "./audit";
 
 /**
  * Hydrate the active workspace + role for the current request.
@@ -152,6 +153,23 @@ export async function bootstrapUserAndWorkspace(): Promise<SigmafyAuthContext> {
     description: "Starter project. Edit or replace once you're ready.",
     status: "active",
   });
+
+  // Audit-log the service-role bootstrap. Required by ADR 0003 / master
+  // plan §8.1: every service-role use needs an audit row. Best-effort —
+  // failures don't block bootstrap (the user signing up shouldn't suffer
+  // because audit DB write hiccupped).
+  try {
+    await writeAuditLog({
+      actorUserId: userId,
+      action: "bootstrap.create_workspace",
+      targetWorkspaceId: workspace.id,
+      targetResource: `workspace:${workspace.slug}`,
+      justification:
+        "First-login bootstrap — workspace + owner membership + starter project. Service-role bypass required because no workspace context exists yet.",
+    });
+  } catch (err) {
+    console.error("[bootstrap] audit-log write failed (non-blocking):", err);
+  }
 
   // Welcome email (best-effort; bootstrap must not fail if email fails).
   // Phase 0B Slice 4 will move this to an Inngest job for retries.

@@ -15,10 +15,12 @@
     "clean": "rm -rf .turbo .next *.tsbuildinfo"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.3.0",
     "@sigmafy/ai": "workspace:*",
     "@sigmafy/auth": "workspace:*",
     "@sigmafy/db": "workspace:*",
     "@sigmafy/ui": "workspace:*",
+    "drizzle-orm": "^0.36.4",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
