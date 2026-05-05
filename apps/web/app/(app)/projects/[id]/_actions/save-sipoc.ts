@@ -6,6 +6,7 @@ import { schema, withWorkspace, topicPath } from "@sigmafy/db";
 import { requireAuthContext } from "@/lib/auth";
 import { getAppDb } from "@/lib/db";
 import { gradeSipoc } from "@/lib/ai";
+import { sendTopicGradedEmail } from "@/lib/email";
 
 export interface SipocContent {
   suppliers: string[];
@@ -18,12 +19,12 @@ export interface SipocContent {
 /**
  * Save a SIPOC submission and run AI grading inline.
  *
- * Phase 0B: grading happens synchronously in the request. Phase 0B Slice 4
- * moves this to an Inngest job so the request returns instantly and grading
- * lands as a background event. For now the user waits ~3-8 seconds.
+ * Phase 0B: grading + email both happen synchronously in the request.
+ * Phase 0B Slice 4 moves grading + email to Inngest so the request returns
+ * instantly and grading + delivery land as background events.
  *
- * The grading is best-effort: if OpenAI fails, the submission still saves and
- * we return `graded: false`. The user can re-submit to retry grading.
+ * The grading is best-effort: if OpenAI fails, the submission still saves
+ * and we return `graded: false`. The email is also best-effort.
  */
 export async function saveSipoc(input: {
   projectId: string;
@@ -36,8 +37,15 @@ export async function saveSipoc(input: {
   const db = getAppDb();
   const path = topicPath(input.phaseSlug, input.sectionSlug, input.topicSlug);
 
-  // 1. Save the submission (always succeeds independently of grading)
-  const insertedId = await withWorkspace(db, ctx.workspace.id, async (tx) => {
+  // 1. Save the submission and look up the project name (single tx).
+  const { insertedId, projectName } = await withWorkspace(db, ctx.workspace.id, async (tx) => {
+    const projectRows = await tx
+      .select({ name: schema.projects.name })
+      .from(schema.projects)
+      .where(eq(schema.projects.id, input.projectId))
+      .limit(1);
+    const project = projectRows[0];
+
     const rows = await tx
       .insert(schema.topicSolutions)
       .values({
@@ -49,21 +57,23 @@ export async function saveSipoc(input: {
         status: "submitted",
       })
       .returning({ id: schema.topicSolutions.id });
-    return rows[0]!.id;
+    return { insertedId: rows[0]!.id, projectName: project?.name ?? "Project" };
   });
 
-  // 2. Try to grade (best-effort; failures don't block save)
+  // 2. Grade (best-effort).
   let graded = false;
+  let gradingResult: Awaited<ReturnType<typeof gradeSipoc>>["grading"] | null = null;
   try {
-    const { grading } = await gradeSipoc({
+    const r = await gradeSipoc({
       workspaceId: ctx.workspace.id,
       userId: ctx.user.id,
       content: input.content,
     });
+    gradingResult = r.grading;
     await withWorkspace(db, ctx.workspace.id, async (tx) => {
       await tx
         .update(schema.topicSolutions)
-        .set({ grading })
+        .set({ grading: gradingResult })
         .where(
           and(
             eq(schema.topicSolutions.id, insertedId),
@@ -74,6 +84,22 @@ export async function saveSipoc(input: {
     graded = true;
   } catch (err) {
     console.error("[save-sipoc] grading failed (continuing):", err);
+  }
+
+  // 3. Email (best-effort, only if grading succeeded — nothing meaningful to
+  //    say to the user yet otherwise).
+  if (graded && gradingResult) {
+    await sendTopicGradedEmail({
+      to: ctx.user.email,
+      toName: ctx.user.fullName ?? undefined,
+      workspaceId: ctx.workspace.id,
+      projectId: input.projectId,
+      projectName,
+      topicName: "SIPOC",
+      decision: gradingResult.decision,
+      score: gradingResult.score,
+      summary: gradingResult.summary,
+    });
   }
 
   revalidatePath(`/projects/${input.projectId}`);

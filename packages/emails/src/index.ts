@@ -1,3 +1,7 @@
 export { sendEmail, type EmailClientEnv } from "./send";
-export { PlaceholderEmail, type PlaceholderEmailProps } from "./templates/_placeholder";
+export { WelcomeEmail, type WelcomeEmailProps } from "./templates/welcome";
+export {
+  TopicGradedEmail,
+  type TopicGradedEmailProps,
+} from "./templates/topic-graded";
 export type { SendEmailInput, SendEmailResult } from "./types";

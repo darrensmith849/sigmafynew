@@ -3,6 +3,7 @@ import { getCurrentUser } from "@sigmafy/auth/server";
 import { schema } from "@sigmafy/db";
 import type { SigmafyAuthContext } from "@sigmafy/auth";
 import { getServiceDb } from "./db";
+import { sendWelcomeEmail } from "./email";
 
 /**
  * Hydrate the active workspace + role for the current request.
@@ -150,6 +151,15 @@ export async function bootstrapUserAndWorkspace(): Promise<SigmafyAuthContext> {
     name: "My First Green Belt Project",
     description: "Starter project. Edit or replace once you're ready.",
     status: "active",
+  });
+
+  // Welcome email (best-effort; bootstrap must not fail if email fails).
+  // Phase 0B Slice 4 will move this to an Inngest job for retries.
+  await sendWelcomeEmail({
+    to: clerkUser.email,
+    toName: clerkUser.fullName ?? undefined,
+    workspaceName: workspace.name,
+    workspaceId: workspace.id,
   });
 
   return {
