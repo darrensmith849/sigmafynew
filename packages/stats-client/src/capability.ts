@@ -4,7 +4,7 @@ import type {
   StatsClientError,
 } from "./types";
 
-const PATH = "/api/capability/analysis";
+const PATH = "/api/v1/capability/analysis";
 
 export interface CapabilityCallOptions {
   baseUrl: string;

@@ -4,7 +4,7 @@ import type {
   StatsClientError,
 } from "./types";
 
-const XBAR_R_PATH = "/api/control-charts/xbar-r";
+const XBAR_R_PATH = "/api/v1/control-charts/xbar-r";
 
 export interface XbarRCallOptions {
   baseUrl: string;

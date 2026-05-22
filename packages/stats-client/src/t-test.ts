@@ -6,8 +6,8 @@ import type {
   StatsClientError,
 } from "./types";
 
-const ONE_SAMPLE_PATH = "/api/hypothesis/t-test/one-sample";
-const TWO_SAMPLE_PATH = "/api/hypothesis/t-test/two-sample";
+const ONE_SAMPLE_PATH = "/api/v1/hypothesis/t-test/one-sample";
+const TWO_SAMPLE_PATH = "/api/v1/hypothesis/t-test/two-sample";
 
 export interface TTestCallOptions {
   baseUrl: string;

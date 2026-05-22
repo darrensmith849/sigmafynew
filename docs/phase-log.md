@@ -50,6 +50,51 @@ commit(s), deliverables checked off, decisions, and open questions.
   in-app inbox notifications (currently email only), formal report
   exports (currently dashboards only). All optional-for-pilot.
 
+### Phase 1 maintenance — stats-client regen (2026-05-22)
+
+The upstream FastAPI service (`sigmafy-tools.fly.dev`) shipped v1.6.0 → v1.8.0
+on 2026-05-22 with three contract changes that matter for the gateway:
+
+- **Versioned routes**: `/api/v1/*` is now the canonical contract. Legacy
+  `/api/*` paths still work so this change is non-breaking, but new work
+  should target v1.
+- **Bearer auth** (`Authorization: Bearer <key>`) enforced when
+  `SIGMAFY_API_KEYS` is set. Currently empty in Fly (auth disabled) so the
+  gateway's existing unsigned calls keep working — this is the open item
+  already noted in `build-state.md` re. `STATS_API_SIGNING_SECRET`.
+- **Structured error envelope**: every 4xx/5xx now returns
+  `{detail, code, request_id}` plus an `X-Request-ID` response header.
+  Rate limit (1000 req/hour per key) returns 429 with `retry_after_seconds`.
+
+Action taken:
+
+- Ran `STATS_API_BASE_URL=https://sigmafy-tools.fly.dev pnpm --filter
+  @sigmafy/stats-client generate` — `packages/stats-client/src/generated/api.ts`
+  refreshed (439 KB; 258 `/api/v1/*` paths registered alongside the legacy
+  ones).
+- Flipped the 7 hand-written PATH constants in `packages/stats-client/src/`
+  (`capability.ts`, `histogram.ts`, `imr.ts`, `pareto.ts`, `t-test.ts`,
+  `xbar-r.ts`) from `/api/<thing>` to `/api/v1/<thing>`.
+- Allowlist (`packages/stats-gateway/src/allowlist.ts`) and gateway dispatch
+  logic unchanged — same 7 slugs (`pareto`, `histogram`, `imr-chart`,
+  `xbar-r-chart`, `capability`, `one-sample-t`, `two-sample-t`).
+
+Verification:
+
+- `pnpm typecheck` — 11/11 packages clean.
+- `pnpm --filter @sigmafy/stats-client lint` + `--filter @sigmafy/stats-gateway lint` clean.
+- Gateway integration tests still skipped (require a live FastAPI instance).
+
+Deferred / open:
+
+- `STATS_API_SIGNING_SECRET` enforcement on the upstream — when ready,
+  set `SIGMAFY_API_KEYS` as a Fly secret and the existing gateway
+  `signingSecret` option becomes the bearer header.
+- Eight bug fixes shipped upstream (NaN-leak guards on capability,
+  hypothesis/correlation, gage R&R, etc.) are now active for tenants
+  hitting those endpoints — no portal-side change needed; the upstream
+  responses are simply more correct on degenerate input.
+
 ### V1 success criteria status (master plan §3)
 
 | # | Criterion | Status |

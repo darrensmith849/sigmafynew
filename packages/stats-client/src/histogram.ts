@@ -1,6 +1,6 @@
 import type { HistogramRequest, HistogramResponse, StatsClientError } from "./types";
 
-const HISTOGRAM_PATH = "/api/graph/histogram";
+const HISTOGRAM_PATH = "/api/v1/graph/histogram";
 
 export interface HistogramCallOptions {
   baseUrl: string;

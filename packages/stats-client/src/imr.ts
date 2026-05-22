@@ -4,7 +4,7 @@ import type {
   StatsClientError,
 } from "./types";
 
-const IMR_PATH = "/api/control-charts/imr";
+const IMR_PATH = "/api/v1/control-charts/imr";
 
 export interface IMRCallOptions {
   baseUrl: string;

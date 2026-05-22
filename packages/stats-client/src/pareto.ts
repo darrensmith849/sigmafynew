@@ -1,6 +1,6 @@
 import type { ParetoRequest, ParetoResponse, StatsClientError } from "./types";
 
-const PARETO_PATH = "/api/quality/pareto";
+const PARETO_PATH = "/api/v1/quality/pareto";
 
 export interface ParetoCallOptions {
   baseUrl: string;
@@ -13,7 +13,7 @@ export interface ParetoCallOptions {
 }
 
 /**
- * Typed wrapper around POST /api/quality/pareto on the FastAPI service.
+ * Typed wrapper around POST /api/v1/quality/pareto on the FastAPI service.
  *
  * Always called from the gateway (`@sigmafy/stats-gateway`), never from app
  * code directly.
