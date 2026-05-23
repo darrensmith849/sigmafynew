@@ -5,6 +5,63 @@ commit(s), deliverables checked off, decisions, and open questions.
 
 ---
 
+## Phase 7 — Stats Studio (standalone surface, in progress)
+
+**Status**: 🟡 in flight — gateway widening shipped, app scaffold under way.
+**Started**: 2026-05-22.
+**Scope decision**: ADR 0010 (`docs/adr/0010-stats-studio-standalone-surface.md`).
+
+### What this phase delivers
+
+A new `apps/stats-studio` Next.js app deployed at `stats.sigmafy.co` that
+exposes all 288 tools from the Python stats engine as a self-service catalog,
+sitting beside the SSA pilot in `apps/web`. Shares Clerk auth + the
+workspace model + `@sigmafy/stats-gateway`; gets its own Vercel project and
+its own table (`stats_tool_runs`) for run lineage.
+
+### Why this is a phase, not a slice
+
+CLAUDE.md §Phase rules says "Implement only the current approved phase scope.
+Do not add out-of-scope features 'because they're easy'." Phase 1 (SSA pilot)
+deliberately gates stats behind a 7-tool allowlist. The Studio premise is
+catalog-wide access — that's an explicit deviation requiring its own scope
+boundary, captured in ADR 0010 and approved by the product owner on
+2026-05-22.
+
+### Commits so far
+
+| Sub-phase | Commit | Scope |
+|---|---|---|
+| 7.-2 (Python upstream) | `ef1c9f2` on `sigmafy-tools` repo | v1.8.0 — versioned `/api/v1`, bearer auth scaffolding, structured error envelope, per-key rate limiter, enriched catalog. |
+| 7.-1 (stats-client regen) | `c457a58` | Regenerated `packages/stats-client/src/generated/api.ts` against v1 OpenAPI; flipped 7 hand-written PATH constants. |
+| 7.0 (this entry + ADR) | _in this commit_ | ADR 0010 + this log entry + build-state note. Records scope deviation per CLAUDE.md. |
+| 7.1 (gateway extension) | `8bc0ba7` | New `fetchCatalog()` + `gateway.run(slug, payload)` generic method. 11/11 packages typecheck green. |
+
+### Remaining sub-phases (per the integration plan)
+
+- **7.1b** Surface `X-Request-ID` from `gateway.run()` to callers (currently dropped on errors).
+- **7.2** Lift `bootstrapUserAndWorkspace` out of `apps/web/lib/auth.ts` into a shared `@sigmafy/auth` export with a `createStarterProject` flag.
+- **7.3** New `stats_tool_runs` table with RLS predicate matching the existing migration convention (`::text + true`); FK to `stats_call_log` so the existing audit row stays the source of truth.
+- **7.4** Replace the module-scope catalog cache in `packages/stats-gateway/src/catalog.ts` with Next.js `unstable_cache` / `fetch(..., { next: { revalidate, tags } })` since module state doesn't survive Vercel cold starts.
+- **7.5** Scaffold `apps/stats-studio` (Next.js 15, Clerk middleware, Tailwind, package wiring, per-app `vercel.json`).
+- **7.6** Public marketing landing at `/`.
+- **7.7** Auth-gated `/(app)/catalog` listing 288 tools.
+- **7.8** Generic tool runner `/(app)/t/[slug]` + "Raw JSON" escape hatch.
+- **7.9** Chart stack (Recharts primary + lazy Plotly).
+- **7.10** Runs history at `/(app)/runs`.
+- **7.11** Verify, build, push, document Vercel project setup.
+
+### Known limitations carrying into Phase 7
+
+- `packages/stats-gateway/src/quota.ts` is still stubbed (always `ok: true`).
+  Public `stats.sigmafy.co` should not go live until Upstash Redis quota
+  counters land. Internal `*.vercel.app` URL is fine for testing.
+- `STATS_API_SIGNING_SECRET` documented but not enforced upstream
+  (`sigmafy-tools.fly.dev` runs with empty `SIGMAFY_API_KEYS`). Coordinated
+  three-repo change to turn it on is a separate item.
+
+---
+
 ## Phase 1 — SSA Pilot (in progress)
 
 - **Status**: 15 sub-slices + a 7-step UI Sprint shipped (2026-05-05).

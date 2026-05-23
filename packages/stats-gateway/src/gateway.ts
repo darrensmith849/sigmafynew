@@ -42,8 +42,29 @@ export interface StatsGateway {
    * directly. Goes through the same quota + audit pipeline as the typed
    * methods, but skips the 7-tool allowlist (which exists to scope the
    * DMAIC project flow, not as a security boundary).
+   *
+   * Returns the raw response body plus the X-Request-ID header echoed
+   * back from the Python service, so callers can correlate the run with
+   * the upstream log + Sentry trace.
    */
-  run(slug: string, payload: unknown): Promise<unknown>;
+  run(slug: string, payload: unknown): Promise<{ result: unknown; requestId: string | null }>;
+}
+
+/**
+ * Error thrown when `gateway.run()` receives a 4xx/5xx from the upstream
+ * Python service. Carries the structured envelope fields so callers can
+ * surface stable error codes and link logs by request ID.
+ */
+export class StatsGatewayError extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,
+    public readonly status: number,
+    public readonly requestId: string | null,
+  ) {
+    super(message);
+    this.name = "StatsGatewayError";
+  }
 }
 
 /**
@@ -127,11 +148,16 @@ async function runGeneric(
   slug: string,
   payload: unknown,
   opts: GatewayOptions,
-): Promise<unknown> {
+): Promise<{ result: unknown; requestId: string | null }> {
   const quota = await checkQuota(opts.auth.workspaceId, slug);
   if (!quota.ok) {
     await record(opts, slug, "blocked", 0, "quota exceeded");
-    throw new Error(`stats quota exceeded for slug: ${slug}`);
+    throw new StatsGatewayError(
+      `stats quota exceeded for slug: ${slug}`,
+      "quota_exceeded",
+      429,
+      null,
+    );
   }
 
   const path = "/api/v1/" + slug.replace(/\./g, "/");
@@ -152,12 +178,14 @@ async function runGeneric(
       body: JSON.stringify(payload),
     });
     const latency = Math.round(performance.now() - t0);
+    const requestId = res.headers.get("X-Request-ID");
 
     if (!res.ok) {
       // Python's structured error envelope: { detail, code, request_id }
       const body = (await res.json().catch(() => ({}))) as {
         detail?: unknown;
         code?: string;
+        request_id?: string;
       };
       const message =
         typeof body.detail === "string"
@@ -166,18 +194,16 @@ async function runGeneric(
             ? JSON.stringify(body.detail)
             : `HTTP ${res.status}`;
       const code = body.code ?? `http_${res.status}`;
+      const reqId = requestId ?? body.request_id ?? null;
       await record(opts, slug, "error", latency, `${code}: ${message}`);
-      const err = new Error(message) as Error & { code?: string; status?: number };
-      err.code = code;
-      err.status = res.status;
-      throw err;
+      throw new StatsGatewayError(message, code, res.status, reqId);
     }
 
     const result = await res.json();
     await record(opts, slug, "ok", latency);
-    return result;
+    return { result, requestId };
   } catch (err) {
-    if (err instanceof Error && (err as { status?: number }).status !== undefined) {
+    if (err instanceof StatsGatewayError) {
       // Already recorded above
       throw err;
     }

@@ -74,31 +74,56 @@ interface RawCatalogResponse {
   }>;
 }
 
-const CATALOG_TTL_MS = 60 * 60 * 1000; // 1 hour
-let cached: { at: number; data: Catalog } | null = null;
+const CATALOG_REVALIDATE_SECONDS = 60 * 60; // 1 hour
+export const CATALOG_CACHE_TAG = "stats-catalog";
 
+/**
+ * No-op kept for API compatibility. The Next.js cache is now the
+ * primary surface; to bust it, call `revalidateTag(CATALOG_CACHE_TAG)`
+ * from app code on a Vercel deployment.
+ */
 export function clearCatalogCache(): void {
-  cached = null;
+  // intentionally empty — see CATALOG_CACHE_TAG above
 }
 
 /**
- * Fetch the catalog. Cached for one hour per process.
+ * Fetch the catalog. Uses Next.js's `fetch` cache with a 1-hour
+ * `revalidate` and a stable `stats-catalog` tag.
  *
- * Pass `baseUrl` of the upstream API (e.g. https://sigmafy-tools.fly.dev).
- * Pass `force: true` to skip the cache.
+ * On Vercel this means: the first request after a deploy hits the
+ * upstream; subsequent requests for the next hour read from the Next.js
+ * data cache (per-region). To force a refresh, call
+ * `revalidateTag('stats-catalog')` from a server action — useful when
+ * the Python service ships a new tool.
+ *
+ * In non-Next environments (CLI, tests) the `next` option on `fetch` is
+ * silently ignored and every call hits the upstream.
  */
-export async function fetchCatalog(opts: { baseUrl: string; force?: boolean }): Promise<Catalog> {
-  const now = Date.now();
-  if (!opts.force && cached && now - cached.at < CATALOG_TTL_MS) {
-    return cached.data;
-  }
-
+export async function fetchCatalog(opts: {
+  baseUrl: string;
+  /** Force-fetch by passing `cache: "no-store"` semantics. */
+  force?: boolean;
+}): Promise<Catalog> {
   const url = `${opts.baseUrl.replace(/\/$/, "")}/tools`;
-  const res = await fetch(url, { headers: { Accept: "application/json" } });
+  // Next.js extends RequestInit with `next: { revalidate, tags }` at runtime
+  // but the type-only definition isn't visible in this leaf TypeScript
+  // library. Pass through `unknown` to keep this file's tsconfig
+  // independent of next.
+  const init = {
+    headers: { Accept: "application/json" },
+    ...(opts.force
+      ? { cache: "no-store" }
+      : { next: { revalidate: CATALOG_REVALIDATE_SECONDS, tags: [CATALOG_CACHE_TAG] } }),
+  } as unknown as RequestInit;
+  const res = await fetch(url, init);
   if (!res.ok) {
     throw new Error(`Catalog fetch failed: ${res.status} ${res.statusText}`);
   }
   const raw = (await res.json()) as RawCatalogResponse;
+  return normaliseRawCatalog(raw);
+}
+
+function normaliseRawCatalog(raw: RawCatalogResponse): Catalog {
 
   const categories: CatalogCategory[] = (raw.categories ?? []).map((cat) => ({
     name: cat.name ?? "Uncategorised",
@@ -121,7 +146,6 @@ export async function fetchCatalog(opts: { baseUrl: string; force?: boolean }): 
     bySlug,
   };
 
-  cached = { at: now, data: catalog };
   return catalog;
 }
 

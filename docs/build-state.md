@@ -9,6 +9,11 @@ every meaningful implementation session.
 sub-slices and a 7-step UI Sprint shipped. Remaining work is concentrated
 in Slice D (Paystack billing test, Laravel ETL, parallel run, sunset).
 
+**Phase 7 — Stats Studio**: 🟡 **In progress** (started 2026-05-22). New
+`apps/stats-studio` Next.js app exposing all 288 Python tools as a
+standalone catalog at `stats.sigmafy.co`. Sits beside the SSA pilot.
+Scope decision in ADR 0010; sub-phases tracked in `docs/phase-log.md`.
+
 ### Phase 1 slices
 
 | Slice | Scope | Status |

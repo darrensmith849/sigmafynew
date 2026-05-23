@@ -5,6 +5,7 @@ export * from "./project-templates";
 export * from "./projects";
 export * from "./topic-solutions";
 export * from "./stats-call-log";
+export * from "./stats-tool-runs";
 export * from "./audit-log";
 export * from "./workspace-invitations";
 export * from "./classes";

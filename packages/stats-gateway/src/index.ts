@@ -1,4 +1,4 @@
-export { createStatsGateway, type StatsGateway } from "./gateway";
+export { createStatsGateway, StatsGatewayError, type StatsGateway } from "./gateway";
 export { ENDPOINT_ALLOWLIST, isAllowed, type StatsEndpoint } from "./allowlist";
 export {
   fetchCatalog,
