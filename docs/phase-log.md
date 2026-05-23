@@ -51,13 +51,18 @@ boundary, captured in ADR 0010 and approved by the product owner on
 
 - **7.11** Vercel project setup for `stats-studio` (new manual project pointing at `apps/stats-studio`, env vars cloned from `apps/web`, custom domain `stats.sigmafy.co`). Documented in `docs/environment-setup.md`.
 
-### Known limitations carrying into Phase 7
+### Sub-phase 7.12 — Real quota enforcement (shipped)
+
+- Added `workspaces.quota_tier` column (`free|starter|pro|internal`, default `free`) via migration `0011_phase_7_workspace_quota_tier.sql`. Applied to live Neon DB.
+- New `packages/stats-gateway/src/db-quota.ts` exports `createDbQuotaChecker(db, options?)`. Reads `quota_tier`, counts today's accepted runs in `stats_call_log`, returns `{ ok, remaining, resetAt }`. Daily window resets at midnight UTC.
+- `GatewayOptions` now accepts an optional `quotaChecker` field; falls back to the no-op `checkQuota()` in `quota.ts` for backwards compatibility (apps/web's existing actions still pass typecheck unchanged).
+- `apps/stats-studio/.../run-tool.ts` wires both `createDbStatsLogger(db)` (writes the audit row) **and** `createDbQuotaChecker(db)` (reads it back), so the quota is now live for every Studio call.
+- Default tier limits (in TypeScript so they tune without a migration): free=100/day, starter=1000/day, pro=10000/day, internal=unlimited.
+
+The original Upstash Redis design is deferred — `stats_call_log` already records every call, so the audit trail doubles as the counter. Swap to Redis if `COUNT(*)` becomes hot.
 
 ### Known limitations carrying into Phase 7
 
-- `packages/stats-gateway/src/quota.ts` is still stubbed (always `ok: true`).
-  Public `stats.sigmafy.co` should not go live until Upstash Redis quota
-  counters land. Internal `*.vercel.app` URL is fine for testing.
 - `STATS_API_SIGNING_SECRET` documented but not enforced upstream
   (`sigmafy-tools.fly.dev` runs with empty `SIGMAFY_API_KEYS`). Coordinated
   three-repo change to turn it on is a separate item.

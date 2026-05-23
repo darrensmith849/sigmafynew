@@ -4,10 +4,11 @@ import { revalidatePath } from "next/cache";
 import { sql } from "drizzle-orm";
 import { withWorkspace, schema } from "@sigmafy/db";
 import {
+  createDbQuotaChecker,
+  createDbStatsLogger,
   createStatsGateway,
   fetchCatalog,
   StatsGatewayError,
-  consoleStatsLogger,
 } from "@sigmafy/stats-gateway";
 import { getAppDb } from "@/lib/db";
 import { requireAuthContext } from "@/lib/auth";
@@ -75,7 +76,10 @@ export async function runTool(input: RunToolInput): Promise<RunToolResult> {
   const gateway = createStatsGateway({
     baseUrl: STATS_API_BASE_URL,
     auth: { workspaceId: ctx.workspace.id, userId: ctx.user.id },
-    logger: consoleStatsLogger, // stats_call_log writer lives in the gateway itself
+    // stats_call_log audit row per call — feeds the quota checker below.
+    logger: createDbStatsLogger(db),
+    // Per-workspace daily quota enforced from stats_call_log + workspace.quota_tier.
+    quotaChecker: createDbQuotaChecker(db),
     signingSecret: process.env.STATS_API_SIGNING_SECRET,
   });
 

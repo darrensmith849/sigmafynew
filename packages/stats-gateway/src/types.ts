@@ -33,6 +33,17 @@ export interface QuotaResult {
   resetAt: string;
 }
 
+/**
+ * Pluggable quota checker. When `GatewayOptions.quotaChecker` is
+ * unset, the gateway falls back to the no-op `checkQuota()` in
+ * ./quota.ts — preserves backwards compatibility with callers that
+ * haven't wired the DB-backed checker yet. Production callers
+ * should inject `createDbQuotaChecker(db)` from ./db-quota.
+ */
+export interface QuotaChecker {
+  check(workspaceId: string, endpoint: string): Promise<QuotaResult>;
+}
+
 export interface GatewayLogger {
   log(record: StatsCallRecord): void | Promise<void>;
 }
@@ -48,6 +59,8 @@ export interface GatewayOptions {
   signingSecret?: string;
   auth: GatewayAuth;
   logger: GatewayLogger;
+  /** Optional DB-backed quota checker; defaults to always-allow. */
+  quotaChecker?: QuotaChecker;
 }
 
 export type {

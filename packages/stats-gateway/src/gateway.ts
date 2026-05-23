@@ -149,11 +149,12 @@ async function runGeneric(
   payload: unknown,
   opts: GatewayOptions,
 ): Promise<{ result: unknown; requestId: string | null }> {
-  const quota = await checkQuota(opts.auth.workspaceId, slug);
+  const quota = await resolveQuota(opts, slug);
   if (!quota.ok) {
     await record(opts, slug, "blocked", 0, "quota exceeded");
+    const resetAt = quota.resetAt;
     throw new StatsGatewayError(
-      `stats quota exceeded for slug: ${slug}`,
+      `stats quota exceeded for slug: ${slug} — resets at ${resetAt}`,
       "quota_exceeded",
       429,
       null,
@@ -222,10 +223,10 @@ async function runCall<T>(
     await record(opts, endpoint, "blocked", 0, `endpoint not allowlisted: ${endpoint}`);
     throw new Error(`stats endpoint not allowlisted: ${endpoint}`);
   }
-  const quota = await checkQuota(opts.auth.workspaceId, endpoint);
+  const quota = await resolveQuota(opts, endpoint);
   if (!quota.ok) {
     await record(opts, endpoint, "blocked", 0, "quota exceeded");
-    throw new Error(`stats quota exceeded for endpoint: ${endpoint}`);
+    throw new Error(`stats quota exceeded for endpoint: ${endpoint} — resets at ${quota.resetAt}`);
   }
   const t0 = performance.now();
   try {
@@ -255,4 +256,16 @@ async function record(
     errorMessage,
     occurredAt: new Date().toISOString(),
   });
+}
+
+/**
+ * Use the injected QuotaChecker if the caller wired one, else fall back
+ * to the no-op `checkQuota()` in ./quota.ts. Lets us keep the gateway
+ * usable from tests + callers that haven't migrated yet.
+ */
+async function resolveQuota(opts: GatewayOptions, endpoint: string) {
+  if (opts.quotaChecker) {
+    return opts.quotaChecker.check(opts.auth.workspaceId, endpoint);
+  }
+  return checkQuota(opts.auth.workspaceId, endpoint);
 }

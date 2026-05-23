@@ -1,6 +1,11 @@
 export { createStatsGateway, StatsGatewayError, type StatsGateway } from "./gateway";
 export { ENDPOINT_ALLOWLIST, isAllowed, type StatsEndpoint } from "./allowlist";
 export {
+  createDbQuotaChecker,
+  DEFAULT_TIER_LIMITS,
+  type DbQuotaCheckerOptions,
+} from "./db-quota";
+export {
   fetchCatalog,
   clearCatalogCache,
   type Catalog,
@@ -16,6 +21,7 @@ export type {
   GatewayLogger,
   StatsCallRecord,
   QuotaResult,
+  QuotaChecker,
   ParetoRequest,
   ParetoResponse,
   HistogramRequest,
