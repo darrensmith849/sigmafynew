@@ -168,6 +168,49 @@ Create one project for Sigmafy, then a database branch per developer
 and one for `main` (production). Reinstate a separate `dev` branch when the
 dev/PR flow is reinstated before Phase 1 (ADR 0006).
 
+## 6c. Adding the stats-studio Vercel project (Phase 7)
+
+`apps/stats-studio` is a **separate Vercel project** from `sigmafy-web` —
+deploys independently, has its own custom domain (`stats.sigmafy.co`).
+Set up once via the Vercel dashboard (not auto-created):
+
+1. **Create project** → Vercel dashboard → New Project → Import the
+   `sigmafynew` GitHub repo (you'll see it's already imported for
+   `sigmafy-web` and `sigmafy-admin`; pick "Add new project from this repo").
+2. **Project name**: `sigmafy-stats-studio`.
+3. **Root Directory**: `apps/stats-studio`.
+4. **Framework Preset**: Next.js (auto-detects).
+5. **Build & Output**: leave defaults — `apps/stats-studio/vercel.json`
+   already sets `installCommand`, `buildCommand`, and `ignoreCommand`
+   (turbo-ignore on `@sigmafy/stats-studio`).
+6. **Node version**: 22.x (matches `.nvmrc`).
+7. **Environment variables** — copy all from `apps/stats-studio/.env.example`
+   filled with real values. Specifically:
+    - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` — from Clerk
+      dashboard. Can reuse the same Clerk app as `apps/web` so users have
+      one identity across both surfaces.
+    - `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in`,
+      `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up`,
+      `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/catalog`,
+      `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/catalog`.
+    - `DATABASE_URL`, `DATABASE_URL_SERVICE` — same Neon connection
+      strings as `apps/web` (workspace role + service role).
+    - `STATS_API_BASE_URL=https://sigmafy-tools.fly.dev` (host only — the
+      gateway appends `/api/v1/<slug-path>`).
+    - `STATS_API_SIGNING_SECRET` — empty for now; required once the
+      Python service flips on `SIGMAFY_API_KEYS`.
+8. **Custom domain** → Domains → add `stats.sigmafy.co`. Vercel
+   auto-issues TLS once the DNS CNAME points at it.
+9. **Turbo Remote Cache** — already configured at the repo level; no
+   project-specific step.
+
+After first deploy, sanity check:
+
+- `https://stats.sigmafy.co/` shows the marketing page.
+- `/sign-up` lands you in the studio with a workspace auto-bootstrapped.
+- `/catalog` shows 288 tools across 28 categories.
+- A run on any tool inserts a row in `stats_tool_runs` visible at `/runs`.
+
 ## 7. Troubleshooting
 
 - **`Cannot find module '@sigmafy/...'`** — run `pnpm install` from the repo

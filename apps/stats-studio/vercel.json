@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@sigmafy/stats-studio...",
+  "ignoreCommand": "npx turbo-ignore @sigmafy/stats-studio"
+}

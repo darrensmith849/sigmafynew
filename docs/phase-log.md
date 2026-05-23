@@ -34,22 +34,24 @@ boundary, captured in ADR 0010 and approved by the product owner on
 |---|---|---|
 | 7.-2 (Python upstream) | `ef1c9f2` on `sigmafy-tools` repo | v1.8.0 — versioned `/api/v1`, bearer auth scaffolding, structured error envelope, per-key rate limiter, enriched catalog. |
 | 7.-1 (stats-client regen) | `c457a58` | Regenerated `packages/stats-client/src/generated/api.ts` against v1 OpenAPI; flipped 7 hand-written PATH constants. |
-| 7.0 (this entry + ADR) | _in this commit_ | ADR 0010 + this log entry + build-state note. Records scope deviation per CLAUDE.md. |
-| 7.1 (gateway extension) | `8bc0ba7` | New `fetchCatalog()` + `gateway.run(slug, payload)` generic method. 11/11 packages typecheck green. |
+| 7.0 (ADR + docs) | `e275bf8` | ADR 0010 + Phase 7 log entry + build-state note. Records scope deviation per CLAUDE.md. |
+| 7.1 (gateway extension) | `8bc0ba7` | New `fetchCatalog()` + `gateway.run(slug, payload)` generic method. |
+| 7.1b (requestId surfacing) | `e275bf8` | `gateway.run()` returns `{ result, requestId }`; new `StatsGatewayError` carries `code`/`status`/`requestId`. |
+| 7.3 (stats_tool_runs) | `e275bf8` | Drizzle schema + RLS migration `0010`; applied to live Neon DB via `scripts/apply-migration.ts`. |
+| 7.4 (catalog cache) | `e275bf8` | Module cache → Next.js `fetch` revalidate (1hr) + `stats-catalog` tag. |
+| 7.x (applier script) | `042fd7e` | Generalised `packages/db/scripts/apply-migration.ts` + docs/environment-setup.md update. |
+| **7.5–7.10 (stats-studio app)** | _in this commit_ | New `apps/stats-studio` Next.js app — marketing `/`, Clerk sign-in/up, `/catalog` (288 tools), `/t/[slug]` generic runner + Raw JSON, `/runs` history, `/runs/[id]` detail. Plotly lazy-loaded; typecheck + lint + production build all green. |
 
-### Remaining sub-phases (per the integration plan)
+### Deferred from the plan
 
-- **7.1b** Surface `X-Request-ID` from `gateway.run()` to callers (currently dropped on errors).
-- **7.2** Lift `bootstrapUserAndWorkspace` out of `apps/web/lib/auth.ts` into a shared `@sigmafy/auth` export with a `createStarterProject` flag.
-- **7.3** New `stats_tool_runs` table with RLS predicate matching the existing migration convention (`::text + true`); FK to `stats_call_log` so the existing audit row stays the source of truth.
-- **7.4** Replace the module-scope catalog cache in `packages/stats-gateway/src/catalog.ts` with Next.js `unstable_cache` / `fetch(..., { next: { revalidate, tags } })` since module state doesn't survive Vercel cold starts.
-- **7.5** Scaffold `apps/stats-studio` (Next.js 15, Clerk middleware, Tailwind, package wiring, per-app `vercel.json`).
-- **7.6** Public marketing landing at `/`.
-- **7.7** Auth-gated `/(app)/catalog` listing 288 tools.
-- **7.8** Generic tool runner `/(app)/t/[slug]` + "Raw JSON" escape hatch.
-- **7.9** Chart stack (Recharts primary + lazy Plotly).
-- **7.10** Runs history at `/(app)/runs`.
-- **7.11** Verify, build, push, document Vercel project setup.
+- **7.2 (shared bootstrap helper)** — instead of refactoring `apps/web`'s bootstrap into `@sigmafy/auth`, `apps/stats-studio/lib/auth.ts` ships its own thinner `bootstrapStudioUser()` that creates user + workspace + owner-membership only (no starter Green Belt project, no welcome email, no audit log). Zero risk to apps/web; when both apps eventually want a true shared bootstrap, that's a clean refactor of the two helpers into one with a flag.
+- **Recharts wrapper** — the plan called for Recharts as the primary chart renderer with Plotly as fallback. v1 ships Plotly-only (lazy-loaded). Reason: hand-mapping 30+ Plotly trace types to Recharts is significantly more code than the ~3 MB Plotly chunk on first chart load, and the chunk caches per-tenant. The wrapper is easy to add later for the few high-traffic charts that justify it; for v1, universal Plotly is the right tradeoff.
+
+### Remaining for Phase 7
+
+- **7.11** Vercel project setup for `stats-studio` (new manual project pointing at `apps/stats-studio`, env vars cloned from `apps/web`, custom domain `stats.sigmafy.co`). Documented in `docs/environment-setup.md`.
+
+### Known limitations carrying into Phase 7
 
 ### Known limitations carrying into Phase 7
 

@@ -1,0 +1,6 @@
+/* App-level styles. Tokens and base styles come from @sigmafy/ui/styles.css. */
+
+html,
+body {
+  min-height: 100vh;
+}
