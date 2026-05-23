@@ -120,15 +120,51 @@ pnpm --filter @sigmafy/admin dev    # http://localhost:3001
 
 ## 6. Database
 
+There are **two flavours** of migration in this repo. Use the matching command
+for each — mixing them up will either fail or leak privileges.
+
+### 6a. Schema migrations (Drizzle Kit, journaled)
+
+`CREATE TABLE`, `ADD COLUMN`, FK changes — anything Drizzle Kit can derive
+from a schema diff. Tracked in `packages/db/migrations/meta/_journal.json`.
+
 ```bash
-# Generate migrations from schema (Phase 0A onwards)
+# Generate from packages/db/src/schema/*.ts
 pnpm db:generate
 
-# Apply migrations against DATABASE_URL
-pnpm db:migrate
+# Apply via Drizzle Kit
+DATABASE_URL=<service-role connection string> pnpm db:migrate
 ```
 
-In Neon, create one project for Sigmafy, then a database branch per developer
+Note: `pnpm db:migrate` runs through Turbo. `DATABASE_URL` must be exported in
+the calling shell because Turbo only passes env vars listed in `turbo.json`'s
+`globalEnv`. The Drizzle config reads it directly.
+
+### 6b. Hand-written RLS migrations (this repo's convention)
+
+`ENABLE ROW LEVEL SECURITY`, `CREATE POLICY`, role grants — anything Drizzle
+Kit can't derive from a schema. These ship as numbered `.sql` files alongside
+the Drizzle ones (0001, 0005, 0007, 0009, 0010, …) and are applied
+out-of-band via the helper script:
+
+```bash
+cd packages/db
+export DATABASE_URL=<service-role connection string>
+pnpm exec tsx scripts/apply-migration.ts 0010_phase_7_stats_tool_runs.sql
+```
+
+The script reads the SQL file, executes it through the Neon serverless
+driver as the service role, and prints a verification line for every table
+the migration touched (RLS status + policy list). Migrations must use
+`IF NOT EXISTS` / `DROP POLICY IF EXISTS` so re-runs are safe.
+
+**Always use the service-role URL** (typically `DATABASE_URL_SERVICE` from
+`apps/web/.env.local`). The non-bypass `app_user` doesn't have DDL or GRANT
+privileges.
+
+### Neon branching
+
+Create one project for Sigmafy, then a database branch per developer
 and one for `main` (production). Reinstate a separate `dev` branch when the
 dev/PR flow is reinstated before Phase 1 (ADR 0006).
 
