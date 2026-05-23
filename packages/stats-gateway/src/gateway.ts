@@ -35,6 +35,15 @@ export interface StatsGateway {
   capability(request: CapabilityRequest): Promise<CapabilityResponse>;
   oneSampleT(request: OneSampleTRequest): Promise<OneSampleTResponse>;
   twoSampleT(request: TwoSampleTRequest): Promise<TwoSampleTResponse>;
+  /**
+   * Generic tool runner — accepts any slug present in the Python catalog
+   * (e.g. "control-charts.imr", "hypothesis.t-test.one-sample"). Used by
+   * the standalone stats-studio app where users browse the full catalog
+   * directly. Goes through the same quota + audit pipeline as the typed
+   * methods, but skips the 7-tool allowlist (which exists to scope the
+   * DMAIC project flow, not as a security boundary).
+   */
+  run(slug: string, payload: unknown): Promise<unknown>;
 }
 
 /**
@@ -102,7 +111,80 @@ export function createStatsGateway(opts: GatewayOptions): StatsGateway {
         }),
       );
     },
+    async run(slug, payload) {
+      return runGeneric(slug, payload, opts);
+    },
   };
+}
+
+/**
+ * Generic call path used by the standalone stats-studio surface. Translates
+ * a dotted slug ("control-charts.imr") into the canonical /api/v1/... URL
+ * and POSTs the payload. Audit + quota still enforced; the only thing
+ * skipped is the typed-method allowlist.
+ */
+async function runGeneric(
+  slug: string,
+  payload: unknown,
+  opts: GatewayOptions,
+): Promise<unknown> {
+  const quota = await checkQuota(opts.auth.workspaceId, slug);
+  if (!quota.ok) {
+    await record(opts, slug, "blocked", 0, "quota exceeded");
+    throw new Error(`stats quota exceeded for slug: ${slug}`);
+  }
+
+  const path = "/api/v1/" + slug.replace(/\./g, "/");
+  const url = `${opts.baseUrl.replace(/\/$/, "")}${path}`;
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  if (opts.signingSecret) {
+    headers["Authorization"] = `Bearer ${opts.signingSecret}`;
+  }
+
+  const t0 = performance.now();
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+    });
+    const latency = Math.round(performance.now() - t0);
+
+    if (!res.ok) {
+      // Python's structured error envelope: { detail, code, request_id }
+      const body = (await res.json().catch(() => ({}))) as {
+        detail?: unknown;
+        code?: string;
+      };
+      const message =
+        typeof body.detail === "string"
+          ? body.detail
+          : typeof body.detail === "object"
+            ? JSON.stringify(body.detail)
+            : `HTTP ${res.status}`;
+      const code = body.code ?? `http_${res.status}`;
+      await record(opts, slug, "error", latency, `${code}: ${message}`);
+      const err = new Error(message) as Error & { code?: string; status?: number };
+      err.code = code;
+      err.status = res.status;
+      throw err;
+    }
+
+    const result = await res.json();
+    await record(opts, slug, "ok", latency);
+    return result;
+  } catch (err) {
+    if (err instanceof Error && (err as { status?: number }).status !== undefined) {
+      // Already recorded above
+      throw err;
+    }
+    const message = err instanceof Error ? err.message : String(err);
+    await record(opts, slug, "error", Math.round(performance.now() - t0), message);
+    throw err;
+  }
 }
 
 async function runCall<T>(

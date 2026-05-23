@@ -1,5 +1,13 @@
 export { createStatsGateway, type StatsGateway } from "./gateway";
 export { ENDPOINT_ALLOWLIST, isAllowed, type StatsEndpoint } from "./allowlist";
+export {
+  fetchCatalog,
+  clearCatalogCache,
+  type Catalog,
+  type CatalogCategory,
+  type CatalogTool,
+  type CatalogField,
+} from "./catalog";
 export { consoleStatsLogger } from "./logging";
 export { createDbStatsLogger } from "./db-logger";
 export type {
