@@ -3,17 +3,23 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 /**
  * stats-studio middleware.
  *
- * The shared `@sigmafy/auth/middleware` only allows `/`, sign-in, sign-up,
- * /api/clerk, /api/inngest, and /accept-invite as public paths. Studio
- * adds its marketing surfaces (`/pricing`, `/features`, `/about`) to that
- * list — everything else (catalog, tool runner, runs history) requires
- * a Clerk session.
+ * UX intent (see ADR 0010 + 2026-05-24 product decision): the catalogue
+ * and every individual tool page are PUBLIC. Anyone can browse all 288
+ * tools, fill in inputs, see the example data — gating only kicks in
+ * when they hit "Run analysis" (the server action returns an
+ * `activation_required` code which the form surfaces as a friendly
+ * "Activate to run" CTA).
+ *
+ * Only the personal `/runs` history (and run detail pages) require a
+ * Clerk session, because that data is scoped to a specific workspace.
  */
 const isPublic = createRouteMatcher([
   "/",
   "/pricing",
   "/features(.*)",
   "/about",
+  "/catalog",
+  "/t(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/clerk(.*)",

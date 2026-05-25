@@ -54,9 +54,31 @@ export type RunToolResult = RunToolSuccess | RunToolFailure;
  * history. We do NOT wrap the gateway call itself in withWorkspace because
  * the gateway's logger opens its own transaction — see ADR 0010 §
  * "Transaction boundary with the audit logger".
+ *
+ * Gating model (2026-05-24): the catalogue + every tool page are PUBLIC.
+ * Anonymous visitors can land here. We intercept and return
+ * `activation_required` instead of throwing, so the client form can
+ * render a friendly "Activate to run" CTA rather than an error.
  */
 export async function runTool(input: RunToolInput): Promise<RunToolResult> {
-  const ctx = await requireAuthContext();
+  let ctx;
+  try {
+    ctx = await requireAuthContext();
+  } catch (exc) {
+    if (
+      exc instanceof Error &&
+      (exc.message === "not_signed_in" || exc.message === "no_workspace")
+    ) {
+      return {
+        ok: false,
+        runId: null,
+        code: "activation_required",
+        message: "Sign in or activate your workspace to run this tool.",
+        requestId: null,
+      };
+    }
+    throw exc;
+  }
   const db = getAppDb();
 
   // Look up the tool in the catalog so we can persist `tool_category` and

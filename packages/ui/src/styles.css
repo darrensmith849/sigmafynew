@@ -2,6 +2,11 @@
 @import "./tokens/index.css";
 @import "./animations/animations.css";
 
+/* Tailwind v4 scans the importing app's tree by default. Explicitly include
+   this package's own source so utility classes used by primitives (IconTile,
+   Logo, Button, etc.) are generated for every app in the monorepo. */
+@source ".";
+
 @layer base {
   * {
     border-color: var(--color-border);

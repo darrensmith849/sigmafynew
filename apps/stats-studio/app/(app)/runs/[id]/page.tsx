@@ -5,7 +5,10 @@ import { withWorkspace, schema } from "@sigmafy/db";
 import { Card, Chip, Eyebrow } from "@sigmafy/ui";
 import { getAppDb } from "@/lib/db";
 import { requireAuthContext } from "@/lib/auth";
-import { PlotlyChart } from "../../t/[slug]/_components/plotly-chart";
+// PlotlyChart now lives under the public (marketing) tool runner path
+// because the catalogue + tool runner were opened to anonymous browsing
+// in the 2026-05-24 refactor. Run history is still authenticated.
+import { PlotlyChart } from "../../../(marketing)/t/[slug]/_components/plotly-chart";
 
 export default async function RunDetailPage({
   params,

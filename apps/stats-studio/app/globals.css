@@ -1,5 +1,10 @@
 /* App-level styles. Tokens and base styles come from @sigmafy/ui/styles.css. */
 
+/* Tailwind v4 doesn't scan symlinked workspace packages by default under
+   Turbopack. Explicitly include the shared UI primitive sources so utilities
+   used by IconTile, Logo, Button, etc. are emitted in this app's CSS bundle. */
+@source "../../../packages/ui/src/**/*.{ts,tsx}";
+
 html,
 body {
   min-height: 100vh;

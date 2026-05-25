@@ -1,6 +1,7 @@
 "use client";
 
-import { Card } from "@sigmafy/ui";
+import Link from "next/link";
+import { Button, Card } from "@sigmafy/ui";
 import type { CatalogTool } from "@sigmafy/stats-gateway";
 import type { RunToolResult } from "../_actions/run-tool";
 import { PlotlyChart } from "./plotly-chart";
@@ -13,6 +14,32 @@ export function ToolResult({
   tool: CatalogTool;
 }) {
   if (!result.ok) {
+    // Special case: anonymous user hit "Run". Show a friendly gate, not an error.
+    if (result.code === "activation_required") {
+      return (
+        <Card className="p-6">
+          <h3 className="text-base font-semibold text-fg">Activate to run</h3>
+          <p className="mt-2 text-sm text-muted">
+            You can browse the full catalogue and explore every tool freely.
+            To actually run an analysis and save results to your workspace,
+            activate a free Sigmafy Studio account.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button asChild>
+              <Link href="/sign-up">Activate — free during beta</Link>
+            </Button>
+            <Button asChild variant="ghost">
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
+          </div>
+          <p className="mt-4 text-xs text-muted">
+            Free during beta. Every run is logged to your private workspace
+            with a unique request ID you can trace back to the stats engine.
+          </p>
+        </Card>
+      );
+    }
+
     return (
       <Card className="border-border-strong bg-surface-1 p-5">
         <h3 className="text-sm font-semibold text-fg">Error</h3>
