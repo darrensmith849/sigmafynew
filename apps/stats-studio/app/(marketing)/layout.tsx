@@ -35,9 +35,14 @@ export default async function MarketingLayout({ children }: { children: ReactNod
                 Catalogue
               </Link>
               {isSignedIn ? (
-                <Link href="/runs" className="text-muted hover:text-fg">
-                  My runs
-                </Link>
+                <>
+                  <Link href="/assistants" className="text-muted hover:text-fg">
+                    Assistants
+                  </Link>
+                  <Link href="/runs" className="text-muted hover:text-fg">
+                    My runs
+                  </Link>
+                </>
               ) : (
                 <Link href="/pricing" className="text-muted hover:text-fg">
                   Pricing

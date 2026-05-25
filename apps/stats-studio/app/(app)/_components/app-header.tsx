@@ -15,6 +15,9 @@ export function AppHeader({ workspaceName }: { workspaceName: string }) {
             <Link href="/catalog" className="text-muted hover:text-fg">
               Catalogue
             </Link>
+            <Link href="/assistants" className="text-muted hover:text-fg">
+              Assistants
+            </Link>
             <Link href="/runs" className="text-muted hover:text-fg">
               My runs
             </Link>
