@@ -11,3 +11,6 @@ export * from "./workspace-invitations";
 export * from "./classes";
 export * from "./phase-approvals";
 export * from "./topic-comments";
+export * from "./agent-assistants";
+export * from "./agent-threads";
+export * from "./agent-messages";
