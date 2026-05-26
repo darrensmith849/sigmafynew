@@ -61,7 +61,18 @@ export async function POST(req: Request) {
       threadId,
       text,
     });
-    return NextResponse.json(result, { status: 200 });
+    // Phase 9A slice 4: response is the user turn + all generated
+    // assistant/tool turns from the agentic loop. The client should
+    // refresh the server-rendered thread page rather than try to
+    // surgically apply N turns to a local store.
+    return NextResponse.json(
+      {
+        userMessage: result.userMessage,
+        responseMessages: result.responseMessages,
+        turnCount: result.responseMessages.length,
+      },
+      { status: 200 },
+    );
   } catch (exc) {
     const message = exc instanceof Error ? exc.message : "unknown_error";
     if (message === "thread_not_found") {
