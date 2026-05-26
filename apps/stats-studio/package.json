@@ -17,6 +17,7 @@
     "@clerk/nextjs": "^7.3.0",
     "@anthropic-ai/sdk": "^0.32.0",
     "@sigmafy/ai": "workspace:*",
+    "openai": "^4.76.0",
     "@sigmafy/auth": "workspace:*",
     "@sigmafy/db": "workspace:*",
     "@sigmafy/stats-gateway": "workspace:*",
