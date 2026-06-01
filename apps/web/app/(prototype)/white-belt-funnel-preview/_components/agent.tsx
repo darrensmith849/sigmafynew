@@ -4,6 +4,7 @@ import {
   intentLabels,
   mockIncomingReplies,
   type IncomingReply,
+  type IntentCategory,
 } from "../_data/email-agent";
 import { SectionHeader } from "./shell";
 
@@ -26,6 +27,7 @@ export function AgentTab({ replyId }: { replyId?: string }) {
         title="Reply → classify → suggest → human approves"
         description="An AI suggests a response; a human approves before anything sends. No auto-send. No Gmail or SMTP connection. The intent classification surface is the part we want to test first."
       />
+      <IntentDistribution replies={mockIncomingReplies} />
       <div className="grid gap-6 lg:grid-cols-[3fr_4fr]">
         <ReplyInbox replies={mockIncomingReplies} selectedId={selected.id} />
         <ReplyDetail reply={selected} />
@@ -33,6 +35,66 @@ export function AgentTab({ replyId }: { replyId?: string }) {
       <SafetyGuardrails />
     </div>
   );
+}
+
+function IntentDistribution({ replies }: { replies: IncomingReply[] }) {
+  const counts = new Map<IntentCategory, number>();
+  for (const r of replies)
+    counts.set(r.detectedIntent, (counts.get(r.detectedIntent) ?? 0) + 1);
+  const ordered = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  return (
+    <Card data-reveal>
+      <CardHeader>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle>Intent distribution</CardTitle>
+          <Chip>{replies.length} replies · mock</Chip>
+        </div>
+        <p className="text-[13px] text-muted-foreground">
+          Classifier output across the mock inbox. Each row would feed
+          routing + sequence-trigger rules.
+        </p>
+      </CardHeader>
+      <CardContent>
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {ordered.map(([intent, count]) => {
+            const pct = (count / Math.max(replies.length, 1)) * 100;
+            return (
+              <li
+                key={intent}
+                className="rounded-md border border-border-subtle bg-surface p-3"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[13px] font-medium text-fg">
+                    {intentLabels[intent]}
+                  </p>
+                  <Chip className="!text-[10px]">{count}</Chip>
+                </div>
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-pill bg-surface-3">
+                  <span
+                    className="block h-full"
+                    style={{
+                      width: `${pct}%`,
+                      backgroundColor: "var(--tint-ai)",
+                    }}
+                  />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+function monogram(name: string) {
+  return name
+    .split(" ")
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 }
 
 function ReplyInbox({
@@ -43,7 +105,7 @@ function ReplyInbox({
   selectedId: string;
 }) {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Incoming replies</CardTitle>
         <p className="text-[13px] text-muted-foreground">
@@ -62,30 +124,47 @@ function ReplyInbox({
                 <Link
                   href={`${ROUTE}?tab=agent&reply=${r.id}`}
                   prefetch={false}
-                  className="block px-4 py-3"
+                  className="flex gap-3 px-4 py-3"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-medium text-fg">{r.fromName}</p>
-                    <Chip
-                      tint={
-                        SENTIMENT_TINT[r.sentiment] as
-                          | "projects"
-                          | "spc"
-                          | "training"
-                          | "ai"
-                          | "admin"
-                          | undefined
-                      }
-                    >
-                      {r.sentiment}
-                    </Chip>
+                  <span
+                    aria-hidden
+                    className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-pill border text-[11px] font-semibold"
+                    style={{
+                      color: "var(--tint-ai)",
+                      backgroundColor:
+                        "color-mix(in srgb, var(--tint-ai) 10%, var(--color-surface))",
+                      borderColor:
+                        "color-mix(in srgb, var(--tint-ai) 22%, transparent)",
+                    }}
+                  >
+                    {monogram(r.fromName)}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate text-sm font-medium text-fg">
+                        {r.fromName}
+                      </p>
+                      <Chip
+                        tint={
+                          SENTIMENT_TINT[r.sentiment] as
+                            | "projects"
+                            | "spc"
+                            | "training"
+                            | "ai"
+                            | "admin"
+                            | undefined
+                        }
+                      >
+                        {r.sentiment}
+                      </Chip>
+                    </div>
+                    <p className="mt-1 line-clamp-2 text-[12px] text-muted-foreground">
+                      {r.body}
+                    </p>
+                    <p className="mt-1 text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+                      {intentLabels[r.detectedIntent]} · {r.status.replace(/_/g, " ")}
+                    </p>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-[12px] text-muted-foreground">
-                    {r.body}
-                  </p>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-                    {intentLabels[r.detectedIntent]} · status: {r.status.replace(/_/g, " ")}
-                  </p>
                 </Link>
               </li>
             );
@@ -98,7 +177,7 @@ function ReplyInbox({
 
 function ReplyDetail({ reply }: { reply: IncomingReply }) {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>{reply.fromName}</CardTitle>
@@ -120,17 +199,19 @@ function ReplyDetail({ reply }: { reply: IncomingReply }) {
           <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
             Reply received
           </p>
-          <div className="mt-2 rounded-card border border-border-subtle bg-surface p-4 text-[14px] leading-relaxed text-fg">
+          <div
+            className="mt-2 max-w-[88%] rounded-card rounded-tl-sm border border-border-subtle bg-surface p-4 text-[14px] leading-relaxed text-fg"
+          >
             {reply.body}
           </div>
         </section>
 
-        <section>
+        <section className="self-end">
           <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-            Suggested response · draft only
+            Suggested response · draft only · human approval required
           </p>
           <div
-            className="mt-2 rounded-card border p-4 text-[14px] leading-relaxed text-fg"
+            className="ml-auto mt-2 max-w-[88%] rounded-card rounded-tr-sm border p-4 text-[14px] leading-relaxed text-fg"
             style={{
               backgroundColor:
                 "color-mix(in srgb, var(--tint-ai) 5%, var(--color-surface))",
@@ -166,7 +247,7 @@ function ReplyDetail({ reply }: { reply: IncomingReply }) {
 
 function SafetyGuardrails() {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Safety rules</CardTitle>
       </CardHeader>

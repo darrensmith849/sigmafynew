@@ -14,8 +14,10 @@ import {
   mockNextBestActionRules,
   mockTemperature,
   type ChannelStatusRow,
+  type RemarketingChannel,
 } from "../_data/remarketing";
 import { SectionHeader } from "./shell";
+import { GaugeRing } from "./gauge-ring";
 
 const STATUS_LABEL: Record<ChannelStatusRow["status"], string> = {
   eligible: "Eligible",
@@ -30,6 +32,29 @@ const TEMP_TONE: Record<string, ChipTint | undefined> = {
   warm: "training",
   hot: "ai",
   converted: "projects",
+};
+
+const TEMP_VALUE: Record<string, number> = {
+  cold: 20,
+  warm: 55,
+  hot: 85,
+  converted: 100,
+};
+
+const CHANNEL_MONOGRAM: Record<RemarketingChannel, string> = {
+  email: "E",
+  google_ads: "G",
+  meta_ads: "M",
+  linkedin: "Li",
+  sales_team: "S",
+};
+
+const CHANNEL_TINT: Record<RemarketingChannel, ChipTint> = {
+  email: "spc",
+  google_ads: "projects",
+  meta_ads: "ai",
+  linkedin: "training",
+  sales_team: "admin",
 };
 
 export function RemarketingTab() {
@@ -50,8 +75,10 @@ export function RemarketingTab() {
 }
 
 function LeadTemperatureCard() {
+  const tint = TEMP_TONE[mockTemperature] ?? "training";
+  const value = TEMP_VALUE[mockTemperature] ?? 50;
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle>Learner — Thandi Mokoena</CardTitle>
@@ -66,13 +93,32 @@ function LeadTemperatureCard() {
           Stage: Sales follow-up needed · last action 2026-05-28
         </p>
       </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap items-center gap-6">
+          <GaugeRing value={value} tint={tint} size={96} thickness={8} />
+          <div className="flex flex-col gap-1 text-[13px]">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+              Temperature gauge
+            </p>
+            <p className="text-fg">
+              <span className="font-medium">Cold</span> · 0–30 ·
+              <span className="ml-2 font-medium">Warm</span> · 30–70 ·
+              <span className="ml-2 font-medium">Hot</span> · 70–95 ·
+              <span className="ml-2 font-medium">Converted</span> · 95+
+            </p>
+            <p className="mt-1 italic text-muted-foreground">
+              Gauge mapping is mock · final scoring lives in @sigmafy backend.
+            </p>
+          </div>
+        </div>
+      </CardContent>
     </Card>
   );
 }
 
 function RemarketingChannelStatusGrid({ rows }: { rows: ChannelStatusRow[] }) {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Remarketing channels</CardTitle>
         <p className="text-[13px] text-muted-foreground">
@@ -85,8 +131,11 @@ function RemarketingChannelStatusGrid({ rows }: { rows: ChannelStatusRow[] }) {
             key={r.channel}
             className="flex flex-col gap-2 rounded-card border border-border-subtle bg-surface p-4"
           >
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-fg">{r.label}</p>
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2">
+                <ChannelMonogram channel={r.channel} />
+                <p className="text-sm font-medium text-fg">{r.label}</p>
+              </span>
               <Chip
                 tint={
                   r.status === "active"
@@ -110,13 +159,30 @@ function RemarketingChannelStatusGrid({ rows }: { rows: ChannelStatusRow[] }) {
   );
 }
 
+function ChannelMonogram({ channel }: { channel: RemarketingChannel }) {
+  const tint = CHANNEL_TINT[channel];
+  return (
+    <span
+      aria-hidden
+      className="inline-flex h-7 w-7 items-center justify-center rounded-md border text-[11px] font-semibold"
+      style={{
+        color: `var(--tint-${tint})`,
+        backgroundColor: `color-mix(in srgb, var(--tint-${tint}) 10%, var(--color-surface))`,
+        borderColor: `color-mix(in srgb, var(--tint-${tint}) 22%, transparent)`,
+      }}
+    >
+      {CHANNEL_MONOGRAM[channel]}
+    </span>
+  );
+}
+
 function EventTimelinePanel({ events }: { events: FunnelEvent[] }) {
   const sorted = [...events].sort((a, b) =>
     a.occurredAt < b.occurredAt ? -1 : 1,
   );
   const byType = new Map(mockEventTaxonomy.map((t) => [t.type, t]));
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Event timeline</CardTitle>
         <p className="text-[13px] text-muted-foreground">
@@ -166,7 +232,7 @@ function EventTimelinePanel({ events }: { events: FunnelEvent[] }) {
 
 function EventTaxonomyPanel() {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Event taxonomy</CardTitle>
         <p className="text-[13px] text-muted-foreground">
@@ -211,7 +277,7 @@ function EventTaxonomyPanel() {
 
 function NextBestActionPanel() {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Recommended next best actions</CardTitle>
         <p className="text-[13px] text-muted-foreground">

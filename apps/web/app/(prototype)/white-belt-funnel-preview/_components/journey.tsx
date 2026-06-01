@@ -13,6 +13,8 @@ import { SectionHeader } from "./shell";
 import { FunnelSummary } from "./funnel-summary";
 import { FunnelMap } from "./funnel-map";
 import { CommercialLens } from "./commercial-lens";
+import { FunnelHealth } from "./funnel-health";
+import { CategoryDivider } from "./category-divider";
 
 const ROUTE = "/white-belt-funnel-preview";
 
@@ -43,9 +45,24 @@ export function JourneyTab({
         description="Completion → certificate → portal → upgrade/referral/company/reseller/stats CTAs → behaviour tracking → remarketing → sales follow-up → conversion. The blocks below summarise each stage with mock numbers, the visual map, and the commercial lens."
       />
 
+      <CategoryDivider
+        label="Funnel overview"
+        detail="Health · KPIs · map · commercial lens"
+        icon="funnel"
+        tint="training"
+      />
+
+      <FunnelHealth />
       <FunnelSummary />
       <FunnelMap />
       <CommercialLens />
+
+      <CategoryDivider
+        label="Course surface"
+        detail="What the learner actually clicks through"
+        icon="compass"
+        tint="training"
+      />
 
       <SectionHeader
         eyebrow="Step 1 — Learner journey"

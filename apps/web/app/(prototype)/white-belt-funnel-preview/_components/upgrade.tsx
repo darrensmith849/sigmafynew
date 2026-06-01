@@ -6,16 +6,26 @@ import {
   CardTitle,
   Chip,
 } from "@sigmafy/ui";
-import { mockDiscountConcepts, mockUpgradeOffers, type Offer } from "../_data/offers";
+import { mockDiscountConcepts, mockUpgradeOffers } from "../_data/offers";
+import type { Offer } from "../_data/offers";
+import type { BeltLevel } from "../_data/course";
 import type { FunnelEventType } from "../_data/events";
 import { SectionHeader } from "./shell";
 import { MockEventChip } from "./mock-event-chip";
+import { IconCalendar } from "./icons";
 
 const EVENT_FOR_BELT: Record<Offer["belt"], FunnelEventType> = {
   white: "next_belt_cta_viewed",
   yellow: "yellow_belt_clicked",
   green: "green_belt_clicked",
   black: "black_belt_clicked",
+};
+
+const BELT_COLOR: Record<BeltLevel, string> = {
+  white: "#e8e8eb",
+  yellow: "#e6c454",
+  green: "#5fa779",
+  black: "#1a1a1a",
 };
 
 export function UpgradeTab() {
@@ -32,14 +42,109 @@ export function UpgradeTab() {
           <BeltComparisonCard key={o.id} offer={o} />
         ))}
       </div>
+      <CompareAllBelts />
       <BookACallCta />
     </div>
+  );
+}
+
+function BeltRibbon({ belt }: { belt: BeltLevel }) {
+  return (
+    <span
+      aria-hidden
+      className="inline-flex h-7 w-7 items-center justify-center rounded-md border"
+      style={{
+        backgroundColor: `color-mix(in srgb, ${BELT_COLOR[belt]} 18%, var(--color-surface))`,
+        borderColor: `color-mix(in srgb, ${BELT_COLOR[belt]} 50%, transparent)`,
+      }}
+    >
+      <span
+        className="inline-block h-3 w-5 rounded-sm"
+        style={{ backgroundColor: BELT_COLOR[belt] }}
+      />
+    </span>
+  );
+}
+
+function CompareAllBelts() {
+  const rows: { label: string; render: (o: Offer) => React.ReactNode }[] = [
+    {
+      label: "Tagline",
+      render: (o) => (
+        <span className="text-fg">{o.tagline}</span>
+      ),
+    },
+    {
+      label: "Duration",
+      render: (o) => o.estimatedDuration,
+    },
+    {
+      label: "Price (placeholder)",
+      render: (o) => o.pricePlaceholder,
+    },
+    {
+      label: "Outcomes",
+      render: (o) => `${o.outcomes.length} listed`,
+    },
+    {
+      label: "Audience",
+      render: (o) => `${o.whoItIsFor.length} cohort fits`,
+    },
+    {
+      label: "Recommended next",
+      render: (o) => (o.recommended ? "Yes" : "—"),
+    },
+  ];
+  return (
+    <Card data-reveal>
+      <CardHeader>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle>Compare all belts</CardTitle>
+          <Chip>At a glance · mock</Chip>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="border-b border-border-subtle text-[11px] uppercase tracking-[0.06em] text-muted-foreground">
+                <th className="px-4 py-2 text-left font-medium">&nbsp;</th>
+                {mockUpgradeOffers.map((o) => (
+                  <th key={o.id} className="px-4 py-2 text-left font-medium">
+                    <span className="flex items-center gap-2">
+                      <BeltRibbon belt={o.belt} />
+                      <span className="text-fg">{o.title}</span>
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr
+                  key={r.label}
+                  className="border-b border-border-subtle last:border-b-0"
+                >
+                  <td className="px-4 py-2 text-muted-foreground">{r.label}</td>
+                  {mockUpgradeOffers.map((o) => (
+                    <td key={o.id} className="px-4 py-2 text-fg">
+                      {r.render(o)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
 function DiscountBanner() {
   return (
     <Card
+      data-reveal
       style={{
         backgroundColor:
           "color-mix(in srgb, var(--tint-training) 6%, var(--color-surface))",
@@ -49,7 +154,22 @@ function DiscountBanner() {
     >
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <CardTitle>White Belt graduate discount</CardTitle>
+          <div className="flex items-center gap-3">
+            <span
+              aria-hidden
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border"
+              style={{
+                color: "var(--tint-training)",
+                backgroundColor:
+                  "color-mix(in srgb, var(--tint-training) 12%, var(--color-surface))",
+                borderColor:
+                  "color-mix(in srgb, var(--tint-training) 26%, transparent)",
+              }}
+            >
+              <IconCalendar className="h-5 w-5" />
+            </span>
+            <CardTitle>White Belt graduate discount</CardTitle>
+          </div>
           <Chip tint="training">Concept only · not live</Chip>
         </div>
       </CardHeader>
@@ -71,6 +191,7 @@ function DiscountBanner() {
 function BeltComparisonCard({ offer }: { offer: Offer }) {
   return (
     <Card
+      data-reveal
       style={
         offer.recommended
           ? {
@@ -82,8 +203,13 @@ function BeltComparisonCard({ offer }: { offer: Offer }) {
     >
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
-          <Chip tint="training">{offer.title}</Chip>
-          {offer.recommended && <Chip>Recommended next step</Chip>}
+          <span className="flex items-center gap-2">
+            <BeltRibbon belt={offer.belt} />
+            <Chip tint="training">{offer.title}</Chip>
+          </span>
+          {offer.recommended && (
+            <Chip className="pulse-soft">Recommended next step</Chip>
+          )}
         </div>
         <CardTitle>{offer.tagline}</CardTitle>
         <p className="text-[13px] text-muted-foreground">{offer.description}</p>
@@ -130,6 +256,7 @@ function BeltComparisonCard({ offer }: { offer: Offer }) {
             <Button
               variant={offer.recommended ? "primary" : "outline"}
               size="sm"
+              {...(offer.recommended ? { "data-magnetic": "5" } : {})}
             >
               {offer.primaryCtaLabel}
             </Button>
@@ -150,7 +277,7 @@ function BeltComparisonCard({ offer }: { offer: Offer }) {
 
 function BookACallCta() {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Not sure which belt?</CardTitle>
         <p className="text-[13px] text-muted-foreground">

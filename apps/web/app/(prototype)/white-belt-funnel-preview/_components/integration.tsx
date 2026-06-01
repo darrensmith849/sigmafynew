@@ -6,6 +6,7 @@ import {
 } from "../_data/integration-notes";
 import { SectionHeader } from "./shell";
 import { ArchitectureDiagram } from "./architecture-diagram";
+import { CategoryDivider } from "./category-divider";
 
 export function IntegrationTab() {
   return (
@@ -16,6 +17,12 @@ export function IntegrationTab() {
         description="What the real backend would need to do, what compliance work has to land alongside it, and the explicit gate that has to be signed off before any of it is built."
       />
       <ArchitectureDiagram />
+      <CategoryDivider
+        label="Backend notes & compliance"
+        detail="What gets built, what regulates it"
+        icon="shield"
+        tint="admin"
+      />
       <FutureIntegrationNotesPanel />
       <ComplianceNotesPanel />
       <SignOffGate />
@@ -25,7 +32,7 @@ export function IntegrationTab() {
 
 function FutureIntegrationNotesPanel() {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Future backend integration notes</CardTitle>
         <p className="text-[13px] text-muted-foreground">
@@ -62,7 +69,7 @@ function FutureIntegrationNotesPanel() {
 
 function ComplianceNotesPanel() {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Compliance & consent placeholders</CardTitle>
         <p className="text-[13px] text-muted-foreground">
@@ -96,6 +103,7 @@ function ComplianceNotesPanel() {
 function SignOffGate() {
   return (
     <Card
+      data-reveal
       style={{
         borderColor:
           "color-mix(in srgb, var(--tint-ai) 35%, transparent)",
@@ -106,7 +114,7 @@ function SignOffGate() {
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle>Sign-off gate</CardTitle>
-          <Chip tint="ai">Required before backend work</Chip>
+          <Chip tint="ai" className="pulse-soft">Required before backend work</Chip>
         </div>
         <p className="text-[13px] text-muted-foreground">
           No backend integration, no live emails, no real ads pixels, no

@@ -7,7 +7,10 @@ import {
   CardTitle,
   Chip,
   Eyebrow,
+  Timeline,
+  TimelineItem,
 } from "@sigmafy/ui";
+import { mockEventLog, mockEventTaxonomy } from "../_data/events";
 import { mockLearner } from "../_data/learner";
 import {
   intentLabel,
@@ -17,11 +20,24 @@ import {
   sortByPriority,
   statusLabel,
   statusTint,
+  type CtaIntent,
   type PortalCtaEnriched,
 } from "../_data/portal-priorities";
 import { mockNextBestActionRules } from "../_data/remarketing";
 import { SectionHeader } from "./shell";
+import { CategoryDivider } from "./category-divider";
 import { MockEventChip } from "./mock-event-chip";
+import { iconMap, type IconKey } from "./icons";
+
+const ICON_FOR_INTENT: Record<CtaIntent, IconKey> = {
+  upgrade: "arrowUp",
+  company: "building",
+  referral: "gift",
+  reseller: "handshake",
+  stats: "stats",
+  advisor: "phone",
+  "self-serve": "download",
+};
 
 export function PortalTab() {
   const firstName = mockLearner.fullName.split(" ")[0];
@@ -34,7 +50,16 @@ export function PortalTab() {
         description="The portal is not a menu — it's a recommendation engine. CTAs are ordered by priority. Status, intent, and event chips show what Sigmafy would know about each card behind the scenes."
       />
 
+      <ActivitySoFar />
+
       <NextBestActionRecommendation />
+
+      <CategoryDivider
+        label="Prioritised next steps"
+        detail="Sorted by impact · grouped by tier"
+        icon="target"
+        tint="training"
+      />
 
       <div className="flex flex-col gap-4">
         <PriorityGroup
@@ -60,9 +85,61 @@ export function PortalTab() {
   );
 }
 
+function ActivitySoFar() {
+  const taxonomy = new Map(mockEventTaxonomy.map((t) => [t.type, t]));
+  const items = [...mockEventLog]
+    .sort((a, b) => (a.occurredAt < b.occurredAt ? -1 : 1))
+    .slice(0, 5);
+  return (
+    <Card data-reveal>
+      <CardHeader>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle>Your activity so far</CardTitle>
+          <Chip>Last 5 events · mock</Chip>
+        </div>
+        <p className="text-[13px] text-muted-foreground">
+          What Sigmafy already knows about this learner — the basis for every
+          recommendation below.
+        </p>
+      </CardHeader>
+      <CardContent>
+        <Timeline>
+          {items.map((e) => {
+            const t = taxonomy.get(e.type);
+            return (
+              <TimelineItem
+                key={e.id}
+                tint={
+                  t?.category === "conversion"
+                    ? "projects"
+                    : t?.category === "intent"
+                      ? "training"
+                      : t?.category === "email"
+                        ? "ai"
+                        : t?.category === "sales"
+                          ? "spc"
+                          : undefined
+                }
+                timestamp={new Date(e.occurredAt).toLocaleString("en-ZA", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                  hour12: false,
+                })}
+                title={t?.label ?? e.type}
+                description={t?.description}
+              />
+            );
+          })}
+        </Timeline>
+      </CardContent>
+    </Card>
+  );
+}
+
 function NextBestActionRecommendation() {
   return (
     <Card
+      data-reveal
       style={{
         borderColor:
           "color-mix(in srgb, var(--tint-training) 35%, transparent)",
@@ -76,7 +153,7 @@ function NextBestActionRecommendation() {
             <Eyebrow>Sigmafy recommends</Eyebrow>
             <CardTitle>Upgrade to Yellow Belt next</CardTitle>
           </div>
-          <Chip tint="training">Best next step</Chip>
+          <Chip tint="training" className="pulse-soft">Best next step</Chip>
         </div>
         <p className="text-[13px] text-muted-foreground">
           Based on your activity so far — certificate downloaded, Yellow Belt
@@ -90,7 +167,10 @@ function NextBestActionRecommendation() {
         <div className="flex flex-col items-end gap-2">
           <div className="flex gap-2">
             <Button variant="primary" size="md" asChild>
-              <Link href="/white-belt-funnel-preview?tab=upgrade">
+              <Link
+                href="/white-belt-funnel-preview?tab=upgrade"
+                data-magnetic="6"
+              >
                 View Yellow Belt
               </Link>
             </Button>
@@ -137,8 +217,13 @@ function PriorityGroup({
 
 function PortalCtaCard({ cta }: { cta: PortalCtaEnriched }) {
   const isBestNext = cta.priority === "best-next";
+  const Icon = iconMap[ICON_FOR_INTENT[cta.intent]];
+  const tintCss = priorityTint[cta.priority]
+    ? `var(--tint-${priorityTint[cta.priority]})`
+    : "var(--color-accent)";
   return (
     <Card
+      data-reveal
       style={
         isBestNext
           ? {
@@ -149,14 +234,27 @@ function PortalCtaCard({ cta }: { cta: PortalCtaEnriched }) {
       }
     >
       <CardHeader>
-        <div className="flex flex-wrap items-center gap-2">
-          <Chip tint={priorityTint[cta.priority]} className="!text-[10px]">
-            {priorityLabel[cta.priority]}
-          </Chip>
-          <Chip className="!text-[10px]">{intentLabel[cta.intent]}</Chip>
-          <Chip tint={statusTint[cta.status]} className="!text-[10px]">
-            {statusLabel[cta.status]}
-          </Chip>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Chip tint={priorityTint[cta.priority]} className="!text-[10px]">
+              {priorityLabel[cta.priority]}
+            </Chip>
+            <Chip className="!text-[10px]">{intentLabel[cta.intent]}</Chip>
+            <Chip tint={statusTint[cta.status]} className="!text-[10px]">
+              {statusLabel[cta.status]}
+            </Chip>
+          </div>
+          <span
+            aria-hidden
+            className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md border"
+            style={{
+              color: tintCss,
+              backgroundColor: `color-mix(in srgb, ${tintCss} 10%, var(--color-surface))`,
+              borderColor: `color-mix(in srgb, ${tintCss} 22%, transparent)`,
+            }}
+          >
+            <Icon className="h-5 w-5" />
+          </span>
         </div>
         <p className="mt-1 text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
           {cta.eyebrow}
@@ -203,7 +301,7 @@ function PortalCtaCard({ cta }: { cta: PortalCtaEnriched }) {
 
 function NextBestActionRules() {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Next-best-action logic</CardTitle>
         <p className="text-[13px] text-muted-foreground">

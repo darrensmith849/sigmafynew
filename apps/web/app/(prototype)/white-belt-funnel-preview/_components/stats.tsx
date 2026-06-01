@@ -1,8 +1,35 @@
 import { Button, Card, CardContent, CardHeader, CardTitle, Chip } from "@sigmafy/ui";
 import { mockResellerOpportunity } from "../_data/referrals";
 import { mockSigmafyStats, type SigmafyStatTile } from "../_data/sigmafy-stats";
+import { mockSparklines } from "../_data/sparkline-data";
 import { SectionHeader } from "./shell";
 import { MockEventChip } from "./mock-event-chip";
+import { StatCard } from "./stat-card";
+import { IconHandshake, type IconKey } from "./icons";
+
+const ICON_FOR_STAT: Record<string, IconKey> = {
+  active: "flag",
+  savings: "coins",
+  completion: "checkDouble",
+  progression: "ladder",
+  company: "building",
+  roi: "pulse",
+};
+
+const SPARK_FOR_STAT: Record<string, string> = {
+  active: "stat_active",
+  savings: "stat_savings",
+  completion: "stat_completion",
+  progression: "stat_progression",
+  company: "stat_company",
+  roi: "stat_roi",
+};
+
+const STAT_TINT: Record<NonNullable<SigmafyStatTile["tone"]>, "projects" | "training" | "ai" | undefined> = {
+  positive: "projects",
+  warning: "ai",
+  neutral: undefined,
+};
 
 export function StatsTab() {
   return (
@@ -21,7 +48,7 @@ export function StatsTab() {
 function SigmafyStatsPreviewPanel() {
   const s = mockSigmafyStats;
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle>{s.headline}</CardTitle>
@@ -32,7 +59,16 @@ function SigmafyStatsPreviewPanel() {
       <CardContent className="flex flex-col gap-5">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {s.tiles.map((t) => (
-            <StatTile key={t.id} tile={t} />
+            <StatCard
+              key={t.id}
+              label={t.label}
+              value={t.value}
+              caption={t.caption}
+              delta={t.delta}
+              tint={STAT_TINT[t.tone ?? "neutral"]}
+              icon={ICON_FOR_STAT[t.id]}
+              sparkline={mockSparklines[SPARK_FOR_STAT[t.id] ?? ""]}
+            />
           ))}
         </div>
         <div className="flex flex-wrap items-end justify-between gap-2 border-t border-border-subtle pt-3">
@@ -56,40 +92,28 @@ function SigmafyStatsPreviewPanel() {
   );
 }
 
-function StatTile({ tile }: { tile: SigmafyStatTile }) {
-  return (
-    <div className="flex flex-col gap-1 rounded-card border border-border-subtle bg-surface p-4">
-      <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-        {tile.label}
-      </p>
-      <p className="t-num text-[26px] font-semibold text-fg">{tile.value}</p>
-      <p className="text-[12px] text-muted-foreground">{tile.caption}</p>
-      {tile.delta && (
-        <p
-          className="mt-1 text-[12px] font-medium"
-          style={{
-            color:
-              tile.tone === "positive"
-                ? "var(--tint-projects)"
-                : tile.tone === "warning"
-                  ? "var(--tint-ai)"
-                  : "var(--color-muted)",
-          }}
-        >
-          {tile.delta}
-        </p>
-      )}
-    </div>
-  );
-}
-
 function ResellerOpportunityPanel() {
   const r = mockResellerOpportunity;
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <CardTitle>{r.headline}</CardTitle>
+          <span className="flex items-center gap-3">
+            <span
+              aria-hidden
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border"
+              style={{
+                color: "var(--tint-admin)",
+                backgroundColor:
+                  "color-mix(in srgb, var(--tint-admin) 10%, var(--color-surface))",
+                borderColor:
+                  "color-mix(in srgb, var(--tint-admin) 22%, transparent)",
+              }}
+            >
+              <IconHandshake className="h-5 w-5" />
+            </span>
+            <CardTitle>{r.headline}</CardTitle>
+          </span>
           <Chip>Concept · partner terms TBC</Chip>
         </div>
         <p className="text-[13px] text-muted-foreground">{r.summary}</p>

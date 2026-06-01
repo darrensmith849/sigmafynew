@@ -9,6 +9,10 @@ import {
   Eyebrow,
 } from "@sigmafy/ui";
 import { mockCertificate } from "../_data/certificate";
+import {
+  mockCohortComparison,
+  mockCohortHeadline,
+} from "../_data/cohort-comparison";
 import type { FunnelEventType } from "../_data/events";
 import { mockLearner } from "../_data/learner";
 import { SectionHeader } from "./shell";
@@ -25,6 +29,7 @@ export function CertificateTab() {
         description="A short, polished win. The certificate is the artefact; the page itself is what converts. Conversion CTAs sit immediately below."
       />
       <CertificatePage />
+      <CohortComparison />
       <ReadyForYellowBelt />
       <WhatsNext />
     </div>
@@ -87,7 +92,7 @@ function AchievementBadge() {
     <div className="flex items-center gap-3">
       <span
         aria-hidden
-        className="relative inline-flex h-12 w-12 items-center justify-center rounded-pill border"
+        className="relative inline-flex h-12 w-12 items-center justify-center rounded-pill border pulse-soft"
         style={{
           background:
             "radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--tint-training) 25%, var(--color-surface)) 0%, color-mix(in srgb, var(--tint-training) 8%, var(--color-surface)) 70%)",
@@ -118,6 +123,54 @@ function AchievementBadge() {
         <p className="text-sm font-semibold text-fg">White Belt · 26 May 2026</p>
       </div>
     </div>
+  );
+}
+
+function CohortComparison() {
+  return (
+    <Card data-reveal>
+      <CardHeader>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <Eyebrow>{mockCohortHeadline.eyebrow}</Eyebrow>
+            <CardTitle>{mockCohortHeadline.title}</CardTitle>
+          </div>
+          <Chip>Illustrative · mock cohort</Chip>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <ul className="grid gap-3 sm:grid-cols-3">
+          {mockCohortComparison.map((s) => (
+            <li
+              key={s.id}
+              className="flex flex-col gap-1 rounded-card border border-border-subtle bg-surface p-4"
+            >
+              <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+                {s.label}
+              </p>
+              <div className="flex items-baseline gap-3 pt-1">
+                <span className="t-num text-[20px] font-semibold text-fg">
+                  {s.you}
+                </span>
+                <span className="text-[12px] text-muted-foreground">you</span>
+              </div>
+              <div className="flex items-baseline gap-3">
+                <span
+                  className="t-num text-[18px] font-semibold"
+                  style={{ color: "var(--tint-training)" }}
+                >
+                  {s.cohort}
+                </span>
+                <span className="text-[12px] text-muted-foreground">cohort</span>
+              </div>
+              <p className="mt-1 text-[12px] italic text-muted-foreground">
+                {s.note}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
 

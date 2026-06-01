@@ -5,6 +5,7 @@ import {
   type MockEndpointContract,
 } from "../_data/endpoints";
 import { SectionHeader } from "./shell";
+import { IconUsers, IconRadio, IconGift, IconCog } from "./icons";
 
 const ROUTE = "/white-belt-funnel-preview";
 
@@ -26,11 +27,139 @@ export function EndpointsTab({ endpointId }: { endpointId?: string }) {
         title="The future API surface"
         description="Documentation-only contracts. No route handlers are wired in this prototype — these shapes are what the real backend would target."
       />
+      <ApiMap endpoints={mockEndpointContracts} />
       <div className="grid gap-6 lg:grid-cols-[3fr_4fr]">
         <EndpointList endpoints={mockEndpointContracts} selectedId={selected.id} />
         <EndpointContractCard endpoint={selected} />
       </div>
     </div>
+  );
+}
+
+type EpGroup = "learner" | "events" | "interest" | "ops";
+
+const GROUP_DEFS: {
+  id: EpGroup;
+  label: string;
+  detail: string;
+  match: (e: MockEndpointContract) => boolean;
+  Icon: typeof IconUsers;
+  tint: "training" | "ai" | "projects" | "admin";
+}[] = [
+  {
+    id: "learner",
+    label: "Learner",
+    detail: "Learner profile + offers",
+    match: (e) => e.id === "ep_learner" || e.id === "ep_offers",
+    Icon: IconUsers,
+    tint: "training",
+  },
+  {
+    id: "events",
+    label: "Events",
+    detail: "Event log + record",
+    match: (e) =>
+      e.id === "ep_events_list" || e.id === "ep_events_post",
+    Icon: IconRadio,
+    tint: "ai",
+  },
+  {
+    id: "interest",
+    label: "Interest capture",
+    detail: "Referral · company · reseller",
+    match: (e) =>
+      e.id === "ep_referral" ||
+      e.id === "ep_company" ||
+      e.id === "ep_reseller",
+    Icon: IconGift,
+    tint: "projects",
+  },
+  {
+    id: "ops",
+    label: "Ops",
+    detail: "Templates · sales · simulate",
+    match: (e) =>
+      e.id === "ep_email_templates" ||
+      e.id === "ep_sales_leads" ||
+      e.id === "ep_simulate_reply",
+    Icon: IconCog,
+    tint: "admin",
+  },
+];
+
+function ApiMap({ endpoints }: { endpoints: MockEndpointContract[] }) {
+  return (
+    <Card data-reveal>
+      <CardHeader>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle>API map · by purpose</CardTitle>
+          <Chip>Documentation only</Chip>
+        </div>
+        <p className="text-[13px] text-muted-foreground">
+          The 10 mock endpoints grouped by what they serve.
+        </p>
+      </CardHeader>
+      <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {GROUP_DEFS.map((g) => {
+          const eps = endpoints.filter(g.match);
+          const tintCss = `var(--tint-${g.tint})`;
+          return (
+            <div
+              key={g.id}
+              className="flex flex-col gap-2 rounded-card border border-border-subtle bg-surface p-4"
+              style={{
+                borderColor: `color-mix(in srgb, ${tintCss} 22%, var(--color-border-subtle))`,
+              }}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  <span
+                    aria-hidden
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-md border"
+                    style={{
+                      color: tintCss,
+                      backgroundColor: `color-mix(in srgb, ${tintCss} 10%, var(--color-surface))`,
+                      borderColor: `color-mix(in srgb, ${tintCss} 22%, transparent)`,
+                    }}
+                  >
+                    <g.Icon className="h-4 w-4" />
+                  </span>
+                  <p className="text-sm font-semibold text-fg">{g.label}</p>
+                </span>
+                <Chip className="!text-[10px]">{eps.length}</Chip>
+              </div>
+              <p className="text-[12px] text-muted-foreground">{g.detail}</p>
+              <ul className="mt-1 flex flex-col gap-1 text-[11px]">
+                {eps.map((e) => (
+                  <li
+                    key={e.id}
+                    className="flex items-center gap-2"
+                  >
+                    <Chip
+                      tint={
+                        METHOD_TINT[e.method] as
+                          | "projects"
+                          | "spc"
+                          | "training"
+                          | "ai"
+                          | "admin"
+                          | undefined
+                      }
+                      className="!text-[9px]"
+                    >
+                      {e.method}
+                    </Chip>
+                    <code className="truncate text-muted-foreground">
+                      {e.path.replace("/api/mock/white-belt-funnel", "…")}
+                    </code>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -42,7 +171,7 @@ function EndpointList({
   selectedId: string;
 }) {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Endpoints</CardTitle>
         <p className="text-[13px] text-muted-foreground">
@@ -96,7 +225,7 @@ function EndpointList({
 
 function EndpointContractCard({ endpoint }: { endpoint: MockEndpointContract }) {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>

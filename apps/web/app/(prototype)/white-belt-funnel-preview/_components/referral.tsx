@@ -14,6 +14,7 @@ import {
 } from "../_data/referrals";
 import { SectionHeader } from "./shell";
 import { MockEventChip } from "./mock-event-chip";
+import { IconBuilding, IconGift, IconRadio, IconTarget } from "./icons";
 
 export function ReferralTab() {
   return (
@@ -23,19 +24,106 @@ export function ReferralTab() {
         title="Refer learners, refer teams, refer companies"
         description="Two CTAs — one for referrals (concept stage), one for bringing your company to Sigmafy / 2KO."
       />
+      <HowItWouldWork />
       <ReferralProgrammePanel />
       <CompanyInvitePanel />
     </div>
   );
 }
 
+function HowItWouldWork() {
+  const steps = [
+    {
+      label: "Refer",
+      detail:
+        "Send a learner, a team, or your company through your unique link.",
+      Icon: IconRadio,
+    },
+    {
+      label: "Track",
+      detail: "Sigmafy attributes the signup and stage transitions to you.",
+      Icon: IconTarget,
+    },
+    {
+      label: "Reward",
+      detail:
+        "Approved rewards land in your account — final terms TBC before payout.",
+      Icon: IconGift,
+    },
+  ];
+  return (
+    <Card data-reveal>
+      <CardHeader>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle>How it would work</CardTitle>
+          <Chip>Concept · subject to approval</Chip>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <ol className="grid gap-3 sm:grid-cols-3">
+          {steps.map((s, i) => (
+            <li
+              key={s.label}
+              className="relative flex flex-col gap-2 rounded-card border border-border-subtle bg-surface p-4"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span
+                  aria-hidden
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-md border"
+                  style={{
+                    color: "var(--tint-training)",
+                    backgroundColor:
+                      "color-mix(in srgb, var(--tint-training) 10%, var(--color-surface))",
+                    borderColor:
+                      "color-mix(in srgb, var(--tint-training) 22%, transparent)",
+                  }}
+                >
+                  <s.Icon className="h-5 w-5" />
+                </span>
+                <span className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+                  Step {i + 1}
+                </span>
+              </div>
+              <p className="text-base font-semibold text-fg">{s.label}</p>
+              <p className="text-[13px] text-muted-foreground">{s.detail}</p>
+              {i < steps.length - 1 && (
+                <span
+                  aria-hidden
+                  className="absolute -right-2 top-1/2 hidden -translate-y-1/2 text-muted-foreground sm:inline"
+                >
+                  →
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </CardContent>
+    </Card>
+  );
+}
+
 function ReferralProgrammePanel() {
   const r = mockReferralProgramme;
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <CardTitle>{r.headline}</CardTitle>
+          <span className="flex items-center gap-3">
+            <span
+              aria-hidden
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border"
+              style={{
+                color: "var(--tint-ai)",
+                backgroundColor:
+                  "color-mix(in srgb, var(--tint-ai) 10%, var(--color-surface))",
+                borderColor:
+                  "color-mix(in srgb, var(--tint-ai) 22%, transparent)",
+              }}
+            >
+              <IconGift className="h-5 w-5" />
+            </span>
+            <CardTitle>{r.headline}</CardTitle>
+          </span>
           <Chip>Concept · subject to approval</Chip>
         </div>
         <p className="text-[13px] text-muted-foreground">{r.summary}</p>
@@ -88,10 +176,25 @@ function ReferralProgrammePanel() {
 function CompanyInvitePanel() {
   const c = mockCompanyInvite;
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <CardTitle>{c.headline}</CardTitle>
+          <span className="flex items-center gap-3">
+            <span
+              aria-hidden
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border"
+              style={{
+                color: "var(--tint-projects)",
+                backgroundColor:
+                  "color-mix(in srgb, var(--tint-projects) 10%, var(--color-surface))",
+                borderColor:
+                  "color-mix(in srgb, var(--tint-projects) 22%, transparent)",
+              }}
+            >
+              <IconBuilding className="h-5 w-5" />
+            </span>
+            <CardTitle>{c.headline}</CardTitle>
+          </span>
           <Chip tint="training">Lead capture · mock</Chip>
         </div>
         <p className="text-[13px] text-muted-foreground">{c.summary}</p>

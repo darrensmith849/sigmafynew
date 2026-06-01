@@ -1,43 +1,48 @@
 import { Card, CardContent, CardHeader, Chip, Eyebrow } from "@sigmafy/ui";
 import { mockFunnelKpis, mockKpiHeadline } from "../_data/kpis";
+import { mockSparklines } from "../_data/sparkline-data";
+import { StatCard } from "./stat-card";
+import type { IconKey } from "./icons";
+
+const ICON_FOR_KPI: Record<string, IconKey> = {
+  kpi_completions: "checkCircle",
+  kpi_cert_downloads: "award",
+  kpi_upgrade_clicks: "arrowUp",
+  kpi_company_leads: "building",
+  kpi_referral_interest: "gift",
+  kpi_remarketing_active: "radio",
+  kpi_sales_followups: "phone",
+  kpi_yb_conversions: "target",
+};
 
 export function FunnelSummary() {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <Eyebrow>{mockKpiHeadline.eyebrow}</Eyebrow>
-            <h3 className="mt-1 text-[22px] font-semibold tracking-tight text-fg">
+            <h3 className="mt-1 h-headline text-fg">
               {mockKpiHeadline.title}
             </h3>
           </div>
           <Chip>Mock data</Chip>
         </div>
-        <p className="max-w-3xl text-[13px] text-muted-foreground">
-          {mockKpiHeadline.description}
-        </p>
+        <p className="t-lede max-w-3xl">{mockKpiHeadline.description}</p>
       </CardHeader>
       <CardContent>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {mockFunnelKpis.map((k) => (
-            <div
+            <StatCard
               key={k.id}
-              className="flex flex-col gap-1 rounded-card border border-border-subtle bg-surface p-4"
-            >
-              <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-                {k.label}
-              </p>
-              <p className="t-num text-[24px] font-semibold text-fg">{k.value}</p>
-              <p className="text-[12px] text-muted-foreground">{k.caption}</p>
-              {k.delta && (
-                <p className="mt-1 text-[12px]">
-                  <Chip tint={k.tint} className="!text-[10px]">
-                    {k.delta}
-                  </Chip>
-                </p>
-              )}
-            </div>
+              label={k.label}
+              value={k.value}
+              caption={k.caption}
+              delta={k.delta}
+              tint={k.tint}
+              icon={ICON_FOR_KPI[k.id]}
+              sparkline={mockSparklines[k.id]}
+            />
           ))}
         </div>
       </CardContent>

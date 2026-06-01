@@ -4,9 +4,13 @@ import {
   funnelStageLabels,
   mockLeadScoringRules,
   mockSalesLeads,
+  type FunnelStage,
   type SalesLead,
 } from "../_data/sales-funnel";
 import { SectionHeader } from "./shell";
+import { GaugeRing } from "./gauge-ring";
+import { Sparkline } from "./sparkline";
+import { mockMicroSeries } from "../_data/sparkline-data";
 
 const ROUTE = "/white-belt-funnel-preview";
 
@@ -32,12 +36,90 @@ export function SalesPortalTab({ leadId }: { leadId?: string }) {
         title="What 2KO sees"
         description="A sales-side view of every White Belt graduate, funnel stage, channels active, and the recommended next action."
       />
+      <FunnelStageDistribution leads={mockSalesLeads} />
       <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
         <LeadListTable leads={mockSalesLeads} selectedLeadId={selected.id} />
         <LeadDetailPanel lead={selected} />
       </div>
       <LeadScoringRulesCard />
     </div>
+  );
+}
+
+function FunnelStageDistribution({ leads }: { leads: SalesLead[] }) {
+  const stageOrder: FunnelStage[] = [
+    "completed_white_belt",
+    "certificate_downloaded",
+    "viewed_upgrade_offer",
+    "interested_yellow_belt",
+    "company_referral_potential",
+    "remarketing_active",
+    "sales_follow_up_needed",
+    "converted",
+    "dormant",
+  ];
+  const counts = new Map<FunnelStage, number>();
+  for (const s of stageOrder) counts.set(s, 0);
+  for (const l of leads)
+    counts.set(l.funnelStage, (counts.get(l.funnelStage) ?? 0) + 1);
+  const total = leads.length || 1;
+  const tintFor = (s: FunnelStage) =>
+    s === "converted"
+      ? "var(--tint-projects)"
+      : s === "dormant"
+        ? "var(--color-surface-3)"
+        : s === "sales_follow_up_needed"
+          ? "var(--tint-ai)"
+          : "var(--tint-training)";
+  return (
+    <Card data-reveal>
+      <CardHeader>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle>Funnel stage distribution</CardTitle>
+          <Chip>{leads.length} leads · mock</Chip>
+        </div>
+        <p className="text-[13px] text-muted-foreground">
+          How the mock cohort is spread across the nine funnel stages.
+        </p>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        <div className="flex h-3 w-full overflow-hidden rounded-pill bg-surface-3">
+          {stageOrder.map((s) => {
+            const c = counts.get(s) ?? 0;
+            const w = (c / total) * 100;
+            if (w === 0) return null;
+            return (
+              <span
+                key={s}
+                title={`${funnelStageLabels[s]} · ${c}`}
+                style={{ width: `${w}%`, backgroundColor: tintFor(s) }}
+              />
+            );
+          })}
+        </div>
+        <ul className="grid gap-1 sm:grid-cols-3">
+          {stageOrder.map((s) => {
+            const c = counts.get(s) ?? 0;
+            return (
+              <li
+                key={s}
+                className="flex items-center gap-2 text-[12px]"
+              >
+                <span
+                  aria-hidden
+                  className="inline-block h-2 w-2 rounded-full"
+                  style={{ backgroundColor: tintFor(s) }}
+                />
+                <span className="text-muted-foreground">
+                  {funnelStageLabels[s]}
+                </span>
+                <span className="ml-auto t-num font-medium text-fg">{c}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -49,7 +131,7 @@ function LeadListTable({
   selectedLeadId: string;
 }) {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Leads</CardTitle>
         <p className="text-[13px] text-muted-foreground">
@@ -105,8 +187,25 @@ function LeadListTable({
                         {funnelStageLabels[l.funnelStage]}
                       </Chip>
                     </td>
-                    <td className="px-4 py-3 t-num font-medium text-fg">
-                      {l.interestScore}
+                    <td className="px-4 py-3">
+                      <span className="flex items-center gap-2">
+                        <span className="t-num font-medium text-fg">
+                          {l.interestScore}
+                        </span>
+                        <Sparkline
+                          values={mockMicroSeries[l.id] ?? [10, 12, 14, 16, 18]}
+                          tint={
+                            l.interestScore >= 80
+                              ? "ai"
+                              : l.interestScore >= 40
+                                ? "training"
+                                : undefined
+                          }
+                          width={48}
+                          height={16}
+                          withArea={false}
+                        />
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {l.activeChannels.length
@@ -131,7 +230,7 @@ function LeadListTable({
 
 function LeadDetailPanel({ lead }: { lead: SalesLead }) {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>{lead.name}</CardTitle>
@@ -231,18 +330,18 @@ function LeadScoreCard({ score }: { score: number }) {
         <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
           Interest score
         </p>
-        <p className="t-num text-[28px] font-semibold text-fg">{score}</p>
+        <Chip tint={tint} className="mt-1">
+          {score >= 80 ? "Hot" : score >= 40 ? "Warm" : "Cold"}
+        </Chip>
       </div>
-      <Chip tint={tint}>
-        {score >= 80 ? "Hot" : score >= 40 ? "Warm" : "Cold"}
-      </Chip>
+      <GaugeRing value={score} tint={tint} size={72} thickness={6} unit="" />
     </div>
   );
 }
 
 function LeadScoringRulesCard() {
   return (
-    <Card>
+    <Card data-reveal>
       <CardHeader>
         <CardTitle>Lead scoring rules</CardTitle>
         <p className="text-[13px] text-muted-foreground">
