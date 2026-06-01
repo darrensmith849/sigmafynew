@@ -10,6 +10,9 @@ import {
 } from "@sigmafy/ui";
 import { mockWhiteBeltCourse, type Lesson, type Module } from "../_data/course";
 import { SectionHeader } from "./shell";
+import { FunnelSummary } from "./funnel-summary";
+import { FunnelMap } from "./funnel-map";
+import { CommercialLens } from "./commercial-lens";
 
 const ROUTE = "/white-belt-funnel-preview";
 
@@ -34,6 +37,16 @@ export function JourneyTab({
 
   return (
     <div className="flex flex-col gap-10">
+      <SectionHeader
+        eyebrow="Executive overview"
+        title="White Belt → Conversion · the whole funnel at a glance"
+        description="Completion → certificate → portal → upgrade/referral/company/reseller/stats CTAs → behaviour tracking → remarketing → sales follow-up → conversion. The blocks below summarise each stage with mock numbers, the visual map, and the commercial lens."
+      />
+
+      <FunnelSummary />
+      <FunnelMap />
+      <CommercialLens />
+
       <SectionHeader
         eyebrow="Step 1 — Learner journey"
         title="White Belt course · landing → lessons → completion"

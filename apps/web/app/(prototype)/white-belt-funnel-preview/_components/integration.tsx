@@ -5,6 +5,7 @@ import {
   mockSignOffChecklist,
 } from "../_data/integration-notes";
 import { SectionHeader } from "./shell";
+import { ArchitectureDiagram } from "./architecture-diagram";
 
 export function IntegrationTab() {
   return (
@@ -14,6 +15,7 @@ export function IntegrationTab() {
         title="Backend notes & sign-off gate"
         description="What the real backend would need to do, what compliance work has to land alongside it, and the explicit gate that has to be signed off before any of it is built."
       />
+      <ArchitectureDiagram />
       <FutureIntegrationNotesPanel />
       <ComplianceNotesPanel />
       <SignOffGate />

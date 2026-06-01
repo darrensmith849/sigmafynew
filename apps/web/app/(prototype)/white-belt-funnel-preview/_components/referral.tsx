@@ -13,6 +13,7 @@ import {
   mockReferralProgramme,
 } from "../_data/referrals";
 import { SectionHeader } from "./shell";
+import { MockEventChip } from "./mock-event-chip";
 
 export function ReferralTab() {
   return (
@@ -67,11 +68,17 @@ function ReferralProgrammePanel() {
             </p>
           ))}
         </aside>
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border-subtle pt-3">
+        <div className="flex flex-wrap items-end justify-between gap-2 border-t border-border-subtle pt-3">
           <p className="text-[12px] text-muted-foreground">
             Submitting interest does not commit you to a final programme.
           </p>
-          <Button variant="primary" size="md">{r.ctaLabel}</Button>
+          <div className="flex flex-col items-end gap-2">
+            <Button variant="primary" size="md">{r.ctaLabel}</Button>
+            <MockEventChip
+              event="referral_cta_clicked"
+              futureAction="Add to referral interest list · email when programme is live."
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -143,13 +150,19 @@ function CompanyInvitePanel() {
               )}
             </div>
           ))}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border-subtle pt-3 sm:col-span-2">
+          <div className="flex flex-wrap items-end justify-between gap-2 border-t border-border-subtle pt-3 sm:col-span-2">
             <p className="text-[12px] text-muted-foreground">
               {c.submissionDisclaimer}
             </p>
-            <Button variant="primary" size="md" type="button">
-              {c.submitLabel}
-            </Button>
+            <div className="flex flex-col items-end gap-2">
+              <Button variant="primary" size="md" type="button">
+                {c.submitLabel}
+              </Button>
+              <MockEventChip
+                event="company_invite_submitted"
+                futureAction="Notify sales · open lead in CRM · send proposal template."
+              />
+            </div>
           </div>
         </form>
       </CardContent>

@@ -7,7 +7,16 @@ import {
   Chip,
 } from "@sigmafy/ui";
 import { mockDiscountConcepts, mockUpgradeOffers, type Offer } from "../_data/offers";
+import type { FunnelEventType } from "../_data/events";
 import { SectionHeader } from "./shell";
+import { MockEventChip } from "./mock-event-chip";
+
+const EVENT_FOR_BELT: Record<Offer["belt"], FunnelEventType> = {
+  white: "next_belt_cta_viewed",
+  yellow: "yellow_belt_clicked",
+  green: "green_belt_clicked",
+  black: "black_belt_clicked",
+};
 
 export function UpgradeTab() {
   return (
@@ -113,16 +122,26 @@ function BeltComparisonCard({ offer }: { offer: Offer }) {
             ))}
           </ul>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border-subtle pt-3">
-          <p className="text-[12px] text-muted-foreground">
-            {offer.primaryCtaHint}
-          </p>
-          <Button
-            variant={offer.recommended ? "primary" : "outline"}
-            size="sm"
-          >
-            {offer.primaryCtaLabel}
-          </Button>
+        <div className="flex flex-col gap-3 border-t border-border-subtle pt-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[12px] text-muted-foreground">
+              {offer.primaryCtaHint}
+            </p>
+            <Button
+              variant={offer.recommended ? "primary" : "outline"}
+              size="sm"
+            >
+              {offer.primaryCtaLabel}
+            </Button>
+          </div>
+          <MockEventChip
+            event={EVENT_FOR_BELT[offer.belt]}
+            futureAction={
+              offer.belt === "yellow"
+                ? "Add to Yellow Belt high-intent audience · graduate discount sequence."
+                : "Route to advisor · personalised pathway email."
+            }
+          />
         </div>
       </CardContent>
     </Card>
@@ -138,11 +157,17 @@ function BookACallCta() {
           A 20-minute call with an advisor maps a personalised pathway.
         </p>
       </CardHeader>
-      <CardContent className="flex flex-wrap items-center justify-between gap-3">
+      <CardContent className="flex flex-wrap items-end justify-between gap-3">
         <p className="text-[14px] text-fg">
           No pitch — just figure out the right next step.
         </p>
-        <Button variant="primary" size="md">Book a call (mock)</Button>
+        <div className="flex flex-col items-end gap-2">
+          <Button variant="primary" size="md">Book a call (mock)</Button>
+          <MockEventChip
+            event="call_booked"
+            futureAction="Assign to advisor immediately · pre-send one-pager."
+          />
+        </div>
       </CardContent>
     </Card>
   );

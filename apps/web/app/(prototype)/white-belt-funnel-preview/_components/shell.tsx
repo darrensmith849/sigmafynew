@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Chip, Eyebrow, Logo, TabsBar, TabLink } from "@sigmafy/ui";
 import { tabs, type TabKey } from "../_data/tabs";
+import { ReviewerStatusPanel } from "./reviewer-status-panel";
 
 const ROUTE = "/white-belt-funnel-preview";
 
@@ -71,6 +72,8 @@ export function PrototypeShell({
           </span>
         </div>
       </footer>
+
+      <ReviewerStatusPanel />
     </div>
   );
 }

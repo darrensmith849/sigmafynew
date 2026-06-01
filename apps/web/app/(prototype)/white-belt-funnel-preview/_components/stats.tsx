@@ -2,6 +2,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Chip } from "@sigmafy
 import { mockResellerOpportunity } from "../_data/referrals";
 import { mockSigmafyStats, type SigmafyStatTile } from "../_data/sigmafy-stats";
 import { SectionHeader } from "./shell";
+import { MockEventChip } from "./mock-event-chip";
 
 export function StatsTab() {
   return (
@@ -34,14 +35,20 @@ function SigmafyStatsPreviewPanel() {
             <StatTile key={t.id} tile={t} />
           ))}
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border-subtle pt-3">
+        <div className="flex flex-wrap items-end justify-between gap-2 border-t border-border-subtle pt-3">
           <p className="text-[12px] text-muted-foreground">
             Numbers above are mock. Real Sigmafy tenants see their own data via
             the stats-gateway and project records.
           </p>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="primary" size="md">{s.ctaLabel}</Button>
-            <Button variant="outline" size="md">{s.ctaSecondaryLabel}</Button>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-wrap gap-2">
+              <Button variant="primary" size="md">{s.ctaLabel}</Button>
+              <Button variant="outline" size="md">{s.ctaSecondaryLabel}</Button>
+            </div>
+            <MockEventChip
+              event="sigmafy_stats_viewed"
+              futureAction="Send company-ROI email +24h · flag for sales."
+            />
           </div>
         </div>
       </CardContent>
@@ -115,8 +122,12 @@ function ResellerOpportunityPanel() {
             </p>
           ))}
         </aside>
-        <div className="flex justify-end">
+        <div className="flex flex-col items-end gap-2">
           <Button variant="primary" size="md">{r.ctaLabel}</Button>
+          <MockEventChip
+            event="reseller_interest_clicked"
+            futureAction="Route to partnerships · send partner-info email +1h."
+          />
         </div>
       </CardContent>
     </Card>
