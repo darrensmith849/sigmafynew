@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { defaultTab, isTabKey } from "./_data/tabs";
+import { AccessGate } from "./_components/access-gate";
 import { PrototypeShell } from "./_components/shell";
 import { JourneyTab } from "./_components/journey";
 import { CertificateTab } from "./_components/certificate";
@@ -21,6 +23,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+const PREVIEW_COOKIE = "preview-access";
+
 type RawParams = Record<string, string | string[] | undefined>;
 
 function first(value: string | string[] | undefined): string | undefined {
@@ -34,6 +38,25 @@ export default async function WhiteBeltFunnelPreviewPage({
   searchParams: Promise<RawParams>;
 }) {
   const params = await searchParams;
+
+  // Access gate: when WHITE_BELT_FUNNEL_PREVIEW_TOKEN is set, require a
+  // matching cookie (the middleware sets it on a valid ?access= query).
+  // When the env var is unset, the gate is bypassed entirely so local dev
+  // and unconfigured deploys still work.
+  const expected = process.env.WHITE_BELT_FUNNEL_PREVIEW_TOKEN?.trim();
+  if (expected) {
+    const cookieStore = await cookies();
+    const cookieToken = cookieStore.get(PREVIEW_COOKIE)?.value;
+    if (cookieToken !== expected) {
+      // If they tried to enter a token via query and it didn't match, the
+      // middleware fell through without setting a cookie — so the `access`
+      // search param is still present here. Use that to switch the gate's
+      // copy to a "wrong token" state.
+      const invalidAttempt = typeof params.access === "string";
+      return <AccessGate invalidAttempt={invalidAttempt} />;
+    }
+  }
+
   const rawTab = first(params.tab);
   const activeTab = isTabKey(rawTab) ? rawTab : defaultTab;
 
