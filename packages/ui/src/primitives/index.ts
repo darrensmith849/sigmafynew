@@ -7,3 +7,6 @@ export { IconTile, type IconTileProps } from "./icon-tile";
 export { Eyebrow } from "./eyebrow";
 export { Logo } from "./logo";
 export { ThemeToggle, themeBootScript } from "./theme-toggle";
+export { TabsBar, TabLink, TabPanel, type TabLinkProps } from "./tabs";
+export { ProgressBar, type ProgressBarProps } from "./progress-bar";
+export { Timeline, TimelineItem, type TimelineItemProps } from "./timeline";

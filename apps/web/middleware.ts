@@ -1,11 +1,35 @@
-export { sigmafyMiddleware as default } from "@sigmafy/auth/middleware";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// Next.js requires `config` to be a statically analyzable literal export in
-// middleware.ts at the app level — re-exporting from another package leaves
-// the matcher unset, so the middleware runs on EVERY path (including
-// /_next/static/chunks/*), and Clerk's protect-rewrite ends up 404-ing all
-// static assets. Keep this in sync with `sigmafyMiddlewareConfig` in
-// packages/auth/src/middleware.ts.
+/**
+ * apps/web middleware — composes Clerk's `clerkMiddleware` inline so the
+ * public-route matcher can include the surface-only White Belt funnel
+ * preview prototype.
+ *
+ * The shared `@sigmafy/auth/middleware` is deliberately not modified; admin
+ * and any future app continue to inherit the standard public set there.
+ * This file mirrors that set and adds one prototype path. Keep this list in
+ * sync with `packages/auth/src/middleware.ts` if shared public paths
+ * change.
+ *
+ * `config` must be a statically analyzable literal export at the app level
+ * — Next.js cannot read it through a re-export — so it stays inline.
+ */
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/clerk(.*)",
+  "/api/inngest(.*)",
+  "/accept-invite(.*)",
+  "/white-belt-funnel-preview(.*)",
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect();
+  }
+});
+
 export const config = {
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",

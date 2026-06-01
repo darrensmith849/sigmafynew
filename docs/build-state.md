@@ -110,6 +110,17 @@ After the direction-shift commit pushes to `main`, both Vercel projects
 auto-deploy production. Phase-0a app routes are wired but signup will return
 401 until Clerk keys are populated in Vercel project envs.
 
+## Funnel prototype (sign-off pending, off-phase)
+
+- **White Belt conversion funnel** — surface-only clickable prototype
+  on `dev` at `/white-belt-funnel-preview`. Twelve tabs covering the
+  full post-completion journey (course, certificate, portal, upgrade,
+  referral, stats, remarketing, sales portal, email templates, email
+  agent, mock endpoints, integration + compliance + sign-off gate).
+  Mock data only — no DB, no real emails, no ads pixels, no payments.
+  Details and review instructions in `docs/white-belt-funnel-audit.md`.
+  **No backend integration until the sign-off gate is cleared.**
+
 ## Known issues / deferred items
 
 - **End-user verification of Phase 0B slices 1/2/3/5 pending** — see

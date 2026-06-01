@@ -5,6 +5,43 @@ commit(s), deliverables checked off, decisions, and open questions.
 
 ---
 
+## Phase 1 — funnel-prototype sprint (sign-off pending)
+
+- **Status**: 🟡 Surface-only prototype shipped to `dev`; awaiting
+  stakeholder sign-off before any backend work begins. **Out-of-band**
+  with the Phase 1 D-slice schedule — this is a review surface, not a
+  production deliverable.
+- **Date**: 2026-06-01
+- **Branch**: `dev`
+- **What was built** — clickable, mock-data-only White Belt
+  post-completion conversion funnel preview, accessible at
+  `/white-belt-funnel-preview` (unauthenticated, internal review).
+  Twelve tabs: Learner Journey · Certificate · Post-Course Portal ·
+  Upgrade Offers · Referral & Company Invite · Sigmafy Statistics ·
+  Remarketing Map · Sales Portal · Email Templates · Email Agent
+  Concept · Mock Endpoint Contracts · Future Integration & Compliance.
+- **What was NOT built** — anything that touches production. No
+  schema, no migration, no billing/AI/emails/stats-gateway imports, no
+  real ads pixels, no live forms.
+- **Files added** — 3 new generic primitives in `packages/ui`
+  (`Tabs`, `ProgressBar`, `Timeline`); 1 middleware edit in `apps/web`
+  (adds `/white-belt-funnel-preview(.*)` to the local public matcher);
+  the prototype route + 13 mock data modules + 12 composite component
+  files; one audit doc (`docs/white-belt-funnel-audit.md`).
+- **Sign-off gate** — checklist lives in
+  `docs/white-belt-funnel-audit.md` and is rendered in the prototype's
+  Integration tab. Backend integration of any kind blocked on
+  sign-off.
+- **Next recommended phase** — return to **Slice D** of Phase 1 (D.2
+  Paystack billing test, D.3 Laravel ETL). The funnel work resumes
+  *after* sign-off and is sized as its own phase against the same mock
+  contracts.
+- **Open questions** — final referral reward terms (commercial); final
+  reseller / partner programme structure (commercial); ads-pixel
+  installation gating on cookie-consent infrastructure; CRM choice.
+
+---
+
 ## Phase 1 — SSA Pilot (in progress)
 
 - **Status**: 15 sub-slices + a 7-step UI Sprint shipped (2026-05-05).
